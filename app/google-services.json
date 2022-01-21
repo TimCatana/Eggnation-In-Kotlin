@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "865304368550",
+    "project_id": "eggnationkotlin",
+    "storage_bucket": "eggnationkotlin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:865304368550:android:53c0da95fe17a7adf92b67",
+        "android_client_info": {
+          "package_name": "com.applicnation.eggnationkotlin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "865304368550-q7qpse0h81p6famtkf52rh58ilnicv9d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.applicnation.eggnationkotlin",
+            "certificate_hash": "4803b03c82fb71c87aff6ef67b669381d948fd19"
+          }
+        },
+        {
+          "client_id": "865304368550-jnjaatg5cf5ck232omhpio0a8q4ie5e3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3pxdyA4GQSgUP6f22RaLxy1tAoFGE-z4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "865304368550-jnjaatg5cf5ck232omhpio0a8q4ie5e3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
