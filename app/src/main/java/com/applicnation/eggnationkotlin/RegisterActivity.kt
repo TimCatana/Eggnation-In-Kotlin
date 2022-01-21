@@ -36,6 +36,8 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+
+
     private fun register(username: String?, email: String?, password: String?) {
         if(email === null || password === null || username === null) {
             Toast.makeText(this@RegisterActivity, "Something went wrong while reading email and password", Toast.LENGTH_LONG).show()
@@ -43,7 +45,7 @@ class RegisterActivity : AppCompatActivity() {
 
         // TODO - check to make sure inputs are valid and sanatized
 
-        auth.createUserWithEmailAndPassword(email!!, password!!) // TODO - use the inputs from the EditText components for email and password
+        auth.createUserWithEmailAndPassword(email!!, password!!)
             .addOnCompleteListener {
                 if(it.isSuccessful) {
                     // Add user to firestore database
