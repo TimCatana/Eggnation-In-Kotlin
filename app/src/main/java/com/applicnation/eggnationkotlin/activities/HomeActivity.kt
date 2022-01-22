@@ -1,10 +1,12 @@
-package com.applicnation.eggnationkotlin
+package com.applicnation.eggnationkotlin.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import com.applicnation.eggnationkotlin.R
+import com.applicnation.eggnationkotlin.databinding.ActivityHomeBinding
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -14,16 +16,25 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 
 class HomeActivity : AppCompatActivity() {
+
+//    companion object {
+//        val message: String = "This is HomeActivity Companion Object"
+//    }
+
+
+    private lateinit var binding: ActivityHomeBinding
+
     private var mInterstitialAd: InterstitialAd? = null
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
-        MobileAds.initialize(this@HomeActivity)
+        binding = ActivityHomeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        loadInterAd()
+
+        MobileAds.initialize(this@HomeActivity)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().getReference()
@@ -44,7 +55,14 @@ class HomeActivity : AppCompatActivity() {
         }
 
         showAdBtn.setOnClickListener {
+
             showInterAd()
+        }
+
+
+
+        binding.storeBtn.setOnClickListener {
+            startActivity(Intent(this@HomeActivity, StoreActivity::class.java))
         }
 
 
@@ -80,13 +98,8 @@ class HomeActivity : AppCompatActivity() {
             }
 
             mInterstitialAd?.show(this@HomeActivity)
-
-
-
-
-
-
         } else {
+            loadInterAd()
             Toast.makeText(this@HomeActivity, "Ad wasn't ready to show yet", Toast.LENGTH_LONG).show()
         }
     }

@@ -1,4 +1,4 @@
-package com.applicnation.eggnationkotlin
+package com.applicnation.eggnationkotlin.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.applicnation.eggnationkotlin.R
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
@@ -20,7 +21,10 @@ class LoginActivity : AppCompatActivity() {
 
         var registerTV = findViewById<TextView>(R.id.tvRegister)
         registerTV.setOnClickListener {
-            startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
+
+            val goToRegisterActivity = Intent(this@LoginActivity, RegisterActivity::class.java)
+            goToRegisterActivity.putExtra("key", "Sent String")
+            startActivity(goToRegisterActivity)
         }
 
         var loginBtn = findViewById<Button>(R.id.btnLogin)

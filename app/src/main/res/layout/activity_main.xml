@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
+    android:backgroundTint="@color/black"
     android:gravity="center_horizontal"
-    tools:context=".MainActivity" >
+    tools:context=".activities.MainActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

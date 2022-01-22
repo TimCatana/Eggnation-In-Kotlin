@@ -1,4 +1,4 @@
-package com.applicnation.eggnationkotlin
+package com.applicnation.eggnationkotlin.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.applicnation.eggnationkotlin.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
@@ -29,6 +30,19 @@ class RegisterActivity : AppCompatActivity() {
         loginTV.setOnClickListener {
             startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
         }
+
+
+
+        val bundle: Bundle? = intent.extras
+
+        bundle?.let{
+            val msgFromLogin = bundle?.getString("key")
+            Toast.makeText(this@RegisterActivity, msgFromLogin, Toast.LENGTH_LONG).show()
+        }
+
+
+
+
 
 
 

@@ -1,8 +1,13 @@
-package com.applicnation.eggnationkotlin
+package com.applicnation.eggnationkotlin.activities
 
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowInsets
+import android.view.WindowManager
+import android.view.WindowManager.*
+import com.applicnation.eggnationkotlin.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -13,7 +18,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            window.setFlags(
+                LayoutParams.FLAG_FULLSCREEN,
+                LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+
         auth = FirebaseAuth.getInstance()
+
+        /*
+        custom fonts from assets folder.
+        I can use this, or I can use the custom view I made in MSPTextiewBold
+
+        val typeface: Typeface = Typeface.createFromAsset(assets, "font-name.ext")
+        textView.typeface = typeface
+
+         */
     }
 
     // this will be the main routing system to determine wheterh the user is lgged in or not
