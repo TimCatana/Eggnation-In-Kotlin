@@ -12,35 +12,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EggNationKotlin">
-        <activity android:name=".activities.ForgotPasswordActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
-
-        <activity android:name=".activities.BaseActivity" />
 
         <!-- For AdMob -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7503631457339866~5619526175" /> <!-- Activities -->
+            android:value="ca-app-pub-7503631457339866~5619526175" />
+
         <activity
-            android:name=".activities.StoreActivity"
+            android:name="com.applicnation.eggnationkotlin.ui.activities.DashboardActivity"
+            android:exported="true"></activity>
+        <activity
+            android:name="com.applicnation.eggnationkotlin.ui.activities.ForgotPasswordActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.applicnation.eggnationkotlin.ui.activities.BaseActivity" />
+        <activity
+            android:name="com.applicnation.eggnationkotlin.ui.activities.StoreActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.RegisterActivity"
+            android:name="com.applicnation.eggnationkotlin.ui.activities.RegisterActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.HomeActivity"
+            android:name="com.applicnation.eggnationkotlin.ui.activities.HomeActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.HomeScreen" />
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="com.applicnation.eggnationkotlin.ui.activities.LoginActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.applicnation.eggnationkotlin.ui.activities.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>

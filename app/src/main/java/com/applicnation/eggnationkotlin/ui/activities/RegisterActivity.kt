@@ -1,21 +1,19 @@
-package com.applicnation.eggnationkotlin.activities
+package com.applicnation.eggnationkotlin.ui.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.applicnation.eggnationkotlin.R
+import com.applicnation.eggnationkotlin.firestore.FirestoreClass
+import com.applicnation.eggnationkotlin.models.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 // add View.OnClickListener to overide the onclick. see the commented out function below
 class RegisterActivity : BaseActivity() { // Base Activity inherits from AppCompatActivity
@@ -37,18 +35,12 @@ class RegisterActivity : BaseActivity() { // Base Activity inherits from AppComp
         }
 
 
-
         val bundle: Bundle? = intent.extras
 
-        bundle?.let{
+        bundle?.let {
             val msgFromLogin = bundle?.getString("key")
             Toast.makeText(this@RegisterActivity, msgFromLogin, Toast.LENGTH_LONG).show()
         }
-
-
-
-
-
 
 
         var registerBtn = findViewById<Button>(R.id.btnRegister)
@@ -58,18 +50,25 @@ class RegisterActivity : BaseActivity() { // Base Activity inherits from AppComp
 
         // TODO - make button to register and register user.
         registerBtn.setOnClickListener {
-            register(username = userNameTV.text.toString(), email = emailTV.text.toString(), password = passwordTV.text.toString())
+            register(
+                username = userNameTV.text.toString(),
+                email = emailTV.text.toString(),
+                password = passwordTV.text.toString()
+            )
         }
     }
-
 
 
     private fun register(username: String?, email: String?, password: String?) {
 
         // TODO - add the validateRegisterDetails instead of the below null checks
 
-        if(email === null || password === null || username === null) {
-            Toast.makeText(this@RegisterActivity, "Something went wrong while reading email and password", Toast.LENGTH_LONG).show()
+        if (email === null || password === null || username === null) {
+            Toast.makeText(
+                this@RegisterActivity,
+                "Something went wrong while reading email and password",
+                Toast.LENGTH_LONG
+            ).show()
         }
 
         // TODO - check to make sure inputs are valid and sanatized
@@ -77,33 +76,51 @@ class RegisterActivity : BaseActivity() { // Base Activity inherits from AppComp
 //                    showProgressDialog("registering...")
         auth.createUserWithEmailAndPassword(email!!, password!!)
             .addOnCompleteListener {
-                if(it.isSuccessful) {
+                if (it.isSuccessful) {
 
-                    // Add user to firestore database
-                        val user: MutableMap<String, Any> = HashMap()
-                        user["username"] = username!!
-                        user["email"] = email!!
-                        user["prizes"] = ArrayList<Any>()
-                        user["created"] = Date()
+                    val firebaseUser: FirebaseUser = it.result!!.user!!
 
-                        firestore
-                            .collection("users")
-                            .document(auth.currentUser!!.uid)
-                            .set(user)
+                    val user = User(
+                        username = username!!,
+                        email = email!!
+                    )
 
-                    Toast.makeText(this@RegisterActivity, "Successfully registered User", Toast.LENGTH_LONG).show()
+                    FirestoreClass().registerUser(this@RegisterActivity, user, firebaseUser.uid)
+
+
+//                    val user: HashMap<String, Any> = HashMap()
+//                    // Add user to firestore database
+//                        user["username"] = username!!
+//                    user["email"] = email!!
+//                    user["prizes"] = ArrayList<Any>()
+//                    user["created"] = Date()
+//
+//                        firestore
+//                            .collection("users")
+//                            .document(auth.currentUser!!.uid)
+//                            .set(user)
+
+                    Toast.makeText(
+                        this@RegisterActivity,
+                        "Successfully registered User",
+                        Toast.LENGTH_LONG
+                    ).show()
 
                     // hide progress bar
                     startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(this@RegisterActivity, "Failed to register user. Please try again ${it.exception!!.message.toString()}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@RegisterActivity,
+                        "Failed to register user. Please try again ${it.exception!!.message.toString()}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
     }
 
 
-    private fun validateRegisterDetails() : Boolean {
+    private fun validateRegisterDetails(): Boolean {
 
         // no spaces before and after.
         // passwords must match
@@ -135,8 +152,7 @@ class RegisterActivity : BaseActivity() { // Base Activity inherits from AppComp
     }
 
 
-
-        // this can be used if you have a lot of onclick listeners. This will override onclick and you can have all the code in one place for different buttons
+    // this can be used if you have a lot of onclick listeners. This will override onclick and you can have all the code in one place for different buttons
 
 //    override fun onClick(view: View) {
 //        if(view != null) {
@@ -147,6 +163,17 @@ class RegisterActivity : BaseActivity() { // Base Activity inherits from AppComp
 //            }
 //        }
 //    }
+
+
+
+    fun userRegistrationSuccess() {
+
+        hideProgressDialog()
+
+        // show toast that user registered
+
+
+    }
 
 
 }

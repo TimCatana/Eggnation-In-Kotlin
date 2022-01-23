@@ -2,8 +2,6 @@ package com.applicnation.eggnationkotlin
 
 data class Skin(var skinTitle: String)
 
-
-
 object Supplier {
     val skins = listOf(
         Skin("egg1"),

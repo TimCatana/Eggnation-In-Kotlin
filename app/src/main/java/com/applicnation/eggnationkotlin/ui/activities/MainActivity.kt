@@ -1,15 +1,11 @@
-package com.applicnation.eggnationkotlin.activities
+package com.applicnation.eggnationkotlin.ui.activities
 
 import android.content.Intent
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.WindowInsets
-import android.view.WindowManager
 import android.view.WindowManager.*
 import com.applicnation.eggnationkotlin.R
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -18,17 +14,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        @Suppress("DEPRECATION")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.insetsController?.hide(WindowInsets.Type.statusBars())
-        } else {
-            window.setFlags(
-                LayoutParams.FLAG_FULLSCREEN,
-                LayoutParams.FLAG_FULLSCREEN
-            )
-        }
+        startActivity(Intent(this@MainActivity, DashboardActivity::class.java))
+        finish()
 
-        auth = FirebaseAuth.getInstance()
+//        @Suppress("DEPRECATION")
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            window.insetsController?.hide(WindowInsets.Type.statusBars())
+//        } else {
+//            window.setFlags(
+//                LayoutParams.FLAG_FULLSCREEN,
+//                LayoutParams.FLAG_FULLSCREEN
+//            )
+//        }
+//
+//        auth = FirebaseAuth.getInstance()
 
         /*
         custom fonts from assets folder.
@@ -41,21 +40,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     // this will be the main routing system to determine wheterh the user is lgged in or not
-    override fun onStart() {
-        super.onStart();
-
-        var mfirebaseUser: FirebaseUser? = auth?.currentUser;
-
-        if(mfirebaseUser != null) {
-            // go to home screen
-            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-            finish()
-        } else {
-            // go to login screen
-            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-            finish()
-        }
-    }
+//    override fun onStart() {
+//        super.onStart();
+//
+//
+//
+//        var mfirebaseUser: FirebaseUser? = auth?.currentUser;
+//
+//        if(mfirebaseUser != null) {
+//            // go to home screen
+//            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+//            finish()
+//        } else {
+//            // go to login screen
+//            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+//            finish()
+//        }
+//    }
 
 }
 

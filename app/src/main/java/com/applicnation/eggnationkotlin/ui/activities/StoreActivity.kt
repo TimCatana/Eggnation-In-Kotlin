@@ -1,4 +1,4 @@
-package com.applicnation.eggnationkotlin.activities
+package com.applicnation.eggnationkotlin.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
