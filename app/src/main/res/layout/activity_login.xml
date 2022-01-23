@@ -10,16 +10,16 @@
         android:id="@+id/flHeaderImage"
         android:layout_width="wrap_content"
         android:layout_height="200dp"
+        app:layout_constraintBaseline_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBaseline_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="image"
             android:scaleType="fitXY"
-            android:src="@drawable/test"/>
+            android:src="@drawable/test" />
 
         <ImageView
             android:layout_width="220dp"
@@ -41,7 +41,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/flHeaderImage"/>
+        app:layout_constraintTop_toBottomOf="@id/flHeaderImage" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilLoginEmail"
@@ -60,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
-            android:text="abc@gmail.com"/>
+            android:text="abc@gmail.com" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:text="123456"/>
+            android:text="123456" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -91,6 +91,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/button_background"
         android:foreground="?attr/selectableItemBackground"
         android:gravity="center"
         android:text="Login"
@@ -99,7 +100,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilLoginPassword"/>
+        app:layout_constraintTop_toBottomOf="@id/tilLoginPassword" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -127,7 +128,7 @@
             android:foreground="?attr/selectableItemBackground"
             android:padding="5dp"
             android:text="Register"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </LinearLayout>
 
