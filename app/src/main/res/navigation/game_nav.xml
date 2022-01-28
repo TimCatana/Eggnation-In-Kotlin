@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_nav"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.applicnation.eggnationkotlin.gameStack.HomeFragment"
+        android:label="fragment_home2"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_availablePrizesFragment2"
+            app:destination="@id/availablePrizesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment2"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_wonPrizesFragment2"
+            app:destination="@id/wonPrizesFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_storeFragment2"
+            app:destination="@id/storeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/storeFragment"
+        android:name="com.applicnation.eggnationkotlin.gameStack.StoreFragment"
+        android:label="fragment_store"
+        tools:layout="@layout/fragment_store" >
+        <action
+            android:id="@+id/action_storeFragment_to_homeFragment2"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.applicnation.eggnationkotlin.gameStack.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/availablePrizesFragment"
+        android:name="com.applicnation.eggnationkotlin.gameStack.AvailablePrizesFragment"
+        android:label="fragment_available_prizes"
+        tools:layout="@layout/fragment_available_prizes" >
+        <action
+            android:id="@+id/action_availablePrizesFragment_to_homeFragment2"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wonPrizesFragment"
+        android:name="com.applicnation.eggnationkotlin.gameStack.WonPrizesFragment"
+        android:label="fragment_won_prizes"
+        tools:layout="@layout/fragment_won_prizes" >
+        <action
+            android:id="@+id/action_wonPrizesFragment_to_homeFragment2"
+            app:destination="@id/homeFragment" />
+    </fragment>
+</navigation>

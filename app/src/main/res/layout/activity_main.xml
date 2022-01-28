@@ -7,6 +7,6 @@
     android:background="@color/backgroundColor"
     android:backgroundTint="@color/black"
     android:gravity="center_horizontal"
-    tools:context=".ui.activities.MainActivity">
+    tools:context=".MainActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

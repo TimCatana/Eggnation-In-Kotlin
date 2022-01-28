@@ -9,6 +9,6 @@
         android:startColor="@color/black"
         android:type="linear"/>
 
-    <corners android:radius="@dimen/button_background_radius"/>
+    <corners android:radius="10dp"/>
 
 </shape>

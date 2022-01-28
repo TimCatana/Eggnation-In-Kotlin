@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.LoginActivity">
 
-<!-- add srollView for small phones with small screens -->
+    <!-- add srollView for small phones with small screens -->
 
     <FrameLayout
         android:id="@+id/flHeaderImage"

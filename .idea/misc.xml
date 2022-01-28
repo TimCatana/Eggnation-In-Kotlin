@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/drawable/button_background.xml" value="0.2703125" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.2703125" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.2703125" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2703125" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.2703125" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_auth.xml" value="0.346875" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_base.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_dashboard.xml" value="0.15760869565217392" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_forgot_password.xml" value="0.15760869565217392" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_game.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_home.xml" value="0.15760869565217392" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_login.xml" value="0.15760869565217392" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_register.xml" value="0.15760869565217392" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/dialogue_progress.xml" value="0.15760869565217392" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_forgot_password.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_home2.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_login.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_register.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
