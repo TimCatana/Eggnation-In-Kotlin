@@ -20,19 +20,27 @@
 
         <activity
             android:name=".gameStack.GameActivity"
-            android:exported="false"
+            android:exported="true"
             android:screenOrientation="portrait"
-            />
+
+            >
+
+
+        </activity>
         <activity
             android:name=".authStack.AuthActivity"
-            android:exported="false"
+            android:exported="true"
             android:screenOrientation="portrait"
-            />
+            >
+
+
+        </activity>
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

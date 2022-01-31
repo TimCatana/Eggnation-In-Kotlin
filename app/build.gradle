@@ -33,6 +33,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        dataBinding true
     }
 }
 
@@ -66,4 +67,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:20.5.0'
 
     implementation("androidx.cardview:cardview:1.0.0")
+
+
+    // add viewmodel scope when I start refactoring my code to use view models
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0-alpha01")
 }

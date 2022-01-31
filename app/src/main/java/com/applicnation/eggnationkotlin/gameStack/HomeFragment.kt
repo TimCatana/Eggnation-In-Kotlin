@@ -5,27 +5,48 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.applicnation.eggnationkotlin.R
+import com.applicnation.eggnationkotlin.databinding.FragmentHomeBinding
+import com.applicnation.eggnationkotlin.databinding.FragmentLoginBinding
+import com.applicnation.eggnationkotlin.firebase.RealtimeDatabase
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass.
  * Use the [HomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+    private val database:RealtimeDatabase = RealtimeDatabase()
 
-        // TODO = Do stuff to UI using view
+    private var _binding: FragmentHomeBinding? = null
+    private val binding
+        get() = _binding!!
 
-        return view;
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentHomeBinding.bind(view)
+
+        binding.egg.setOnClickListener {
+            doGameLogic()
+        }
 
     }
+
+
+
+
+
+    fun doGameLogic() {
+        database.incrementGlobalCounter(lifecycleScope)
+    }
+
+
 
 }
 

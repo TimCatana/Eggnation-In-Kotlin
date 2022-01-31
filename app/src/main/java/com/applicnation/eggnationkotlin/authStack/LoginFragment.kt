@@ -1,32 +1,55 @@
 package com.applicnation.eggnationkotlin.authStack
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.navigation.Navigation
 import com.applicnation.eggnationkotlin.R
+import com.applicnation.eggnationkotlin.databinding.FragmentLoginBinding
 
 
 /**
- * A simple [Fragment] subclass.
- * Use the [LoginFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * This fragment shows the UI for the login screen.
+ * This fragment currently uses viewbinding.
+ * @param R_layout_fragment_login used by the onViewCreate method to inflate the layout
+ *        this is so that I don't have to manually write the onViewCreate method and return the
+ *        inflated layout
  */
-class LoginFragment : Fragment() {
+class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_login, container, false)
+    private var _binding: FragmentLoginBinding? = null
+    private val binding
+        get() = _binding!!
 
-        // TODO = Do stuff to UI using view
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        return view;
+        _binding = FragmentLoginBinding.bind(view)
+
+        binding.btnLogin.setOnClickListener {
+            Toast.makeText(view.context, "lolollolo", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.tvRegister.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_loginFragment_to_registerFragment)
+        }
     }
+
+    /**
+     * To avoid memory leaks, set binding to null
+     */
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
+
 }
+
 
 
 
