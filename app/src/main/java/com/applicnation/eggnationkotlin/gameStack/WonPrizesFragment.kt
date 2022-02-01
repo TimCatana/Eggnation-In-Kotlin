@@ -2,27 +2,38 @@ package com.applicnation.eggnationkotlin.gameStack
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.applicnation.eggnationkotlin.R
+import com.applicnation.eggnationkotlin.models.SkinsSupplier
+import com.applicnation.eggnationkotlin.databinding.FragmentWonPrizesBinding
+import com.applicnation.eggnationkotlin.utils.WonPrizeAdapter
 
 /**
  * A simple [Fragment] subclass.
  * Use the [WonPrizesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class WonPrizesFragment : Fragment() {
+class WonPrizesFragment : Fragment(R.layout.fragment_won_prizes) {
+    private lateinit var skinsRecyclerView: RecyclerView
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_won_prizes, container, false)
 
-        // TODO = Do stuff to UI using view
+    private var _binding: FragmentWonPrizesBinding? = null
+    private val binding
+        get() = _binding!!
 
-        return view;
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentWonPrizesBinding.bind(view)
+
+        skinsRecyclerView = binding.skinsRV
+        skinsRecyclerView.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
+
+        val wonPrizesAdapter = WonPrizeAdapter(requireContext(), SkinsSupplier.skins)
+
+        skinsRecyclerView.adapter = wonPrizesAdapter
+
+
     }
 }

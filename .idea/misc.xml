@@ -18,11 +18,17 @@
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_main.xml" value="0.15104166666666666" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/activity_register.xml" value="0.15760869565217392" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/dialogue_progress.xml" value="0.15760869565217392" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_available_prizes.xml" value="0.3625" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_forgot_password.xml" value="0.25416666666666665" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_home.xml" value="0.25416666666666665" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_home2.xml" value="0.25416666666666665" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_login.xml" value="0.25416666666666665" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_register.xml" value="0.25416666666666665" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_settings.xml" value="0.22291666666666668" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_store.xml" value="0.26458333333333334" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/fragment_won_prizes.xml" value="0.22291666666666668" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/item_skin.xml" value="0.2625" />
+        <entry key="..\:/Code/EggNationKotlin/app/src/main/res/layout/item_won_prize.xml" value="0.22291666666666668" />
         <entry key="..\:/Code/EggNationKotlin/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
       </map>
     </option>
