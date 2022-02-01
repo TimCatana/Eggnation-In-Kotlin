@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.applicnation.eggnationkotlin.R
 import com.applicnation.eggnationkotlin.models.SkinsSupplier
 import com.applicnation.eggnationkotlin.databinding.FragmentWonPrizesBinding
-import com.applicnation.eggnationkotlin.utils.AvailablePrizesAdapter
+import com.applicnation.eggnationkotlin.adapters.AvailablePrizesAdapter
+import com.applicnation.eggnationkotlin.models.WonPrizeSupplier
 
 /**
  * A simple [Fragment] subclass.
@@ -30,7 +31,7 @@ class AvailablePrizesFragment : Fragment(R.layout.fragment_available_prizes) {
         skinsRecyclerView = binding.skinsRV
         skinsRecyclerView.layoutManager = GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false)
 
-        val availablePrizesAdapter = AvailablePrizesAdapter(requireContext(), SkinsSupplier.skins)
+        val availablePrizesAdapter = AvailablePrizesAdapter(requireContext(), WonPrizeSupplier.wonPrizes)
 
         skinsRecyclerView.adapter = availablePrizesAdapter
 

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.applicnation.eggnationkotlin.R
 import com.applicnation.eggnationkotlin.models.SkinsSupplier
 import com.applicnation.eggnationkotlin.databinding.FragmentStoreBinding
-import com.applicnation.eggnationkotlin.utils.SkinAdapter
+import com.applicnation.eggnationkotlin.adapters.SkinsAdapter
 
 /**
  * A simple [Fragment] subclass.
@@ -32,7 +32,7 @@ class StoreFragment : Fragment(R.layout.fragment_store) {
         skinsRecyclerView = binding.skinsRV
         skinsRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
-        val skinAdapter = SkinAdapter(requireContext(), SkinsSupplier.skins)
+        val skinAdapter = SkinsAdapter(requireContext(), SkinsSupplier.skins)
 
         skinsRecyclerView.adapter = skinAdapter
 

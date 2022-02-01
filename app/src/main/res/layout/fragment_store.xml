@@ -6,12 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".gameStack.StoreFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/skinsRV"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <ImageView
+        android:id="@+id/egg"
+        android:layout_width="249dp"
+        android:layout_height="399dp"
+        android:gravity="center_horizontal"
+        android:src="@drawable/egg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.108" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/skinsRV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/egg" />
 </androidx.constraintlayout.widget.ConstraintLayout>
