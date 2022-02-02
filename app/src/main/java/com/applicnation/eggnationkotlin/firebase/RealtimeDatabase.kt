@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 // TODO - check that scopes are working properly by logging the scope
 class RealtimeDatabase {
     private val database = FirebaseDatabase.getInstance()
-//    private val userDelta: Long = -1
+    private val userDelta: Long = -1
     private val globalDelta: Long = 1
 
 //    // TODO - seriously considering holding the user count on local storage...

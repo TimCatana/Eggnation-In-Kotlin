@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.applicnation.eggnationkotlin.R
 import com.applicnation.eggnationkotlin.databinding.FragmentLoginBinding
+import com.applicnation.eggnationkotlin.firebase.Authentication
 
 
 /**
@@ -20,6 +22,7 @@ import com.applicnation.eggnationkotlin.databinding.FragmentLoginBinding
  *        inflated layout
  */
 class LoginFragment : Fragment(R.layout.fragment_login) {
+    private val auth: Authentication = Authentication()
 
     private var _binding: FragmentLoginBinding? = null
     private val binding
@@ -31,7 +34,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         _binding = FragmentLoginBinding.bind(view)
 
         binding.btnLogin.setOnClickListener {
-            Toast.makeText(view.context, "lolollolo", Toast.LENGTH_SHORT).show()
+            val userEmail = binding.etLoginEmail.text.toString()
+            val userPassword = binding.etLoginPassword.text.toString()
+
+            auth.signIn(lifecycleScope, userEmail, userPassword)
+            // TODO - the auth will handle the valid and invalid login details, I just need to show the user a UI message when a problem occurs
         }
 
         binding.tvRegister.setOnClickListener {
@@ -40,13 +47,12 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     /**
-     * To avoid memory leaks, set binding to null
+     * Destroy the binding to avoid memory leaks
      */
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
-
 
 }
 

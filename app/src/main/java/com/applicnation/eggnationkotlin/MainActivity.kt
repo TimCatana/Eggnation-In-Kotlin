@@ -21,7 +21,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun goToCorrectScreen() {
         mAuth = FirebaseAuth.getInstance()
-        mAuth.signOut()
         var mfirebaseUser: FirebaseUser? = mAuth.currentUser;
         Log.i("MainActivity", "firebase user is: $mfirebaseUser")
 

@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
@@ -16,13 +17,17 @@ class Authentication {
     // TODO - set coroutines on IO thread?
     // TODO - also update username when registered
     fun createUserAccount(scope: CoroutineScope, email: String, password: String) {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
             } catch (err: Exception) {
                 Log.i("Authentication", "Failed to create account: ${err.message.toString()}")
             }
         }
+    }
+
+    fun getUserId(): String {
+        return auth.currentUser?.uid ?: ""
     }
 
     fun signIn(scope: CoroutineScope, email: String, password: String) {

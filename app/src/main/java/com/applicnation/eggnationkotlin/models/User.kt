@@ -4,8 +4,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class User (
-    val username: String = "",
-    val email: String = "",
-    val prizes: ArrayList<Any> = ArrayList(),
-    val dateCreated: Date = Date(),
+    var username: String = "",
+    var email: String = "",
+    var prizes: ArrayList<Any> = ArrayList(),
+    var dateCreated: Date = Date(),
 )

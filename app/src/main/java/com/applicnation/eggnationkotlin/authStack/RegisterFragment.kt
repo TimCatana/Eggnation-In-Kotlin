@@ -1,24 +1,32 @@
 package com.applicnation.eggnationkotlin.authStack
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.applicnation.eggnationkotlin.R
-import com.applicnation.eggnationkotlin.databinding.FragmentHomeBinding
 import com.applicnation.eggnationkotlin.databinding.FragmentRegisterBinding
+import com.applicnation.eggnationkotlin.firebase.Authentication
 import com.applicnation.eggnationkotlin.firebase.Firestore
+import com.applicnation.eggnationkotlin.models.User
 
 /**
  * this fragment inflates thw view using the parameter
  */
-class RegisterFragment : Fragment(R.layout.fragment_register) {
-    // private val scope = CoroutineScope(Dispatchers.IO + CoroutineName("MyScopeName"))
 
-    val firestore: Firestore = Firestore()
+// TODO - move the non-UI stuff to a viewmodel later on
+// TODO - make sure all inputs are sanitized
+class RegisterFragment : Fragment(R.layout.fragment_register) {
+    private val firestore: Firestore = Firestore()
+    private val auth: Authentication = Authentication()
+
+    private val mWhiteSpaceChars = "\\s".toRegex()
+    private val mLowerCaseChars = "[a-z]".toRegex()
+    private val mUpperCaseChars = "[A-Z]".toRegex()
+    private val mNumberChars = "\\d".toRegex()
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding
@@ -29,178 +37,116 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         _binding = FragmentRegisterBinding.bind(view)
 
         binding.btnRegister.setOnClickListener {
-//            firestore.registerUser()
+            if(isValidInput()) {
+                val userEmail = binding.etRegisterEmail.text.toString()
+                val userName = binding.etRegisterUsername.text.toString()
+                val userPassword = binding.etRegisterPassword.text.toString()
 
-//            add 'lifecycleScope' as scope argument
+                val newUser = User().apply{
+                    this.username = userName
+                    this.email = userEmail
+                }
+
+                auth.createUserAccount(lifecycleScope, userEmail, userPassword)
+                // TODO - check if user already exists in auth, and if they do, do not add them to database because this will overwrite their data
+                Log.i("RegisterFragment", "uid is: $${auth.getUserId()}")
+                firestore.registerUser(lifecycleScope, newUser, auth.getUserId())
+            } else {
+                Toast.makeText(context, "Invalid Input", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         binding.tvLogin.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.action_registerFragment_to_loginFragment)
         }
-
-
     }
+
+    /**
+     * Checks to see if the user valid inputs
+     * - Username is unique
+     * - Password is strong and meets requirements
+     * - Email is in a valid email pattern (i.e. <chars>@<chars>.<chars>)
+     */
+    private fun isValidInput(): Boolean {
+        return (isValidPassword() && isUniqueUsername() && isValidEmail())
+    }
+
+    /**
+     * Queries the database (IDK which one yet) to see if username exists already
+     * @return (Boolean) Whether the username inputted is unique or not
+     */
+    private fun isUniqueUsername(): Boolean {
+        val userUserName = binding.etRegisterUsername.text.toString()
+        // TODO - iterate through a list of usernames in the database and check for uniqueness
+        return true
+    }
+
+    /**
+     * Checks to see if email is in a valid format
+     * @Note This does NOT check if the email exists and is a valid email address
+     * @Note Firebase Authentication will deal with duplicate email addresses
+     * @return (Boolean) Whether the email inputted is in a valid format or not
+     */
+    private fun isValidEmail(): Boolean {
+        val userEmail = binding.etRegisterEmail.text.toString()
+        // TODO - send UI message saying to input a valid email address
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()
+    }
+
+    /**
+     * Checks to see if the password the user inputted a valid, strong password
+     * - Password and ConfirmPassword must match
+     * - Password must not be empty
+     * - Password must be at least 8 characters long
+     * - Password must not contain whitespace
+     * - Password must contain lowercase, uppercase and integer characters
+     * @return (Boolean) Whether or not the password input is valid
+     */
+    private fun isValidPassword(): Boolean {
+        val userPassword = binding.etRegisterPassword.text.toString()
+        // TODO - need to add a 'confirm password' section and test against that
+
+        var isValid = true
+
+        // TODO - test the password input against the confirm password input
+
+        Log.i("RegisterFragment", "$userPassword")
+
+
+        if(userPassword.isBlank()) {
+            Log.i("RegisterFragment", "isBlank")
+            // TODO - send UI message to tell the user to enter a password
+            isValid = false
+        }
+
+        if(userPassword.length < 8) {
+            Log.i("RegisterFragment", "is less than 8 chars long")
+            // TODO - send UI message to tell the user to make password longer
+            isValid = false
+        }
+
+        if(userPassword.contains(mWhiteSpaceChars)) {
+            Log.i("RegisterFragment", "contains whitespace")
+            // TODO - send UI message to tell the user to get rid of whitespace
+            isValid = false
+        }
+
+        if(!(userPassword.contains(mLowerCaseChars)) || !(userPassword.contains(mUpperCaseChars)) || !(userPassword.contains(mNumberChars)) ) {
+            Log.i("RegisterFragment", "does not contain lowercase uppercase and numbers")
+            // TODO - send UI message to tell the user to get include lowercase, uppercase and numbers in password
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    /**
+     * Destroy the binding to avoid memory leaks
+     */
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 }
-
-
-
-//private lateinit var auth: FirebaseAuth
-//    private lateinit var firestore: FirebaseFirestore
-//
-//    // TODO - add binding to make it easier to access elements
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_register)
-//
-//        auth = FirebaseAuth.getInstance()
-//        firestore = FirebaseFirestore.getInstance()
-//
-//        var loginTV = findViewById<TextView>(R.id.tvLogin)
-//        loginTV.setOnClickListener {
-//            // use onBackPressed() to avoid making to many running activities
-//            startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-//        }
-//
-//
-//        val bundle: Bundle? = intent.extras
-//
-//        bundle?.let {
-//            val msgFromLogin = bundle?.getString("key")
-//            Toast.makeText(this@RegisterActivity, msgFromLogin, Toast.LENGTH_LONG).show()
-//        }
-//
-//
-//        var registerBtn = findViewById<Button>(R.id.btnRegister)
-//        var userNameTV = findViewById<EditText>(R.id.etRegisterUsername)
-//        var emailTV = findViewById<EditText>(R.id.etRegisterEmail)
-//        var passwordTV = findViewById<EditText>(R.id.etRegisterPassword)
-//
-//        // TODO - make button to register and register user.
-//        registerBtn.setOnClickListener {
-//            register(
-//                username = userNameTV.text.toString(),
-//                email = emailTV.text.toString(),
-//                password = passwordTV.text.toString()
-//            )
-//        }
-//    }
-//
-//
-//    private fun register(username: String?, email: String?, password: String?) {
-//
-//        // TODO - add the validateRegisterDetails instead of the below null checks
-//
-//        if (email === null || password === null || username === null) {
-//            Toast.makeText(
-//                this@RegisterActivity,
-//                "Something went wrong while reading email and password",
-//                Toast.LENGTH_LONG
-//            ).show()
-//        }
-//
-//        // TODO - check to make sure inputs are valid and sanatized
-//
-////                    showProgressDialog("registering...")
-//        auth.createUserWithEmailAndPassword(email!!, password!!)
-//            .addOnCompleteListener {
-//                if (it.isSuccessful) {
-//
-//                    val firebaseUser: FirebaseUser = it.result!!.user!!
-//
-//                    val user = User(
-//                        username = username!!,
-//                        email = email!!
-//                    )
-//
-//                    FirestoreClass().registerUser(this@RegisterActivity, user, firebaseUser.uid)
-//
-//
-////                    val user: HashMap<String, Any> = HashMap()
-////                    // Add user to firestore database
-////                        user["username"] = username!!
-////                    user["email"] = email!!
-////                    user["prizes"] = ArrayList<Any>()
-////                    user["created"] = Date()
-////
-////                        firestore
-////                            .collection("users")
-////                            .document(auth.currentUser!!.uid)
-////                            .set(user)
-//
-//                    Toast.makeText(
-//                        this@RegisterActivity,
-//                        "Successfully registered User",
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//
-//                    // hide progress bar
-//                    startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
-//                    finish()
-//                } else {
-//                    Toast.makeText(
-//                        this@RegisterActivity,
-//                        "Failed to register user. Please try again ${it.exception!!.message.toString()}",
-//                        Toast.LENGTH_LONG
-//                    ).show()
-//                }
-//            }
-//    }
-//
-//
-//    private fun validateRegisterDetails(): Boolean {
-//
-//        // no spaces before and after.
-//        // passwords must match
-//        // password > 8 chars
-//        // password contain Caps, no caps, and number
-//        // username must be unique (use firebase database to check this), prob gonna need a corroutine to await the process.
-//        // check if is valid email format? is there a library for this? If not, The google auth will fail anyway.
-//
-//
-//        return when {
-//            TextUtils.isEmpty(findViewById<EditText>(R.id.etLoginEmail).text.toString()) -> {
-//                showErrorSnackBar("error message", true)
-//                // will probably use showErrorSnackBar(resources.getString(R.string.name_of_string_from_res, true)
-//                false
-//            }
-//            /**
-//             * !checkbox.ischekced -> {
-//             *  show error snackbar
-//             * }
-//             */
-//            // Need to add terms and conditions/ privacy policy acceptance
-//            // Add checkbox for EU people to accept me showing them ads. Makes it simpler
-//
-//            // for else statement, return true because the input is valie
-//            // once returned true, create the firebase auth account
-//            else -> false
-//        }
-//
-//    }
-//
-//
-//    // this can be used if you have a lot of onclick listeners. This will override onclick and you can have all the code in one place for different buttons
-//
-////    override fun onClick(view: View) {
-////        if(view != null) {
-////            when(view.id) {
-////
-//////                R.id.<id> -> { run some onclick code }
-////
-////            }
-////        }
-////    }
-//
-//
-//
-//    fun userRegistrationSuccess() {
-//
-//        hideProgressDialog()
-//
-//        // show toast that user registered
-//
-//
-//    }
-//
-//
-//}
