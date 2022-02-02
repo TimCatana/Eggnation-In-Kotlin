@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             EggNationTheme {
                 navController = rememberNavController()
-                val test = false // replace with firebase auth later on
+                val test = true // replace with firebase auth later on
                 
                 if(test) {
                     AuthNavGraph(navController = navController)

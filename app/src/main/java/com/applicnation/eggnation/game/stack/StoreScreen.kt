@@ -11,6 +11,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 
+// TODO - add lazyRow for egg skins "recyclerview"
+// TODO - add left and right padding to get the row to begin and end on the middle of the screen
+
 @Composable
 fun StoreScreen(
     navController: NavController
