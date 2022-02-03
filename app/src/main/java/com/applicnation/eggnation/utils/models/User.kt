@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.models
+package com.applicnation.eggnation.utils.models
 
 import java.util.*
 import kotlin.collections.ArrayList

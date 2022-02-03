@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.models
+package com.applicnation.eggnation.utils.models
 
 import com.applicnation.eggnation.R
 

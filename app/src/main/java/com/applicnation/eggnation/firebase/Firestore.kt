@@ -1,9 +1,8 @@
 package com.applicnation.eggnationkotlin.firebase
 
-import android.app.Activity
 import android.util.Log
-import com.applicnation.eggnation.models.Prize
-import com.applicnation.eggnation.models.User
+import com.applicnation.eggnation.utils.models.Prize
+import com.applicnation.eggnation.utils.models.User
 import com.applicnation.eggnation.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue

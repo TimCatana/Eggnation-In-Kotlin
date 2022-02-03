@@ -1,33 +1,39 @@
-package com.applicnation.eggnation.auth.stack
+package com.applicnation.eggnation.ui.auth.stack.loginScreen
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.applicnation.eggnation.composables.ErrorField
 import com.applicnation.eggnation.navigation.AuthScreen
+import com.applicnation.eggnation.ui.auth.stack.common.composables.HeaderText
+import com.applicnation.eggnation.ui.auth.stack.common.states.LoginTextFieldStates
 import com.applicnation.eggnation.ui.theme.EggNationTheme
 
 private enum class LoginConstraintIds {
@@ -42,60 +48,163 @@ private enum class LoginConstraintIds {
 fun LoginScreen(
     navController: NavController
 ) {
-    var emailTextState by remember { mutableStateOf(TextFieldValue("")) }
-    var passwordTextState by remember { mutableStateOf(TextFieldValue("")) }
+    var state = remember { LoginTextFieldStates() }
+
+    val localFocusManager = LocalFocusManager.current
 
     BoxWithConstraints() {
         val constraints = loginPhoneContraints()
 
         ConstraintLayout(constraints, modifier = Modifier.fillMaxSize()) {
-            Text(
-                modifier = Modifier.layoutId(LoginConstraintIds.TXT_TITLE),
-                text = "Login",
-                color = Color.Green,
-                fontSize = MaterialTheme.typography.h3.fontSize,
-                fontWeight = FontWeight.Bold
+            HeaderText(
+                text = "Login", // TODO - set a string resource
+                constraintId = LoginConstraintIds.TXT_TITLE
             )
-            OutlinedTextField(
-                modifier = Modifier.layoutId(LoginConstraintIds.TF_EMAIL),
-                value = emailTextState,
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                label = { Text(text = "email") },
-                onValueChange = { emailTextState = it }
+            LoginEmailTF(
+                constraintId = LoginConstraintIds.TF_EMAIL,
+                emailValue = state.emailText,
+                onEmailChanged = {
+                    state.emailText = it
+                    state.validateEmail()
+//                    state.enableLoginButton()
+                },
+                error = state.emailError,
+                focusManager = localFocusManager
             )
-            OutlinedTextField(
-                modifier = Modifier.layoutId(LoginConstraintIds.TF_PASSWORD),
-                value = passwordTextState,
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                label = { Text(text = "password") },
-                onValueChange = { passwordTextState = it }
+            LoginPasswordTF(
+                constraintId = LoginConstraintIds.TF_PASSWORD,
+                passwordValue = state.passwordText,
+                onPasswordChanged = {
+                    state.passwordText = it
+                    state.validatePassword()
+//                    state.enableLoginButton()
+                },
+                error = state.passwordError,
+                focusManager = localFocusManager,
             )
-            Row(modifier = Modifier.layoutId(LoginConstraintIds.ROW_INFO)) {
-                Text(
-                    text = "Don't have an account? ",
-                    color = Color.Gray,
-                    fontSize = MaterialTheme.typography.body1.fontSize,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    modifier = Modifier.clickable {
-                        navController.navigate(route = AuthScreen.Register.route)
-                    },
-                    text = "Register here",
-                    color = Color.Gray,
-                    fontSize = MaterialTheme.typography.body1.fontSize,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            AccountInfoText(
+                accountQuestion = "Don't have an account? ",
+                actionQuestion = "Register here",
+                modifier = Modifier.layoutId(LoginConstraintIds.ROW_INFO),
+                navigateModifier = Modifier.clickable {
+                    navController.navigate(route = AuthScreen.Register.route)
+                },
+            )
             Button(
                 modifier = Modifier.layoutId(LoginConstraintIds.BTN_LOGIN),
-                onClick = {/* TODO */ })
+                onClick = {/* TODO */ },
+                enabled = state.enableLoginButton() // FIXME - this may or may not be dangerous due to the nature of recompositions. I may just make this function run whenever a textfield is changed and make that change a state varaible
+            )
             {
                 Text(text = "Login")
             }
         }
+    }
+}
+
+
+@Composable
+private fun LoginEmailTF(
+    emailValue: String,
+    onEmailChanged: (String) -> Unit,
+    error: String?,
+    focusManager: FocusManager,
+    constraintId: Any
+) {
+    Column(modifier = Modifier.layoutId(constraintId)) {
+        OutlinedTextField(
+            value = emailValue,
+            onValueChange = { onEmailChanged(it) },
+            label = { Text(text = "Email") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            isError = error != null
+        )
+
+        error?.let { ErrorField(it) }
+    }
+}
+
+
+@Composable
+private fun LoginPasswordTF(
+    passwordValue: String,
+    onPasswordChanged: (String) -> Unit,
+    error: String?,
+    focusManager: FocusManager,
+    constraintId: Any
+) {
+    var showPassword by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.layoutId(constraintId)) {
+        OutlinedTextField(
+            value = passwordValue,
+            onValueChange = { onPasswordChanged(it) },
+            label = { Text(text = "password") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            ),
+            isError = error != null,
+            visualTransformation = if (showPassword) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            trailingIcon = {
+                if (showPassword) {
+                    IconButton(onClick = { showPassword = false }) {
+                        Icon(
+                            imageVector = Icons.Filled.Visibility,
+                            contentDescription = "hide password"
+                        )
+                    }
+                } else {
+                    IconButton(onClick = { showPassword = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.VisibilityOff,
+                            contentDescription = "show password"
+                        )
+                    }
+                }
+            }
+        )
+
+        error?.let { ErrorField(it) }
+    }
+}
+
+
+@Composable
+private fun AccountInfoText(
+    accountQuestion: String,
+    actionQuestion: String,
+    modifier: Modifier,
+    navigateModifier: Modifier
+) {
+    Row(modifier = modifier) {
+        Text(
+            text = accountQuestion,
+            color = Color.Gray,
+            fontSize = MaterialTheme.typography.body1.fontSize,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            modifier = navigateModifier,
+            text = actionQuestion,
+            color = Color.Gray,
+            fontSize = MaterialTheme.typography.body1.fontSize,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -136,9 +245,6 @@ private fun loginPhoneContraints(): ConstraintSet {
         }
     }
 }
-
-//private fun tabletContraints(): ConstraintSet {}
-
 
 @Preview(showBackground = true)
 @Composable

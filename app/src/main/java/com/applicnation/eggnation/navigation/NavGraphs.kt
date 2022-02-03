@@ -5,11 +5,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.applicnation.eggnation.auth.stack.ForgotPasswordScreen
-import com.applicnation.eggnation.auth.stack.LoginScreen
 import com.applicnation.eggnation.auth.stack.RegisterScreen
 import com.applicnation.eggnation.game.stack.*
 import com.applicnation.eggnation.policies.PrivacyPolicyScreen
 import com.applicnation.eggnation.policies.TermsOfServiceScreen
+import com.applicnation.eggnation.ui.auth.stack.loginScreen.LoginScreen
 
 @Composable
 fun AuthNavGraph(

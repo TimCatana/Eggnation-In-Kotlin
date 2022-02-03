@@ -30,7 +30,9 @@ class MainActivity : ComponentActivity() {
                 navController = rememberNavController()
                 mAuth = FirebaseAuth.getInstance()
 
-                if (mAuth.currentUser != null) {
+                val lol = false
+
+                if (lol) {
                     GameNavGraph(navController = navController)
                 } else {
                     AuthNavGraph(navController = navController)

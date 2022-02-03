@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.models
+package com.applicnation.eggnation.utils.models
 
 // TODO - might add the images I want to show in cloud storage
 data class Prize (
