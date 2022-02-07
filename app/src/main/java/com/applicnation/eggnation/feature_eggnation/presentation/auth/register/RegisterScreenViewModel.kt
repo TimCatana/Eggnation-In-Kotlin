@@ -2,14 +2,15 @@ package com.applicnation.eggnation.feature_eggnation.presentation.auth.register
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_register.RegisterUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val registerUser: RegisterUser
-){
+//    private val registerUser: RegisterUser
+): ViewModel() {
 
     /**
      * States:
@@ -35,7 +36,7 @@ class RegisterScreenViewModel @Inject constructor(
      */
     fun onEvent(event: RegisterScreenEvent) {
         when(event) {
-            is RegisterScreenEvent.EnteredUserName -> {
+            is RegisterScreenEvent.EnteredUsername -> {
                 _usernameText.value = event.value
             }
             is RegisterScreenEvent.EnteredEmail -> {

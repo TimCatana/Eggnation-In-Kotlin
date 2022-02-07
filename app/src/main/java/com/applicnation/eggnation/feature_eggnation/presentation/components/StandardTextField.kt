@@ -18,8 +18,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 @Composable
 fun StandardTextField(
     text: String = "",
-    hint: String = "",
-    maxLength: Int = 20,
+    label: String = "",
+    maxLength: Int = 30,
     isError: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     onValueChange: (String) -> Unit
@@ -38,15 +38,11 @@ fun StandardTextField(
                 onValueChange(it)
             }
         },
-        placeholder = {
-            Text(
-                text = hint,
-                style = MaterialTheme.typography.body1
-            )
-        },
+        label = { Text(text = label) },
         isError = isError,
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType
+            // TODO - edit IME action
         ),
         visualTransformation = if (!isPasswordVisible && isPasswordToggleDisplayed) {
             PasswordVisualTransformation()

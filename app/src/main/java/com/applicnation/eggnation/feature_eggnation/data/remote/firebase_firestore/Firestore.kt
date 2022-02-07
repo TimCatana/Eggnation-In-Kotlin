@@ -11,6 +11,7 @@ import kotlinx.coroutines.tasks.await
 import java.lang.Exception
 
 // TODO - check that scopes are working properly by logging the scope
+// TODO - need to refactor this because coroutines are used differently in compose
 class Firestore {
     private val TAG = "FireStoreClass"
     private val firestore = FirebaseFirestore.getInstance()

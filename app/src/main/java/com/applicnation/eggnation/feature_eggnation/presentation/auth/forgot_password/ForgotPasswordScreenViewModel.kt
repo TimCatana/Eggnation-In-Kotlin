@@ -2,13 +2,14 @@ package com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_pa
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordScreenViewModel @Inject constructor(
 //    private val ResetUserPassword: ResetUserPassword TODO - make reset user password use case
-) {
+): ViewModel() {
 
     /**
      * States:

@@ -4,12 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.applicnation.eggnation.auth.stack.ForgotPasswordScreen
-import com.applicnation.eggnation.auth.stack.RegisterScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreen
 import com.applicnation.eggnation.game.stack.*
 import com.applicnation.eggnation.policies.PrivacyPolicyScreen
 import com.applicnation.eggnation.policies.TermsOfServiceScreen
-import com.applicnation.eggnation.deletelater.auth.stack.loginScreen.LoginScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
 
 @Composable
 fun AuthNavGraph(
@@ -32,7 +33,7 @@ fun AuthNavGraph(
         /**
          * @note these screens are in both stacks. The user will not be visiting these often though
          */
-        composable(route = PolicyScreen.PrivacyPolocy.route) {
+        composable(route = PolicyScreen.PrivacyPolicy.route) {
             PrivacyPolicyScreen(navController = navController)
         }
         composable(route = PolicyScreen.TermsOfService.route) {
@@ -71,7 +72,7 @@ fun GameNavGraph(
         /**
          * @note these screens are in both stacks. The user will not be visiting these often though
          */
-        composable(route = PolicyScreen.PrivacyPolocy.route) {
+        composable(route = PolicyScreen.PrivacyPolicy.route) {
             PrivacyPolicyScreen(navController = navController)
         }
         composable(route = PolicyScreen.TermsOfService.route) {

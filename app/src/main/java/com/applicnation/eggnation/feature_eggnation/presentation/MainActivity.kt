@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
                 navController = rememberNavController()
                 mAuth = FirebaseAuth.getInstance()
 
-                val lol = false
+                val lol = true
 
                 // android basics in kotlin
                 // design meets code

@@ -1,5 +1,9 @@
 package com.applicnation.eggnation.feature_eggnation.domain.modal
 
+/**
+ * @param skinName (String) The name of the skin
+ * @param skinImage (Int) A drawable resource file
+ */
 data class Skin(
     var skinName: String,
     var skinImage: Int

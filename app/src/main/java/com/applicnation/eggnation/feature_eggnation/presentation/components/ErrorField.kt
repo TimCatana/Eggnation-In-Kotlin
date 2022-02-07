@@ -1,10 +1,8 @@
-package com.applicnation.eggnation.composables
+package com.applicnation.eggnation.feature_eggnation.presentation.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 
 @Composable

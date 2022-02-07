@@ -11,25 +11,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 
-@Composable
-fun HomeScreen(
-    navController: NavController
-) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-//            modifier = Modifier.clickable {
-//                navController.navigate(route = Screen.Detail.route)
-//            },
-            text = "Home",
-            color = Color.Green,
-            fontSize = MaterialTheme.typography.h3.fontSize,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
+//@Composable
+//fun HomeScreen(
+//    navController: NavController
+//) {
+//    Box(
+//        modifier = Modifier.fillMaxSize(),
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Text(
+////            modifier = Modifier.clickable {
+////                navController.navigate(route = Screen.Detail.route)
+////            },
+//            text = "Home",
+//            color = Color.Green,
+//            fontSize = MaterialTheme.typography.h3.fontSize,
+//            fontWeight = FontWeight.Bold
+//        )
+//    }
+//}
 
 
 
