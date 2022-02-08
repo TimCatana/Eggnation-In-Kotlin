@@ -5,7 +5,7 @@ import androidx.compose.ui.focus.FocusState
 sealed class LoginScreenEvent{
     data class EnteredEmail(val value: String): LoginScreenEvent()
     data class EnteredPassword(val value: String): LoginScreenEvent()
-    data class Login(val email: String, val password: String): LoginScreenEvent()
+    data class SignIn(val email: String, val password: String): LoginScreenEvent()
     // TODO - maybe do some focus changing stuff for the text fields
     // TODO - maybe add navigation here? pr directly in the UI code
 

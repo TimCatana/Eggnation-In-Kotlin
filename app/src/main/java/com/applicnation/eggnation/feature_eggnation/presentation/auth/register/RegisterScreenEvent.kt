@@ -9,8 +9,7 @@ sealed class RegisterScreenEvent {
      * parameters will depend on what service
      * you are using to keep track of user accounts
      * */
-    data class Register(
-        val username: String,
+    data class SignUp(
         val email: String,
         val password: String
     ) : RegisterScreenEvent()

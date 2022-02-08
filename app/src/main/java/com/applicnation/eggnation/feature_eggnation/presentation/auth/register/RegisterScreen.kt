@@ -85,7 +85,13 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    // TODO - register user using Firebase Authentication
+                    viewModel.onEvent(
+                        RegisterScreenEvent.SignUp(
+                            viewModel.emailText.value,
+                            viewModel.passwordText.value
+                            // TODO - need to propogate potential errors here.
+                        )
+                    )
                 },
             ) {
                 Text(text = "Register")

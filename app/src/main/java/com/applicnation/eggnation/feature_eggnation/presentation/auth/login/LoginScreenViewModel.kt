@@ -3,15 +3,18 @@ package com.applicnation.eggnation.feature_eggnation.presentation.auth.login
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_register.RegisterUser
+import androidx.lifecycle.viewModelScope
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.UserSignIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // private cal savedStateHandle: SavedStateHandle - contains navigation parameters
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-//    private val loginUser: LoginUser TODO - add user login use case
+    private val authUseCases: AuthUseCases
 ) : ViewModel() {
 
     /**
@@ -36,9 +39,11 @@ class LoginScreenViewModel @Inject constructor(
             is LoginScreenEvent.EnteredPassword -> {
                 _passwordText.value = event.value
             }
-            is LoginScreenEvent.Login -> {
-                //TODO - Add Firebase authentication login functionality
-                //TODO - Check for error along the way
+            is LoginScreenEvent.SignIn -> {
+                viewModelScope.launch {
+                    authUseCases.userSignIn(email = event.email, password = event.password)
+                    // TODO - need to propogate potential errors somehow
+                }
             }
         }
     }

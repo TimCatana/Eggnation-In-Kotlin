@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.data.remote.firebase_firestore
+package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
 import android.util.Log
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize

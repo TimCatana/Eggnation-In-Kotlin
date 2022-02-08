@@ -45,6 +45,11 @@ fun ForgotPasswordScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
+                viewModel.onEvent(
+                    ForgotPasswordScreenEvent.SendResetPasswordEmail(
+                        viewModel.emailText.value
+                    )
+                )
                 // TODO - send forgot password email with Firebase Authentication
             },
         ) {

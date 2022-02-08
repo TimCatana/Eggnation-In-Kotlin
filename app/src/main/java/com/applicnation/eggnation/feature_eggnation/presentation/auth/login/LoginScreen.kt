@@ -16,8 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.ui.theme.EggNationTheme
@@ -79,7 +77,13 @@ fun LoginScreen(
             Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
             Button(
                 onClick = {
-                    // TODO - log user in using Firebase Auth
+                    viewModel.onEvent(
+                        LoginScreenEvent.SignIn(
+                            viewModel.emailText.value,
+                            viewModel.passwordText.value
+                        // TODO - need to propogate error here
+                        )
+                    )
                 },
             ) {
                 Text(text = "Login")

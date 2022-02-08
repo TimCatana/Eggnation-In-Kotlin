@@ -1,9 +1,8 @@
 package com.applicnation.eggnation.feature_eggnation.data.repository
 
-import com.applicnation.eggnation.feature_eggnation.data.remote.firebase_firestore.Firestore
+import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Firestore
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
 import com.applicnation.eggnation.feature_eggnation.domain.repository.FirestoreRepository
-import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 import javax.inject.Inject
 

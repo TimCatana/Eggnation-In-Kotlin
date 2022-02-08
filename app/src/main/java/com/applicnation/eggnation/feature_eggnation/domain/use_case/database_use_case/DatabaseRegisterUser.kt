@@ -1,10 +1,10 @@
-package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_register
+package com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
 import com.applicnation.eggnation.feature_eggnation.domain.repository.FirestoreRepository
 import javax.inject.Inject
 
-class RegisterUser @Inject constructor(
+class DatabaseRegisterUser @Inject constructor(
     private val repository: FirestoreRepository
 ) {
 

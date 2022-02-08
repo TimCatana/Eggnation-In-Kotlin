@@ -1,9 +1,13 @@
 package com.applicnation.eggnation.di
 
-import com.applicnation.eggnation.feature_eggnation.data.remote.firebase_firestore.Firestore
-import com.applicnation.eggnation.feature_eggnation.data.repository.FirestoreRepositoryImpl
-import com.applicnation.eggnation.feature_eggnation.domain.repository.FirestoreRepository
-import com.google.firebase.firestore.FirebaseFirestore
+import android.app.Application
+import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Authentication
+import com.applicnation.eggnation.feature_eggnation.data.repository.AuthenticationRepositoryImpl
+import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.UserPasswordReset
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.UserSignIn
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.UserSignUp
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,16 +18,26 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-//    @Provides
-//    @Singleton
-//    fun provideFirestoreDatabase(): FirebaseFirestore {
-//        return FirebaseFirestore.getInstance()
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideFirestoreRepository(database: Firestore): FirestoreRepository {
-//        return FirestoreRepositoryImpl(database)
-//    }
+    @Provides
+    @Singleton
+    fun provideAuthentication(): Authentication {
+        return Authentication()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthenticationRepository(auth: Authentication): AuthenticationRepository {
+        return AuthenticationRepositoryImpl(auth)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthUseCases(authenticator: AuthenticationRepository): AuthUseCases {
+        return AuthUseCases(
+            userSignUp = UserSignUp(authenticator),
+            userSignIn = UserSignIn(authenticator),
+            userPasswordReset = UserPasswordReset(authenticator)
+        )
+    }
 
 }
