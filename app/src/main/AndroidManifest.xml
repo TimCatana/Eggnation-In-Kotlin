@@ -10,6 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EggNation">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7503631457339866~5619526175"/>
         <activity
             android:name="com.applicnation.eggnation.feature_eggnation.presentation.MainActivity"
             android:exported="true"

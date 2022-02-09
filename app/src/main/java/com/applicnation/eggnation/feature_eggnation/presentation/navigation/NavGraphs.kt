@@ -4,13 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreen
-import com.applicnation.eggnation.game.stack.*
-import com.applicnation.eggnation.policies.PrivacyPolicyScreen
-import com.applicnation.eggnation.policies.TermsOfServiceScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.game.store.StoreScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.policy.privacy_policy.PrivacyPolicyScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.policy.terms_of_service.TermsOfServiceScreen
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.interstitial.InterstitialAd
 
 @Composable
 fun AuthNavGraph(
@@ -44,14 +48,18 @@ fun AuthNavGraph(
 
 @Composable
 fun GameNavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    adMob: AdMob
 ) {
     NavHost(
         navController = navController,
         startDestination = GameScreen.Home.route
     ) {
         composable(route = GameScreen.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(
+                navController = navController,
+                adMob = adMob
+            )
         }
         composable(route = GameScreen.Store.route) {
             StoreScreen(navController = navController)
@@ -59,15 +67,15 @@ fun GameNavGraph(
         composable(route = GameScreen.WonPrizes.route) {
             WonPrizesScreen(navController = navController)
         }
-        composable(route = GameScreen.AvailablePrizes.route) {
-            AvailablePrizeScreen(navController = navController)
-        }
-        composable(route = GameScreen.Settings.route) {
-            SettingsScreen(navController = navController)
-        }
-        composable(route = GameScreen.EmailVerification.route) {
-            EmailVerificationScreen(navController = navController)
-        }
+//        composable(route = GameScreen.AvailablePrizes.route) {
+//            AvailablePrizeScreen(navController = navController)
+//        }
+//        composable(route = GameScreen.Settings.route) {
+//            SettingsScreen(navController = navController)
+//        }
+//        composable(route = GameScreen.EmailVerification.route) {
+//            EmailVerificationScreen(navController = navController)
+//        }
 
         /**
          * @note these screens are in both stacks. The user will not be visiting these often though

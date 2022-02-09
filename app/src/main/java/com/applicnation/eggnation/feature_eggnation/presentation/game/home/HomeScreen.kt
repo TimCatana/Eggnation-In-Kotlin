@@ -1,5 +1,9 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.home
 
+import android.content.Context
+import android.content.ContextWrapper
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,14 +14,22 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreenViewModel
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.interstitial.InterstitialAd
 
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    adMob: AdMob,
+    viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -25,15 +37,25 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Text(
-            text = "1000",
+            text = viewModel.tapCounter.value.toString(),
             style = MaterialTheme.typography.h3
         )
         Image(
             // TODO - change the size of egg to make it feel natural
             // TODO - get rid of default tap animation
+            // TODO - set id to the image in the datastore I want to make
             painter = painterResource(id = R.drawable.egg),
             contentDescription = "Tappable Egg",
             modifier = Modifier.clickable {
+                viewModel.onEvent(HomeScreenEvent.DecrementCounter)
+
+                if(viewModel.tapCounter.value % 5 == 0) {
+                    viewModel.onEvent(HomeScreenEvent.PlayAd(adMob))
+                } else {
+                    viewModel.onEvent(HomeScreenEvent.LoadAd(adMob))
+                }
+
+
                 // TODO - add main game prize winning logic here
                 // TODO - decrement counter here
                 // TODO - add correct egg animation based on whether user won or not
@@ -59,6 +81,7 @@ fun HomePreview() {
             painter = painterResource(id = R.drawable.egg),
             contentDescription = "Tappable Egg",
             modifier = Modifier.clickable {
+
                 // TODO - add main game prize winning logic here
                 // TODO - decrement counter here
             }

@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.applicnation.eggnation.R
 
 // TODO - make a SkinCard
@@ -17,7 +18,9 @@ import com.applicnation.eggnation.R
 // TODO - maybe add customizations later (hats, scarf, etc...)
 
 @Composable
-fun StoreScreen() {
+fun StoreScreen(
+    navController: NavController,
+) {
 
 }
 

@@ -92,6 +92,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
 
+    // Admob
+    implementation 'com.google.android.gms:play-services-ads:20.5.0'
+
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.4.1'
 
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
