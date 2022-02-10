@@ -1,5 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.navigation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -8,6 +9,7 @@ import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.store.StoreScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreen
@@ -46,6 +48,7 @@ fun AuthNavGraph(
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun GameNavGraph(
     navController: NavHostController,
@@ -67,9 +70,9 @@ fun GameNavGraph(
         composable(route = GameScreen.WonPrizes.route) {
             WonPrizesScreen(navController = navController)
         }
-//        composable(route = GameScreen.AvailablePrizes.route) {
-//            AvailablePrizeScreen(navController = navController)
-//        }
+        composable(route = GameScreen.AvailablePrizes.route) {
+            AvailablePrizesScreen(navController = navController)
+        }
 //        composable(route = GameScreen.Settings.route) {
 //            SettingsScreen(navController = navController)
 //        }

@@ -15,10 +15,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdPlayUseCase
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.*
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.PreferencesGet
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.PreferencesUpdateReceivesNotifications
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.PreferencesUpdateSelectedSkin
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.PreferencesUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -99,9 +96,15 @@ object AppModule {
     @Singleton
     fun providePreferencesUseCases(preferencesRepo: PreferencesRepository): PreferencesUseCases {
         return PreferencesUseCases(
-            preferencesGet = PreferencesGet(preferencesRepo),
+            preferencesGetTapCount = PreferencesGetTapCount(preferencesRepo),
+            preferencesUpdateTapCount = PreferencesUpdateTapCount(preferencesRepo),
+            preferencesGetSelectedSkin = PreferencesGetSelectedSkin(preferencesRepo),
             preferencesUpdateSelectedSkin = PreferencesUpdateSelectedSkin(preferencesRepo),
-            preferencesUpdateReceivesNotifications = PreferencesUpdateReceivesNotifications(preferencesRepo)
+            preferencesGetLastResetTime = PreferencesGetLastResetTime(preferencesRepo),
+            preferencesUpdateLastResetTime = PreferencesUpdateLastResetTime(preferencesRepo),
+            preferencesGetReceivesNotifications = PreferencesGetReceivesNotifications(preferencesRepo),
+            preferencesUpdateReceivesNotifications = PreferencesUpdateReceivesNotifications(preferencesRepo),
+            preferencesDecrementTapCount = PreferencesDecrementTapCount(preferencesRepo)
         )
     }
 

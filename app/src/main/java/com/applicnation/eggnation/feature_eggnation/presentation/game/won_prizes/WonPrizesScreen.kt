@@ -17,31 +17,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreenViewModel
 
 @ExperimentalFoundationApi
 @Composable
 fun WonPrizesScreen(
     navController: NavController,
+    viewModel: WonPrizesScreenViewModel = hiltViewModel()
 ) {
-    val list = (1..10).map { it.toString() }
-
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(2),
-        contentPadding = PaddingValues(),
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        items(list.size) { index ->
-            WonPrizeItem(list[index])
-        }
-    }
-}
-
-@ExperimentalFoundationApi
-@Preview(showBackground = true)
-@Composable
-fun WonPrizesScreenPreview() {
     val list = (1..10).map { it.toString() }
 
     Box() {
@@ -51,24 +37,48 @@ fun WonPrizesScreenPreview() {
             modifier = Modifier.fillMaxSize(),
         ) {
             items(list.size) { index ->
-                WonPrizeItem(list[index])
+                WonPrizeItem(
+                    list[index],
+                    viewModel
+                )
             }
         }
-        WonPrizeItemInfoCard(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .background(Color.Red)
-                .width(400.dp)
-                .height(400.dp), // TODO - make width and height based on screen dimensions
-        )
+
+        if (viewModel.showPrizeInfo.value) {
+            WonPrizeItemInfoCard(
+                viewModel = viewModel,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .background(Color.Red)
+                    .width(400.dp)
+                    .height(400.dp), // TODO - make width and height based on screen dimensions
+            )
+        }
+
     }
 }
 
+@Composable
+private fun WonPrizeItem(
+    itemData: Any,
+    viewModel: WonPrizesScreenViewModel
+) {
+    Card(modifier = Modifier.fillMaxSize()) {
+//        Column() {
+//            Text(text = itemData.toString())
+        Button(onClick = {
+            viewModel.onEvent(WonPrizesScreenEvent.ShowPrizeInfo(true))
+        }) {
+            Text(text = "claim ${itemData.toString()}")
+        }
+//        }
+    }
+}
 
-@Preview(showBackground = true)
 @Composable
 fun WonPrizeItemInfoCard(
-    @PreviewParameter() modifier: Modifier
+    modifier: Modifier,
+    viewModel: WonPrizesScreenViewModel
 ) {
     Box(
         modifier = modifier,
@@ -84,7 +94,11 @@ fun WonPrizeItemInfoCard(
             Text(text = "Title")
             Text(text = "Scrollable description")
 
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = {
+                // TODO - when the user wants to claim the item, send them to a page where they can input their shipping address
+                viewModel.onEvent(WonPrizesScreenEvent.ShowPrizeInfo(false))
+            }) {
+                // TODO - check if prize was claimed or not and set the text basd on that
                 Text(text = "claim")
             }
 
@@ -92,16 +106,60 @@ fun WonPrizeItemInfoCard(
     }
 }
 
-
-@Composable
-private fun WonPrizeItem(itemData: Any) {
-    Card(modifier = Modifier.fillMaxSize()) {
-//        Column() {
-//            Text(text = itemData.toString())
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "claim ${itemData.toString()}")
-        }
+//@ExperimentalFoundationApi
+//@Preview(showBackground = true)
+//@Composable
+//fun WonPrizesScreenPreview() {
+//    val list = (1..10).map { it.toString() }
+//
+//    Box() {
+//        LazyVerticalGrid(
+//            cells = GridCells.Fixed(2),
+//            contentPadding = PaddingValues(),
+//            modifier = Modifier.fillMaxSize(),
+//        ) {
+//            items(list.size) { index ->
+//                WonPrizeItem(list[index])
+//            }
 //        }
-    }
-}
+//        WonPrizeItemInfoCard(
+//            modifier = Modifier
+//                .align(Alignment.CenterStart)
+//                .background(Color.Red)
+//                .width(400.dp)
+//                .height(400.dp), // TODO - make width and height based on screen dimensions
+//        )
+//    }
+//}
+
+
+//@Preview(showBackground = true)
+//@Composable
+//fun WonPrizeItemInfoCardPreview(
+//    modifier: Modifier
+//) {
+//    Box(
+//        modifier = modifier,
+//        contentAlignment = Alignment.Center
+//    ) {
+//        Column(
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.egg),
+//                contentDescription = "item image",
+//            )
+//            Text(text = "Title")
+//            Text(text = "Scrollable description")
+//
+//            Button(onClick = { /*TODO*/ }) {
+//                Text(text = "claim")
+//            }
+//
+//        }
+//    }
+//}
+
+
+
 

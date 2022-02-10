@@ -12,9 +12,9 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_u
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,21 +25,26 @@ class HomeScreenViewModel @Inject constructor(
 
 
     private val _tapCounter = mutableStateOf(1000)
-    val tapCounter: State<Int> = _tapCounter
+    val tapCounter = _tapCounter
 
     private val _eggSkin = mutableStateOf(R.drawable.egg)
     val eggSkin: State<Int> = _eggSkin
 
-    private var getSkinJob: Job? = null
+    private var getTapCountJob: Job? = null
 
     init {
+        resetCountIfNeeded()
         getUserSkin()
+        getCount()
     }
 
     fun onEvent(event: HomeScreenEvent) {
         when (event) {
             is HomeScreenEvent.DecrementCounter -> {
-                _tapCounter.value--
+                viewModelScope.launch {
+                    preferencesUseCases.preferencesDecrementTapCount(_tapCounter.value)
+                    getCount()
+                }
             }
             is HomeScreenEvent.MainGameLogic -> {
                 // TODO
@@ -56,13 +61,38 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun getUserSkin() {
-        getSkinJob?.cancel()
-        getSkinJob = preferencesUseCases.preferencesGet()
+        preferencesUseCases.preferencesGetSelectedSkin()
             .map {
-                _eggSkin.value = it.selectedSkin
+                _eggSkin.value = it
             }
             .launchIn(viewModelScope)
-
     }
 
+    private fun getCount() {
+        getTapCountJob?.cancel()
+        getTapCountJob = preferencesUseCases.preferencesGetTapCount()
+            .map {
+                Log.i("lol", "looooool")
+                _tapCounter.value = it
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun resetCountIfNeeded() {
+        val currentTime = Date().time
+        val dayInMillis: Long =  86_400_000
+        val emptyPreferenceValue: Long = 0
+
+        preferencesUseCases.preferencesGetLastResetTime()
+            .map {
+                if(it == emptyPreferenceValue) {
+                    preferencesUseCases.preferencesUpdateLastResetTime(currentTime)
+                }
+                if((currentTime - it) >= dayInMillis) {
+                    preferencesUseCases.preferencesUpdateTapCount(1000)
+                    preferencesUseCases.preferencesUpdateLastResetTime(currentTime)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
 }
