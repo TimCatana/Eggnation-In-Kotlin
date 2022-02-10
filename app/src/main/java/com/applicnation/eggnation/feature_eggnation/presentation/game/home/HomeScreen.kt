@@ -41,7 +41,7 @@ fun HomeScreen(
             text = viewModel.tapCounter.value.toString(),
             style = MaterialTheme.typography.h3,
             modifier = Modifier.clickable { // TODO - GET RID OF THIS IN PRODUCTION!!!!!!!
-                navController.navigate(GameScreen.Store.route)
+                navController.navigate(GameScreen.WonPrizes.route)
             }
         )
         Image(
