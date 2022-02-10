@@ -44,7 +44,7 @@ fun HomeScreen(
             // TODO - change the size of egg to make it feel natural
             // TODO - get rid of default tap animation
             // TODO - set id to the image in the datastore I want to make
-            painter = painterResource(id = R.drawable.egg),
+            painter = painterResource(id = viewModel.eggSkin.value),
             contentDescription = "Tappable Egg",
             modifier = Modifier.clickable {
                 viewModel.onEvent(HomeScreenEvent.DecrementCounter)
