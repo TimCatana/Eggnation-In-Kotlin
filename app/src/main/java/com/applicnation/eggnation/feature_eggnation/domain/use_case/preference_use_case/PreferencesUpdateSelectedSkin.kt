@@ -9,7 +9,7 @@ class PreferencesUpdateSelectedSkin @Inject constructor(
 
 ) {
 
-    suspend operator fun invoke(receivesNotifications: Boolean){
-        preferencesManager.updateReceiveNotifications(receivesNotifications)
+    suspend operator fun invoke(selectedSkin: Int){
+        preferencesManager.updateSelectedSkin(selectedSkin)
     }
 }

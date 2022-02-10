@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.applicnation.eggnation.R
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.interstitial.InterstitialAd
 
@@ -38,7 +39,10 @@ fun HomeScreen(
     ) {
         Text(
             text = viewModel.tapCounter.value.toString(),
-            style = MaterialTheme.typography.h3
+            style = MaterialTheme.typography.h3,
+            modifier = Modifier.clickable { // TODO - GET RID OF THIS IN PRODUCTION!!!!!!!
+                navController.navigate(GameScreen.Store.route)
+            }
         )
         Image(
             // TODO - change the size of egg to make it feel natural

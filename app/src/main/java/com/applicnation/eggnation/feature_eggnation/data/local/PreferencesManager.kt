@@ -71,5 +71,5 @@ class PreferencesManager @Inject constructor(
     }
 }
 
-const val SELECTED_SKIN_DEFAULT = R.drawable.egg_one
+const val SELECTED_SKIN_DEFAULT = R.drawable.egg
 const val RECEIVES_NOTIFICATIONS_DEFAULT = true
