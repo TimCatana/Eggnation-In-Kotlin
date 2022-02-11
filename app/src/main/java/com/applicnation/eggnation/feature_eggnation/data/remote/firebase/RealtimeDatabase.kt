@@ -3,68 +3,72 @@ package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class RealtimeDatabase {
+    private val TAG = "realtimeDatabaseClass"
+    private val prizeNode = "availablePrizes"
+    private val globalCounterNode = "globalCount"
+    private val users = "usersNode"
 
-//    private val database = FirebaseDatabase.getInstance()
-//    private val userDelta: Long = -1
-//    private val globalDelta: Long = 1
+    private val globalDelta: Long = 1
 
-//    // TODO - seriously considering holding the user count on local storage...
-//    fun registerUser(scope: CoroutineScope, userInfo: User, userId: String) {
-//        scope.launch {
-//            try {
-//
-//            } catch (err: Exception) {
-//                Log.i("RealtimeDatabase", "Failed to register user to realtime database: ${err.message.toString()}")
-//            }
-//        }
-//    }
-//
-//    // TODO - seriously considering holding the user count on local storage...
-//    fun decrementUserCounter(scope: CoroutineScope, userId: String) {
-//        scope.launch {
-//            try {
-//                database.reference.child("users").child(userId)
-//                    .setValue(ServerValue.increment(userDelta)).await()
-//            } catch (err: Exception) {
-//                Log.i("RealtimeDatabase", "Failed to update user count: ${err.message.toString()}")
-//            }
-//        }
-//    }
-//
-//    fun incrementGlobalCounter(scope: CoroutineScope) {
-//        scope.launch {
-//            try {
-//                database.reference.child("globalCount").setValue(ServerValue.increment(globalDelta))
-//                    .await()
-//            } catch (err: Exception) {
-//                Log.i(
-//                    "RealtimeDatabase",
-//                    "Failed to update global count: ${err.message.toString()}"
-//                )
-//            }
-//        }
-//    }
-//
-//    fun checkIfUserWon(scope: CoroutineScope, rng: Int) {
-//        scope.launch {
-//            try {
-//                // TODO - need to check how returning null from database works in kotlin. Test that when I get ther
-//                val prize = database.reference.child("prizes").get().await()
-//
-//                prize?.let{
-//                    // add prize to firestore
-//                    // delete prize from realtime database
-//                }
-//            } catch (err: Exception) {
-//                Log.i("RealtimeDatabase", "Failed to check if user won: ${err.message.toString()}")
-//            }
-//        }
-//    }
-//
+    private val database = FirebaseDatabase.getInstance()
+
+    suspend fun registerUser(userId: String, username: String) {
+        try {
+            database.reference.child(users).child(userId).child("username").setValue(username)
+                .await()
+        } catch (err: Exception) {
+            Log.i(
+                TAG,
+                "Failed to register user to realtime database: ${err.message.toString()}"
+            )
+        }
+    }
+
+    suspend fun incrementGlobalCounter() {
+        try {
+            database.reference.child(globalCounterNode)
+                .setValue(ServerValue.increment(globalDelta))
+                .await()
+        } catch (err: Exception) {
+            Log.i(
+                TAG,
+                "Failed to update global count: ${err.message.toString()}"
+            )
+        }
+    }
+
+    suspend fun getAvailablePrizeByRNG(rng: String) {
+        try {
+            val prize = database.reference.child(prizeNode).child(rng).get().await()
+
+            if (prize.exists()) {
+                Log.d(TAG, "Prize Won! $prize")
+            } else {
+                Log.d(TAG, "Prize Lost...")
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Failed to fetch prize")
+        }
+    }
+
+    suspend fun getAvailablePrizes() {
+        try {
+            val prizes = database.reference.child(prizeNode).get().await()
+
+            if (prizes.exists()) {
+                Log.d(TAG, "Prizes fetched $prizes")
+            } else {
+                Log.d(TAG, "Not prizes available")
+            }
+        } catch (e: Exception) {
+
+        }
+    }
 
 }

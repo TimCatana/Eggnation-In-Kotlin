@@ -62,6 +62,8 @@ class Firestore {
         prizeId: String,
         prizeType: String,
         prizeName: String,
+        prizeDesc: String,
+        priseTier: String,
         userId: String
     ) {
         val userDocument = firestore.collection(Constants.USERSCOL).document(userId)
@@ -70,6 +72,8 @@ class Firestore {
             this.prizeId = prizeId
             this.prizeName = prizeName
             this.prizeType = prizeType
+            this.prizeDesc = prizeDesc
+            this.prizeTier = prizeTier
         }
 
         try{

@@ -4,5 +4,5 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes
 
 sealed class AvailablePrizesScreenEvent {
     data class ShowPrizeInfo(val showInfo: Boolean): AvailablePrizesScreenEvent()
-
+    object FetchAvailablePrizes: AvailablePrizesScreenEvent()
 }

@@ -2,11 +2,11 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.database_us
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 
-class DatabaseGetAvailablePrizes(
+class DatabaseIncrementGlobalCounter(
     private val repository: DatabaseRepository
 ) {
 
     suspend operator fun invoke() {
-        repository.getAvailablePrizes()
+        repository.incrementGlobalCounter()
     }
 }

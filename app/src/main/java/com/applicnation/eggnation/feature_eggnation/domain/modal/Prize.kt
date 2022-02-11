@@ -6,11 +6,15 @@ package com.applicnation.eggnation.feature_eggnation.domain.modal
  * @param prizeId (String) The id of the prize. Should be a randon long string
  * @param prizeName (String) The name of the prize (e.g. "Airpods Pro" or "Pixel 6")
  * @param prizeType (String) The type of prize (e.g. "phone", "laptop" or "clothing")
+ * @param prizeDescription (String) The description of the prize (specs, etc...)
+ * @param prizeTier (String) One of a list of tier types (Bronze, Silver, Gold, Platinum)
  */
 data class Prize (
     var prizeId: String = "",
     var prizeName: String = "",
     var prizeType: String = "",
+    var prizeDesc: String = "",
+    var prizeTier: String = ""
 )
 
 //object WonPrizeSupplier {
