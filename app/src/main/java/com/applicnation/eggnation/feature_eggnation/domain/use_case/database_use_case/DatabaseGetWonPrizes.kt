@@ -6,7 +6,8 @@ class DatabaseGetWonPrizes(
     private val repository: DatabaseRepository
 ) {
 
-    suspend operator fun invoke() {
+    suspend operator fun invoke(userId: String) {
         // TODO - make a getWonPrizes() function
+        repository.getWonPrizes(userId)
     }
 }

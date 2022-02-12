@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.R
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.DatabaseUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.PreferencesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -19,13 +20,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val preferencesUseCases: PreferencesUseCases
+    private val preferencesUseCases: PreferencesUseCases,
+    private val databaseUseCases: DatabaseUseCases
 //    private val adUseCases: AdUseCases TODO - get hilt working to for this... kinda difficult with the scoping
 ) : ViewModel() {
 
+    private val _userWon = mutableStateOf(false)
+    val userWon: State<Boolean> = _userWon
 
     private val _tapCounter = mutableStateOf(1000)
-    val tapCounter = _tapCounter
+    val tapCounter: State<Int> = _tapCounter
 
     private val _eggSkin = mutableStateOf(R.drawable.egg)
     val eggSkin: State<Int> = _eggSkin
@@ -40,6 +44,11 @@ class HomeScreenViewModel @Inject constructor(
 
     fun onEvent(event: HomeScreenEvent) {
         when (event) {
+            HomeScreenEvent.IncrementGlobalCounter -> {
+                viewModelScope.launch {
+                    databaseUseCases.databaseIncrementGlobalCounter()
+                }
+            }
             is HomeScreenEvent.DecrementCounter -> {
                 viewModelScope.launch {
                     preferencesUseCases.preferencesDecrementTapCount(_tapCounter.value)
@@ -47,7 +56,13 @@ class HomeScreenViewModel @Inject constructor(
                 }
             }
             is HomeScreenEvent.MainGameLogic -> {
-                // TODO
+                val rng = (0..5).random()
+
+                viewModelScope.launch {
+                    val prize = databaseUseCases.databaseGetAvailablePrizeByRNG(rng.toString())
+                    Log.d("homescreee", "$prize")
+                    _userWon.value = prize.prizeId.isNotBlank() // true if id contains characters, false if not
+                }
             }
             is HomeScreenEvent.LoadAd -> {
 //                adUseCases.adLoadUseCase
@@ -57,6 +72,7 @@ class HomeScreenViewModel @Inject constructor(
 //                adUseCases.adPlayUseCase
                 event.adMob.playInterstitialAd()
             }
+
         }
     }
 
@@ -80,15 +96,15 @@ class HomeScreenViewModel @Inject constructor(
 
     private fun resetCountIfNeeded() {
         val currentTime = Date().time
-        val dayInMillis: Long =  86_400_000
+        val dayInMillis: Long = 86_400_000
         val emptyPreferenceValue: Long = 0
 
         preferencesUseCases.preferencesGetLastResetTime()
             .map {
-                if(it == emptyPreferenceValue) {
+                if (it == emptyPreferenceValue) {
                     preferencesUseCases.preferencesUpdateLastResetTime(currentTime)
                 }
-                if((currentTime - it) >= dayInMillis) {
+                if ((currentTime - it) >= dayInMillis) {
                     preferencesUseCases.preferencesUpdateTapCount(1000)
                     preferencesUseCases.preferencesUpdateLastResetTime(currentTime)
                 }

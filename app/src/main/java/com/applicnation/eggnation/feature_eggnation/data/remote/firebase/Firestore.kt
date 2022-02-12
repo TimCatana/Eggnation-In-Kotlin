@@ -4,11 +4,15 @@ import android.util.Log
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
 import com.applicnation.eggnation.util.Constants
+import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.getField
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
+import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO - check that scopes are working properly by logging the scope
 // TODO - need to refactor this because coroutines are used differently in compose
@@ -57,6 +61,23 @@ class Firestore {
         }
     }
 
+    suspend fun getWonPrizes(userId: String) {
+        var prizeList: ArrayList<Prize>
+        val prizesCollection = firestore.collection(Constants.USERSCOL).document(userId).collection("prizes")
+
+        try {
+            val prizeSnapshot = prizesCollection.get().await()
+
+            prizeSnapshot.forEach {
+                Log.d("wwwww", "looped prize: ${it.data}")
+            }
+
+
+        } catch (e: Exception) {
+            Log.d("wwwww", "error: $e")
+        }
+    }
+
 
     suspend fun addWonPrizeToUserAccount(
         prizeId: String,
@@ -76,9 +97,9 @@ class Firestore {
             this.prizeTier = prizeTier
         }
 
-        try{
+        try {
             userDocument.update("prizes", FieldValue.arrayUnion(prize)).await()
-        } catch(err: Exception) {
+        } catch (err: Exception) {
 
         }
     }

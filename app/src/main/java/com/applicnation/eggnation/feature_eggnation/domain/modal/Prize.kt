@@ -14,8 +14,11 @@ data class Prize (
     var prizeName: String = "",
     var prizeType: String = "",
     var prizeDesc: String = "",
-    var prizeTier: String = ""
+    var prizeTier: String = "",
+    var prizeClaimed: Boolean = false,
 )
+
+
 
 //object WonPrizeSupplier {
 //    val wonPrizes = arrayListOf(

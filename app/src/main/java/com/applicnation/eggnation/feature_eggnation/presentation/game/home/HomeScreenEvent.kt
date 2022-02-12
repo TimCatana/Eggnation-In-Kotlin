@@ -4,6 +4,7 @@ import android.content.Context
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 
 sealed class HomeScreenEvent {
+    object IncrementGlobalCounter: HomeScreenEvent()
     object DecrementCounter: HomeScreenEvent()
     object MainGameLogic: HomeScreenEvent() // TODO - I'm not sure what this use case should look like yet
     data class LoadAd(val adMob: AdMob): HomeScreenEvent()

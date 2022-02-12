@@ -35,6 +35,10 @@ class DatabaseRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun getWonPrizes(userId: String) {
+        firestore.getWonPrizes(userId)
+    }
+
     override suspend fun addWonPrizeToUserAccount(
         userId: String,
         timeWon: Date,
@@ -59,8 +63,8 @@ class DatabaseRepositoryImpl @Inject constructor(
         return realtimeDatabase.getAvailablePrizes()
     }
 
-    override suspend fun getAvailablePrizeByRNG(rng: String) {
-        realtimeDatabase.getAvailablePrizeByRNG(rng)
+    override suspend fun getAvailablePrizeByRNG(rng: String): Prize {
+        return realtimeDatabase.getAvailablePrizeByRNG(rng)
     }
 
     override suspend fun incrementGlobalCounter() {

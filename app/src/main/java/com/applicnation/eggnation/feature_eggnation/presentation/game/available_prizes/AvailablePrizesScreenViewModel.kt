@@ -1,5 +1,7 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,20 +20,20 @@ class AvailablePrizesScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _showPrizeInfo = mutableStateOf(false)
-    val showPrizeInfo = _showPrizeInfo
+    val showPrizeInfo: State<Boolean> = _showPrizeInfo
 
     private val _prizes = mutableStateOf(ArrayList<Prize>())
-    val prizes = _prizes
+    val prizes: State<ArrayList<Prize>> = _prizes
 
     // TODO - probably make the below three it's own component with viewModel in the future
     private val _prizeTitleInfo = mutableStateOf("")
-    val prizeTitleInfo = _prizeTitleInfo
+    val prizeTitleInfo: State<String> = _prizeTitleInfo
 
     private val _prizeDescInfo = mutableStateOf("")
-    val prizeDescInfo = _prizeDescInfo
+    val prizeDescInfo: State<String> = _prizeDescInfo
 
     private val _prizeImageInfo = mutableStateOf(0)
-    val prizeImageInfo = _prizeImageInfo
+    val prizeImageInfo: State<Int> = _prizeImageInfo
 
     private var fetchPrzesJob: Job? = null
 

@@ -1,13 +1,14 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case
 
+import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 
 class DatabaseGetAvailablePrizeByRNG(
     private val repository: DatabaseRepository
 ) {
 
-    suspend operator fun invoke(rng: String) {
-        repository.getAvailablePrizeByRNG(rng)
+    suspend operator fun invoke(rng: String): Prize {
+        return repository.getAvailablePrizeByRNG(rng)
     }
 
     // TODO - this is the structure for getting data

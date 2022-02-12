@@ -45,17 +45,43 @@ class RealtimeDatabase {
         }
     }
 
-    suspend fun getAvailablePrizeByRNG(rng: String) {
-        try {
-            val prize = database.reference.child(prizeNode).child(rng).get().await()
+    // TODO - returning mull can mean either that the fetch attempt failed or that the user lost this round, either way, it means the user lost so just display the lost animation
+    suspend fun getAvailablePrizeByRNG(rng: String): Prize {
+        val prize = Prize()
 
-            if (prize.exists()) {
-                Log.d(TAG, "Prize Won! $prize and ${prize.children}")
+        try {
+            val prizeSnapshot = database.reference.child(prizeNode).child(rng).get().await()
+
+            if (prizeSnapshot.exists()) {
+                prizeSnapshot.children.forEach() {
+                    when (it.key.toString()) {
+                        "prizeId" -> {
+                            prize.prizeId = it.value.toString()
+                        }
+                        "prizeType" -> {
+                            prize.prizeType = it.value.toString()
+                        }
+                        "prizeTier" -> {
+                            prize.prizeTier = it.value.toString()
+                        }
+                        "prizeTitle" -> {
+                            prize.prizeName = it.value.toString()
+                        }
+                        "prizeDesc" -> {
+                            prize.prizeDesc = it.value.toString()
+                        }
+                    }
+                }
+
+                Log.d(TAG, "Prize Won! ${prizeSnapshot.value} and ${prize}")
+
             } else {
-                Log.d(TAG, "Prize Lost...")
+                Log.d(TAG, "Prize Lost... ${prizeSnapshot.value}")
             }
+            return prize
         } catch (e: Exception) {
             Log.d(TAG, "Failed to fetch prize")
+            return prize
         }
     }
 
@@ -65,6 +91,7 @@ class RealtimeDatabase {
     // TODO - probably return a flow
     suspend fun getAvailablePrizes(): ArrayList<Prize> {
         val prizeList = ArrayList<Prize>()
+
         try {
             val prizesSnapshot = database.reference.child(prizeNode).get().await()
 
@@ -97,16 +124,14 @@ class RealtimeDatabase {
                 }
 
                 Log.d(TAG, "Prizes available:  $prizeList")
-
             } else {
                 Log.d(TAG, "Not prizes available")
             }
 
-            return prizeList
+            return prizeList // TODO - empty prize list means no prizes available
         } catch (e: Exception) {
             Log.d(TAG, "Failed to read prizes from database")
-            // TODO - need to return something if failed. prizeList will be empty, I'm not sure if this will fail
-            // TODO - need some way to send an error.
+            // TODO - need some sort of error indicator to send back
             return prizeList
         }
 

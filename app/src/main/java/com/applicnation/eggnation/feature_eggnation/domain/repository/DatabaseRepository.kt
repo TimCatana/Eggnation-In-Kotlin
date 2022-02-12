@@ -13,6 +13,7 @@ interface DatabaseRepository {
     suspend fun updateUserEmail(userId: String, newEmail: String)
     suspend fun updateUserUsername(userId: String, newUserName: String)
     suspend fun updatePrizeClaimed(userId: String, prizeId: String, claimed: Boolean)
+    suspend fun getWonPrizes(userId: String)
     suspend fun addWonPrizeToUserAccount(
         userId: String,
         timeWon: Date = Date(),
@@ -26,7 +27,7 @@ interface DatabaseRepository {
      * Realtime Database
      */
     suspend fun getAvailablePrizes(): ArrayList<Prize>
-    suspend fun getAvailablePrizeByRNG(rng: String)
+    suspend fun getAvailablePrizeByRNG(rng: String): Prize
     suspend fun incrementGlobalCounter() // should increment on the server side
 //    suspend fun incrementUserCount(userId: String) NOTE - this will only be used if I decide to add count increments on the server side, which I doubt I will do
 
