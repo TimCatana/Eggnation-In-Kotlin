@@ -2,10 +2,12 @@ package com.applicnation.eggnation.feature_eggnation.data.repository
 
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Firestore
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.RealtimeDatabase
+import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class DatabaseRepositoryImpl @Inject constructor(
     private val firestore: Firestore,
@@ -53,8 +55,8 @@ class DatabaseRepositoryImpl @Inject constructor(
     /**
      * RealtimeDatabase
      */
-    override suspend fun getAvailablePrizes() {
-        realtimeDatabase.getAvailablePrizes()
+    override suspend fun getAvailablePrizes(): ArrayList<Prize> {
+        return realtimeDatabase.getAvailablePrizes()
     }
 
     override suspend fun getAvailablePrizeByRNG(rng: String) {

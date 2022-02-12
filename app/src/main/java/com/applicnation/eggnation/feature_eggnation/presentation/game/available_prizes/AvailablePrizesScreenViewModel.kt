@@ -2,31 +2,46 @@ package com.applicnation.eggnation.feature_eggnation.presentation.game.available
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.DatabaseUseCases
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreenEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AvailablePrizesScreenViewModel @Inject constructor(
 //    private val preferencesUseCases: PreferencesUseCases
-//private val databaseUseCases: DatabaseUseCases
+    private val databaseUseCases: DatabaseUseCases
 ) : ViewModel() {
 
     private val _showPrizeInfo = mutableStateOf(false)
     val showPrizeInfo = _showPrizeInfo
 
-    private val _prize = mutableStateOf(Prize())
-    val prize = _prize
+    private val _prizes = mutableStateOf(ArrayList<Prize>())
+    val prizes = _prizes
 
-//    private val _prizeTitle = mutableStateOf("")
-//    val prizeTitle = _showPrizeInfo
-//
-//    private val _prizeDescription = mutableStateOf("")
-//    val prizeDescription = _prizeDescription
+    // TODO - probably make the below three it's own component with viewModel in the future
+    private val _prizeTitleInfo = mutableStateOf("")
+    val prizeTitleInfo = _prizeTitleInfo
+
+    private val _prizeDescInfo = mutableStateOf("")
+    val prizeDescInfo = _prizeDescInfo
+
+    private val _prizeImageInfo = mutableStateOf(0)
+    val prizeImageInfo = _prizeImageInfo
+
+    private var fetchPrzesJob: Job? = null
 
     init {
-        // fetch prizes from database
+        fetchPrzesJob = viewModelScope.launch {
+            _prizes.value = databaseUseCases.databaseGetAvailablePrizes()
+        }
+        // TODO - find a way to wait for init block to finish
+        // TODO - probably use one of the states (like iActive or isFinished etc...) but place this somewhere else and maybe show a loading bar when it is active but not completed.
+        fetchPrzesJob?.isCompleted
     }
 
 
@@ -37,6 +52,15 @@ class AvailablePrizesScreenViewModel @Inject constructor(
                 // TODO - fetch the prize title and name from database and after that's done set showInfo to value
 
                 _showPrizeInfo.value = event.showInfo
+            }
+            // TODO - add prize refresh event
+            AvailablePrizesScreenEvent.FetchAvailablePrizes -> {
+                TODO()
+            }
+            is AvailablePrizesScreenEvent.SetPrizeInfo -> {
+                _prizeTitleInfo.value = event.prizeTitle
+                _prizeDescInfo.value = event.prizeDesc
+                _prizeImageInfo.value = event.prizeImage
             }
         }
     }
