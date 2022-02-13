@@ -9,13 +9,22 @@ package com.applicnation.eggnation.feature_eggnation.domain.modal
  * @param prizeDescription (String) The description of the prize (specs, etc...)
  * @param prizeTier (String) One of a list of tier types (Bronze, Silver, Gold, Platinum)
  */
-data class Prize (
+data class AvailablePrize (
     var prizeId: String = "",
     var prizeName: String = "",
     var prizeType: String = "",
     var prizeDesc: String = "",
     var prizeTier: String = "",
-    var prizeClaimed: Boolean = false,
+)
+
+data class WonPrize (
+    var prizeId: String = "",
+    var prizeName: String = "",
+    var prizeType: String = "",
+    var prizeDesc: String = "",
+    var prizeTier: String = "",
+    var prizeClaimed: Boolean = false
+    // TODO add prizedateWon
 )
 
 

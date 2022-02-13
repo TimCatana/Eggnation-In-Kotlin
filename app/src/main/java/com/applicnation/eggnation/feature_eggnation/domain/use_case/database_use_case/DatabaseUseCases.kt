@@ -6,6 +6,7 @@ data class DatabaseUseCases(
     val databaseGetAvailablePrizeByRNG: DatabaseGetAvailablePrizeByRNG,
     val databaseGetAvailablePrizes: DatabaseGetAvailablePrizes,
     val databaseGetWonPrizes: DatabaseGetWonPrizes,
+    val databaseGetWonPrizeById: DatabaseGetWonPrizeById,
     val databaseIncrementGlobalCounter: DatabaseIncrementGlobalCounter,
     val databaseRegisterUser: DatabaseRegisterUser
 )

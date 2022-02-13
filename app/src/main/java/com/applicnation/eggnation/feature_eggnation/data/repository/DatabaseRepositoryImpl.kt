@@ -2,8 +2,9 @@ package com.applicnation.eggnation.feature_eggnation.data.repository
 
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Firestore
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.RealtimeDatabase
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
+import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 import java.util.*
 import javax.inject.Inject
@@ -35,8 +36,12 @@ class DatabaseRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getWonPrizes(userId: String) {
-        firestore.getWonPrizes(userId)
+    override suspend fun getWonPrizes(userId: String): ArrayList<WonPrize>  {
+        return firestore.getWonPrizes(userId)
+    }
+
+    override suspend fun getWonPrizeById(userId: String, prizeId: String): WonPrize {
+        return firestore.getWonPrizeById(userId, prizeId)
     }
 
     override suspend fun addWonPrizeToUserAccount(
@@ -59,11 +64,11 @@ class DatabaseRepositoryImpl @Inject constructor(
     /**
      * RealtimeDatabase
      */
-    override suspend fun getAvailablePrizes(): ArrayList<Prize> {
+    override suspend fun getAvailablePrizes(): ArrayList<AvailablePrize> {
         return realtimeDatabase.getAvailablePrizes()
     }
 
-    override suspend fun getAvailablePrizeByRNG(rng: String): Prize {
+    override suspend fun getAvailablePrizeByRNG(rng: String): AvailablePrize {
         return realtimeDatabase.getAvailablePrizeByRNG(rng)
     }
 

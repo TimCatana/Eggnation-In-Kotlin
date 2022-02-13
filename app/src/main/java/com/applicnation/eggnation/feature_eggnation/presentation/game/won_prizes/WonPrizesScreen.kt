@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
+import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 
 @ExperimentalFoundationApi
 @Composable
@@ -62,7 +63,7 @@ fun WonPrizesScreen(
 
 @Composable
 private fun WonPrizeItem(
-    itemData: Prize,
+    itemData: WonPrize,
     viewModel: WonPrizesScreenViewModel
 ) {
     Log.d("qqq", "inside availablePrizesItem with ${itemData}")
@@ -126,7 +127,7 @@ fun WonPrizeItemInfoCard(
                 // TODO - when the user wants to claim the item, send them to a page where they can input their shipping address
                 viewModel.onEvent(WonPrizesScreenEvent.ShowPrizeInfo(false))
             }) {
-                // TODO - check if prize was claimed or not and set the text basd on that
+                // TODO - check if prize was claimed or not and set the text based on that
                 Text(text = "claim")
             }
 

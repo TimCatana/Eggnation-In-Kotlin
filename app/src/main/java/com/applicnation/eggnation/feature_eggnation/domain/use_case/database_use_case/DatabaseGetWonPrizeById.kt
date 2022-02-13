@@ -3,12 +3,12 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.database_us
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 
-class DatabaseGetWonPrizes(
+class DatabaseGetWonPrizeById(
     private val repository: DatabaseRepository
 ) {
 
-    suspend operator fun invoke(userId: String): ArrayList<WonPrize>  {
+    suspend operator fun invoke(userId: String, prizeId: String): WonPrize  {
         // TODO - make a getWonPrizes() function
-        return repository.getWonPrizes(userId)
+        return repository.getWonPrizeById(userId, prizeId)
     }
 }

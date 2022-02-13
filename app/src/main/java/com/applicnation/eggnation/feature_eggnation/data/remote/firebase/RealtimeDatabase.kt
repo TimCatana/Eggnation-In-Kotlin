@@ -1,13 +1,9 @@
 package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
 import android.util.Log
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class RealtimeDatabase {
@@ -46,8 +42,8 @@ class RealtimeDatabase {
     }
 
     // TODO - returning mull can mean either that the fetch attempt failed or that the user lost this round, either way, it means the user lost so just display the lost animation
-    suspend fun getAvailablePrizeByRNG(rng: String): Prize {
-        val prize = Prize()
+    suspend fun getAvailablePrizeByRNG(rng: String): AvailablePrize {
+        val prize = AvailablePrize()
 
         try {
             val prizeSnapshot = database.reference.child(prizeNode).child(rng).get().await()
@@ -89,15 +85,15 @@ class RealtimeDatabase {
      * Firestore would be more convenient, but this option is free whereas firestore will get expensive really fast.
      */
     // TODO - probably return a flow
-    suspend fun getAvailablePrizes(): ArrayList<Prize> {
-        val prizeList = ArrayList<Prize>()
+    suspend fun getAvailablePrizes(): ArrayList<AvailablePrize> {
+        val prizeList = ArrayList<AvailablePrize>()
 
         try {
             val prizesSnapshot = database.reference.child(prizeNode).get().await()
 
             if (prizesSnapshot.exists()) {
                 prizesSnapshot.children.forEach() { prize ->
-                    val singlePrize = Prize()
+                    val singlePrize = AvailablePrize()
 
                     prize.children.forEach() {
                         when (it.key.toString()) {

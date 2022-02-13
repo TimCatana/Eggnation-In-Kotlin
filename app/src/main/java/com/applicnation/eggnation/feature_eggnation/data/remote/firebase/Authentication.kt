@@ -44,6 +44,10 @@ class Authentication {
         // TODO - send user verification email
     }
 
+    fun getUserId(): String? {
+        return auth.currentUser?.uid
+    }
+
 //    fun signOut() {
 //        try{
 //            auth.signOut()

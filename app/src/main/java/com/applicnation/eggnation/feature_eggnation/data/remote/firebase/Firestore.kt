@@ -1,14 +1,12 @@
 package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
 import android.util.Log
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
+import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 import com.applicnation.eggnation.util.Constants
-import com.google.firebase.database.GenericTypeIndicator
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.getField
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
 import java.util.*
@@ -61,20 +59,39 @@ class Firestore {
         }
     }
 
-    suspend fun getWonPrizes(userId: String) {
-        var prizeList: ArrayList<Prize>
+    suspend fun getWonPrizes(userId: String): ArrayList<WonPrize> {
+        var prizeList: ArrayList<WonPrize> = ArrayList<WonPrize>()
         val prizesCollection = firestore.collection(Constants.USERSCOL).document(userId).collection("prizes")
 
         try {
             val prizeSnapshot = prizesCollection.get().await()
 
             prizeSnapshot.forEach {
+                prizeList.add(it.toObject(WonPrize::class.java))
                 Log.d("wwwww", "looped prize: ${it.data}")
             }
 
+            Log.d("wwwww", "prizeList: ${prizeList}")
 
+            return prizeList
         } catch (e: Exception) {
             Log.d("wwwww", "error: $e")
+            return prizeList
+        }
+    }
+
+    suspend fun getWonPrizeById(userId: String, prizeId: String): WonPrize {
+        val prizesCol = firestore.collection(Constants.USERSCOL).document(userId).collection("prizes").document(prizeId)
+
+        try {
+            val prizeSnapshot = prizesCol.get().await()
+
+            val prize = prizeSnapshot.toObject(WonPrize::class.java)
+
+            return prize!! // TODO - maybe return a nullable? I need to get rid of this !! because sometimes there may be mismatches
+        } catch (e: Exception) {
+            Log.d("wwwww", "error: $e")
+            return WonPrize()
         }
     }
 
@@ -84,12 +101,12 @@ class Firestore {
         prizeType: String,
         prizeName: String,
         prizeDesc: String,
-        priseTier: String,
+        prizeTier: String,
         userId: String
     ) {
         val userDocument = firestore.collection(Constants.USERSCOL).document(userId)
 
-        val prize = Prize().apply {
+        val prize = WonPrize().apply {
             this.prizeId = prizeId
             this.prizeName = prizeName
             this.prizeType = prizeType

@@ -4,10 +4,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
+import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.DatabaseUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.PreferencesUseCases
-import com.applicnation.eggnation.feature_eggnation.presentation.game.store.StoreScreenEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -15,15 +15,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WonPrizesScreenViewModel @Inject constructor(
-    private val databaseUseCases: DatabaseUseCases
+    private val databaseUseCases: DatabaseUseCases,
+    private val authUseCases: AuthUseCases
 //    private val preferencesUseCases: PreferencesUseCases
 ) : ViewModel() {
 
     private val _showPrizeInfo = mutableStateOf(false)
     val showPrizeInfo: State<Boolean> = _showPrizeInfo
 
-    private val _prizes = mutableStateOf(ArrayList<Prize>())
-    val prizes: State<ArrayList<Prize>> = _prizes
+    private val _prizes = mutableStateOf(ArrayList<WonPrize>())
+    val prizes: State<ArrayList<WonPrize>> = _prizes
 
     // TODO - probably make the below three it's own component with viewModel in the future
     private val _prizeTitleInfo = mutableStateOf("")
@@ -41,7 +42,7 @@ class WonPrizesScreenViewModel @Inject constructor(
     init {
         // TODO - need to get the firebase authentication user id
         fetchPrzesJob = viewModelScope.launch {
-            databaseUseCases.databaseGetWonPrizes("bKHSxBGQ4nPp4KKk7yIbLdOFalX2")
+            _prizes.value = databaseUseCases.databaseGetWonPrizes(authUseCases.userGetUserId()!!) // TODO - probable send in a empty string if userGetId returns null
         }
 
         // TODO - check if fetching is completed before displaying stuff. probably do this in actual composavble code through an if statement? But then I will need to make these mutableSatteOf's
@@ -63,7 +64,9 @@ class WonPrizesScreenViewModel @Inject constructor(
 
             }
             is WonPrizesScreenEvent.SetPrizeInfo -> {
-
+                _prizeTitleInfo.value = event.prizeTitle
+                _prizeDescInfo.value = event.prizeDesc
+                _prizeImageInfo.value = event.prizeImage
             }
         }
     }

@@ -3,5 +3,6 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.authenticat
 data class AuthUseCases(
     val userSignIn: UserSignIn,
     val userSignUp: UserSignUp,
-    val userPasswordReset: UserPasswordReset
+    val userPasswordReset: UserPasswordReset,
+    val userGetUserId: UserGetUserId
 )

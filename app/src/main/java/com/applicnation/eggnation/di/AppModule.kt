@@ -77,7 +77,8 @@ object AppModule {
         return AuthUseCases(
             userSignUp = UserSignUp(authenticationRepo),
             userSignIn = UserSignIn(authenticationRepo),
-            userPasswordReset = UserPasswordReset(authenticationRepo)
+            userPasswordReset = UserPasswordReset(authenticationRepo),
+            userGetUserId = UserGetUserId(authenticationRepo),
         )
     }
 
@@ -143,6 +144,7 @@ object AppModule {
             databaseGetWonPrizes = DatabaseGetWonPrizes(databaseRepo),
             databaseIncrementGlobalCounter = DatabaseIncrementGlobalCounter(databaseRepo),
             databaseRegisterUser = DatabaseRegisterUser(databaseRepo),
+            databaseGetWonPrizeById = DatabaseGetWonPrizeById(databaseRepo)
         )
     }
 

@@ -17,14 +17,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Prize
-import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 
 @ExperimentalFoundationApi
 @Composable
@@ -65,7 +62,7 @@ fun AvailablePrizesScreen(
 
 @Composable
 private fun AvaialblePrizeItem(
-    itemData: Prize,
+    itemData: AvailablePrize,
     viewModel: AvailablePrizesScreenViewModel
 ) {
     Log.d("qqq", "inside availablePrizesItem with ${itemData}")
