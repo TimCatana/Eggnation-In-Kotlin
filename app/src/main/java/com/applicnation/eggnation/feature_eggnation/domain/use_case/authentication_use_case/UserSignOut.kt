@@ -6,7 +6,7 @@ import javax.inject.Inject
 class UserSignOut @Inject constructor(
     private val authenticator: AuthenticationRepository
 ){
-    suspend operator fun invoke() {
+    operator fun invoke() {
         // TODO - maybe add a try catch here? to propogate the error
         authenticator.signOutUser()
     }

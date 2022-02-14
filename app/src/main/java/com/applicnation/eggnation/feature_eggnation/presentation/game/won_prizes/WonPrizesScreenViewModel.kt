@@ -42,7 +42,7 @@ class WonPrizesScreenViewModel @Inject constructor(
     init {
         // TODO - need to get the firebase authentication user id
         fetchPrzesJob = viewModelScope.launch {
-            _prizes.value = databaseUseCases.databaseGetWonPrizes(authUseCases.userGetUserId()!!) // TODO - probable send in a empty string if userGetId returns null
+            _prizes.value = databaseUseCases.databaseGetWonPrizes("bKHSxBGQ4nPp4KKk7yIbLdOFalX2") // TODO - get uid from auth  probably send in a empty string if userGetId returns null
         }
 
         // TODO - check if fetching is completed before displaying stuff. probably do this in actual composavble code through an if statement? But then I will need to make these mutableSatteOf's

@@ -9,6 +9,7 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import timber.log.Timber
 
 /**
  * IMPORTANT NOTE FOR INTERSTITIAL ADS:
@@ -47,10 +48,12 @@ class AdMob constructor(
                 object : InterstitialAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
                         interstitialAd = null
+                        Timber.w("Interstitial Ad failed to load")
                     }
 
                     override fun onAdLoaded(ad: InterstitialAd) {
                         interstitialAd = ad
+                        Timber.i("Interstitial Ad loaded successfully")
                     }
                 })
         }
@@ -62,7 +65,7 @@ class AdMob constructor(
         if (interstitialAd != null) {
             interstitialAd?.show(activityContext)
         } else {
-            Log.d("admob", "The interstitial ad wasn't ready yet.")
+            Timber.w("The interstitial ad was not loaded yet. Ad not played")
         }
     }
 
@@ -73,25 +76,24 @@ class AdMob constructor(
             }
 
             override fun onAdShowedFullScreenContent() {
-                Log.d(
-                    "admob",
-                    "Ad showed fullscreen content."
-                )  // TODO - probably keep track of clicks for marketing purposes
+                Timber.i("Interstitial Ad showed in full screen")
+                 // TODO - probably keep track of clicks for marketing purposes
             }
 
             override fun onAdDismissedFullScreenContent() {
-                Log.d("admob", "Ad was dismissed.")
                 interstitialAd = null
+                Timber.i("Interstitial Ad was dismissed")
             }
 
             override fun onAdClicked() {
-                super.onAdClicked() // TODO - probably keep track of clicks for marketing purposes
+                 // TODO - probably keep track of clicks for marketing purposes
                 interstitialAd = null
+                Timber.i("Interstitial Ad was clicked")
             }
 
             override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
-                Log.d("admob", "Ad failed to show.")
                 interstitialAd = null
+                Timber.w("Interstitial Ad failed to show")
             }
         }
     }

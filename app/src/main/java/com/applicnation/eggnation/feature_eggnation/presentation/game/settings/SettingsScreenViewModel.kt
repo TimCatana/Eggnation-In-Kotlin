@@ -1,5 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
@@ -19,9 +20,8 @@ class SettingsScreenViewModel @Inject constructor(
     fun onEvent(event: SettingsScreenEvent) {
         when (event) {
             is SettingsScreenEvent.SignOut -> {
-                viewModelScope.launch {
-                    authUseCases.userSignOut
-                }
+                    authUseCases.userSignOut()
+                Log.d("rrrr", "rerererooooooooooooooooooooooo")
             }
         }
     }

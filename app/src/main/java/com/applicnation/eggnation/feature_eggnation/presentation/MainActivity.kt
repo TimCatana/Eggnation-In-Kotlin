@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
                 // TODO - need a way to find out how to logout... it's not working with mAuth.currentUser
 
-                if (lol) {
+                if (mAuth.currentUser != null) {
                     GameNavGraph(
                         navController = navController,
                         adMob = adMob

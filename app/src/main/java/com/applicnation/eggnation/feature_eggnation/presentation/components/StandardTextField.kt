@@ -13,8 +13,10 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 
 // TODO - get rid of hint and add label paramater
+
 @Composable
 fun StandardTextField(
     text: String = "",
@@ -34,7 +36,7 @@ fun StandardTextField(
     OutlinedTextField(
         value = text,
         onValueChange = {
-            if(text.length <= maxLength) {
+            if (text.length <= maxLength) {
                 onValueChange(it)
             }
         },
@@ -71,4 +73,40 @@ fun StandardTextField(
                 testTag = "standardTextField"
             }
     )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun StandardTextFieldPreview(
+) {
+    MaterialTheme() {
+        OutlinedTextField(
+            value = "test",
+            onValueChange = {
+                //  TODO
+            },
+            label = { Text(text = "Label") },
+            isError = false,
+            keyboardOptions = KeyboardOptions(
+                // TODO - edit IME action
+            ),
+            // TODO visual Transformation
+            singleLine = true,
+            trailingIcon = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector =
+                        Icons.Filled.Visibility,
+                        contentDescription = "toggle password" // you can also add an if-else for descriptions for different icons - probably do that
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics {
+                    testTag = "standardTextField"
+                }
+        )
+    }
 }

@@ -1,5 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.settings
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
@@ -22,6 +23,7 @@ fun SettingsScreen(
     ) {
         Button(onClick = {
             viewModel.onEvent(SettingsScreenEvent.SignOut)
+            Log.d("rrrr", "rererereeeeeeeeeeeee")
         }) {
             Text(text = "Logout")
         }
