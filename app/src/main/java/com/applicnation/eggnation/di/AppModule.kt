@@ -77,6 +77,7 @@ object AppModule {
         return AuthUseCases(
             userSignUp = UserSignUp(authenticationRepo),
             userSignIn = UserSignIn(authenticationRepo),
+            userSignOut = UserSignOut(authenticationRepo),
             userPasswordReset = UserPasswordReset(authenticationRepo),
             userGetUserId = UserGetUserId(authenticationRepo),
         )

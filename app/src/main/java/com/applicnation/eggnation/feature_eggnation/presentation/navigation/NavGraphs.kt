@@ -10,7 +10,9 @@ import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_pas
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.ClaimPrizeScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.store.StoreScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.privacy_policy.PrivacyPolicyScreen
@@ -73,9 +75,12 @@ fun GameNavGraph(
         composable(route = GameScreen.AvailablePrizes.route) {
             AvailablePrizesScreen(navController = navController)
         }
-//        composable(route = GameScreen.Settings.route) {
-//            SettingsScreen(navController = navController)
-//        }
+        composable(route = GameScreen.ClaimPrize.route) {
+            ClaimPrizeScreen(navController = navController)
+        }
+        composable(route = GameScreen.Settings.route) {
+            SettingsScreen(navController = navController)
+        }
 //        composable(route = GameScreen.EmailVerification.route) {
 //            EmailVerificationScreen(navController = navController)
 //        }

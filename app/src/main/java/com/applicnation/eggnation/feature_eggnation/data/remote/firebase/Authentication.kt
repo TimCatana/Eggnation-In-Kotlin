@@ -20,6 +20,14 @@ class Authentication {
             }
     }
 
+    fun signOutUser() {
+        try {
+            auth.signOut()
+        } catch (e: Exception) {
+            Log.i("signOut", "Failed to signOut")
+        }
+    }
+
     suspend fun signUpUser(email: String, password: String) {
         Log.i("signUp", "in authentucation class ${email}")
             try {

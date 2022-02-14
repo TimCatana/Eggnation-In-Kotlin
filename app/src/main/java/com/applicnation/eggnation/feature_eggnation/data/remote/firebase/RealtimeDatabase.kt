@@ -4,6 +4,8 @@ import android.util.Log
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 
 class RealtimeDatabase {
@@ -30,14 +32,13 @@ class RealtimeDatabase {
 
     suspend fun incrementGlobalCounter() {
         try {
-            database.reference.child(globalCounterNode)
+            database
+                .reference
+                .child(globalCounterNode)
                 .setValue(ServerValue.increment(globalDelta))
                 .await()
         } catch (err: Exception) {
-            Log.i(
-                TAG,
-                "Failed to update global count: ${err.message.toString()}"
-            )
+            Log.i(TAG, "Failed to update global count: ${err.message.toString()}")
         }
     }
 

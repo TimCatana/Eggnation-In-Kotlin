@@ -25,6 +25,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override fun signOutUser() {
+        authenticator.signOutUser()
+    }
+
     override fun getUserId(): String? {
         return authenticator.getUserId()
     }

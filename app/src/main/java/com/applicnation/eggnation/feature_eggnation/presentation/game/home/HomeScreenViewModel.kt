@@ -12,6 +12,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.PreferencesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -35,6 +36,7 @@ class HomeScreenViewModel @Inject constructor(
     val eggSkin: State<Int> = _eggSkin
 
     private var getTapCountJob: Job? = null
+    private var getSkinJob: Job? = null
 
     init {
         resetCountIfNeeded()
@@ -42,15 +44,17 @@ class HomeScreenViewModel @Inject constructor(
         getCount()
     }
 
+
+    // TODO - launch database stuff in IO dispatcher
     fun onEvent(event: HomeScreenEvent) {
         when (event) {
             HomeScreenEvent.IncrementGlobalCounter -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     databaseUseCases.databaseIncrementGlobalCounter()
                 }
             }
             is HomeScreenEvent.DecrementCounter -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     preferencesUseCases.preferencesDecrementTapCount(_tapCounter.value)
                     getCount()
                 }
@@ -58,10 +62,11 @@ class HomeScreenViewModel @Inject constructor(
             is HomeScreenEvent.MainGameLogic -> {
                 val rng = (0..5).random()
 
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     val prize = databaseUseCases.databaseGetAvailablePrizeByRNG(rng.toString())
                     Log.d("homescreee", "$prize")
-                    _userWon.value = prize.prizeId.isNotBlank() // true if id contains characters, false if not
+                    _userWon.value =
+                        prize.prizeId.isNotBlank() // true if id contains characters, false if not
                 }
             }
             is HomeScreenEvent.LoadAd -> {

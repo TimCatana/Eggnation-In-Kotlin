@@ -2,6 +2,7 @@ package com.applicnation.eggnation.feature_eggnation.presentation
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -29,6 +30,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // TODO - sync ROOM database with online db here?, then the user will always get the most up to date info
+        // TODO - if they want to pull to refresh they can, pull to refresh will just add info from online db to local ROOM db
+        // TODO - maybe only have ROOM db for wonPrizes? cause AvailablePrizes uses realtime database for which reads are free?
+
         setContent {
 
             EggNationTheme {
@@ -41,6 +46,9 @@ class MainActivity : ComponentActivity() {
                 // design meets code
                 // (material you)
 
+
+                // TODO - need a way to find out how to logout... it's not working with mAuth.currentUser
+
                 if (lol) {
                     GameNavGraph(
                         navController = navController,
@@ -49,6 +57,8 @@ class MainActivity : ComponentActivity() {
                 } else {
                     AuthNavGraph(navController = navController)
                 }
+
+                Log.d("eeeerrrr", "${mAuth.currentUser}")
             }
         }
     }

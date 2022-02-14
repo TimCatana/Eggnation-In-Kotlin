@@ -7,7 +7,9 @@ import com.applicnation.eggnation.util.Constants
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
@@ -81,18 +83,20 @@ class Firestore {
     }
 
     suspend fun getWonPrizeById(userId: String, prizeId: String): WonPrize {
-        val prizesCol = firestore.collection(Constants.USERSCOL).document(userId).collection("prizes").document(prizeId)
+            val prizesCol =
+                firestore.collection(Constants.USERSCOL).document(userId).collection("prizes")
+                    .document(prizeId)
 
-        try {
-            val prizeSnapshot = prizesCol.get().await()
+            try {
+                val prizeSnapshot = prizesCol.get().await()
 
-            val prize = prizeSnapshot.toObject(WonPrize::class.java)
+                val prize = prizeSnapshot.toObject(WonPrize::class.java)
 
-            return prize!! // TODO - maybe return a nullable? I need to get rid of this !! because sometimes there may be mismatches
-        } catch (e: Exception) {
-            Log.d("wwwww", "error: $e")
-            return WonPrize()
-        }
+                return prize!! // TODO - maybe return a nullable? I need to get rid of this !! because sometimes there may be mismatches
+            } catch (e: Exception) { // TODO - need to catch specific exceptions so taht coroutine does not catch CancellationException by accident as well
+                Log.d("wwwww", "error: $e")
+                return WonPrize()
+            }
     }
 
 

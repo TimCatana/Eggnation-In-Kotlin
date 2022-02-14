@@ -4,5 +4,6 @@ data class AuthUseCases(
     val userSignIn: UserSignIn,
     val userSignUp: UserSignUp,
     val userPasswordReset: UserPasswordReset,
-    val userGetUserId: UserGetUserId
+    val userGetUserId: UserGetUserId,
+    val userSignOut: UserSignOut
 )
