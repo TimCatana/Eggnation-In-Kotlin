@@ -11,7 +11,6 @@ data class Skin(
     var skinImage: Int
 )
 
-
 object SkinsList {
     val skins = arrayListOf(
         Skin("name1", R.drawable.egg),

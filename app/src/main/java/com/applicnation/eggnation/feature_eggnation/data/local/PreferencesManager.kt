@@ -27,6 +27,8 @@ class PreferencesManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
+    // TODO - add profile picture preference
+
     private val Context.dataStore by preferencesDataStore(name = "preferences")
 
     private object PreferencesKeys {

@@ -24,6 +24,7 @@ class Authentication {
     suspend fun signUpUser(email: String, password: String) {
         try {
             auth.createUserWithEmailAndPassword(email, password).await()
+            Timber.i("SUCCESS: User signed up (registered)")
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             // TODO - need to propogate some error to the UI
             Timber.e("Failed to sign user up (register): Email is invalid  (not formatted correctly) --> $e")
@@ -48,6 +49,7 @@ class Authentication {
     suspend fun signInUser(email: String, password: String) {
         try {
             auth.signInWithEmailAndPassword(email, password).await()
+            Timber.i("SUCCESS: User signed in")
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             // TODO - need to propogate some error to the UI
             Timber.e("Failed to sign user in: Email is invalid (not formatted correctly) --> $e")
@@ -66,6 +68,7 @@ class Authentication {
     fun signOutUser() {
         try {
             auth.signOut()
+            Timber.i("SUCCESS: User signed out")
         } catch (e: Exception) {
             // TODO - need to propogate some error to the UI
             Timber.e("Failed to sign user out: Unexpected exception $e")
@@ -95,6 +98,7 @@ class Authentication {
                 Timber.wtf("!!!! Failed to re-authenticate and delete user: HOW DID YOU MANAGE TO TRY TO DELETE YOUR ACCOUNT WHILE NOT BEING SIGNED IN? --> need to force stop now")
             }
 
+            Timber.i("SUCCESS: User account deleted")
         } catch (e: FirebaseAuthInvalidUserException) {
             Timber.e("Failed to re-authenticate and delete user: Is the password valid? Did the re-authentication fail and thus user can not be deleted? --> $e")
         } catch (e: FirebaseAuthInvalidCredentialsException) {
@@ -115,6 +119,7 @@ class Authentication {
     suspend fun sendPasswordResetEmail(email: String) {
         try {
             auth.sendPasswordResetEmail(email).await()
+            Timber.i("SUCCESS: User password reset")
             // TODO - propogate message saying that the email was sent
         } catch (e: FirebaseAuthEmailException) {
             // TODO - need to propogate some error to the UI
@@ -143,8 +148,8 @@ class Authentication {
                 Timber.wtf("!!!! Failed to re-authenticate and delete user: HOW DID YOU MANAGE TO TRY TO VERIFY YOU EMAIL WHILE NOT BEING SIGNED IN??? --> need to force stop now")
             }
 
+            Timber.i("SUCCESS: Verification email sent")
             // TODO - propogate message saying that the email was sent
-
         } catch (e: FirebaseAuthEmailException) {
             // TODO - need to propogate some error to the UI
             Timber.w("Failed to send verification email: Either email is formatted badly or email does not exists --> $e")
@@ -166,6 +171,7 @@ class Authentication {
      */
 
     // TODO - probably do some extensive error checking. If user is null force stop app
+    // TODO - after checking for nullability, return a !! variable, cause I don't want nullables passed around
     fun getUserId(): String? {
         return auth.currentUser?.uid
     }
@@ -221,6 +227,7 @@ class Authentication {
                 Timber.wtf("!!!! Failed to update user email: HOW ARE YOU TRYING TO UPDATE EMAIL WITHOUT BEING SIGNED IN??? --> need to force stop now")
             }
 
+            Timber.i("SUCCESS: User email address updated")
             // TODO - propogate UI message saying that emaul was updated sucessfully (probably send back a boolean value>
 
         } catch (e: FirebaseAuthInvalidUserException) {
@@ -268,6 +275,7 @@ class Authentication {
                 Timber.wtf("!!!! Failed to update user password: HOW ARE YOU TRYING TO UPDATE PASSWORD WITHOUT BEING SIGNED IN??? --> need to force stop now")
             }
 
+            Timber.i("SUCCESS: User password updated")
             // TODO - propogate UI message saying that password was updated sucessfully (probably send back a boolean value>
         } catch (e: FirebaseAuthInvalidUserException) {
             // TODO - propogate UI message saying the password was not updated
@@ -306,6 +314,7 @@ class Authentication {
                 Timber.wtf("!!!! Failed to update user username: HOW ARE YOU TRUING TO UPDATE USERNAME WITHOUT BEING SIGNED IN??? --> need to force stop now")
             }
 
+            Timber.i("SUCCESS: User username updated")
             // TODO - propogate UI message saying that username was updated sucessfully (probably send back a boolean value>
         } catch (e: FirebaseAuthInvalidUserException) {
             // TODO - propogate UI message saying the username was not updated
@@ -333,6 +342,7 @@ class Authentication {
                 Timber.wtf("!!!! Failed to update user profile picture: HOW ARE YOU TRYING TO UPDATE PROFILE PICTURE WITHOUT BEING SIGNED IN??? --> need to force stop now")
             }
 
+            Timber.i("SUCCESS: User profile picture updated")
             // TODO - propogate UI message saying that profile picture was updated sucessfully (probably send back a boolean value>
         } catch (e: FirebaseAuthInvalidUserException) {
             // TODO - propogate UI message saying the profile picture was not updated

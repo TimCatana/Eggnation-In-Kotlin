@@ -49,6 +49,8 @@ class MainActivity : ComponentActivity() {
 
                 // TODO - need a way to find out how to logout... it's not working with mAuth.currentUser
 
+                // TODO - use preferences to keep the user's logged in status
+
                 if (mAuth.currentUser != null) {
                     GameNavGraph(
                         navController = navController,

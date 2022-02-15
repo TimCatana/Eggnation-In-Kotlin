@@ -38,7 +38,11 @@ class AdMob constructor(
     private var interstitialAd: InterstitialAd? = null
     private val adRequest: AdRequest = AdRequest.Builder().build()
 
-
+    /**
+     * Loads an interstitial ad if the ad is null.
+     * @note I am manually setting the ad to null and thus not laoding the ad every single time the.
+     * TODO - maybe run this function in the playInterstitial Ad function? Most likely do that. but then I'll need to get rid of the null if statement
+     */
     fun loadInterstitialAd() {
         if (interstitialAd == null) {
             InterstitialAd.load(
@@ -59,6 +63,9 @@ class AdMob constructor(
         }
     }
 
+    /**
+     * Plays an interstitial ad if the add is loaded
+     */
     fun playInterstitialAd() {
         setInterstitialCallbacks()
 
@@ -69,6 +76,9 @@ class AdMob constructor(
         }
     }
 
+    /**
+     * Set's the callback functions for then an interstitial ad is played
+     */
     private fun setInterstitialCallbacks() {
         interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdImpression() {
