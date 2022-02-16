@@ -1,15 +1,9 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case
 
-import android.util.Log
-import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.data.local.PreferencesManager
 import com.applicnation.eggnation.feature_eggnation.domain.repository.PreferencesRepository
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class PreferencesDecrementTapCount @Inject constructor(
+class DecrementTapCountPrefUC @Inject constructor(
     private val preferencesManager: PreferencesRepository
 
 ) {

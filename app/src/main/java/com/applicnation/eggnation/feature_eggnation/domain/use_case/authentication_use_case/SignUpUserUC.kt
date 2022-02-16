@@ -3,11 +3,11 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.authenticat
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import javax.inject.Inject
 
-class UserSignIn @Inject constructor(
+class SignUpUserUC @Inject constructor(
     private val authenticator: AuthenticationRepository
-){
+) {
     suspend operator fun invoke(email: String, password: String) {
-        // TODO - maybe add a try catch here? to propogate the error
-        authenticator.signInUser(email, password)
+        // TODO - maybe add a try catch here? to propogate potential thrown errors
+        authenticator.signUpUser(email, password)
     }
 }

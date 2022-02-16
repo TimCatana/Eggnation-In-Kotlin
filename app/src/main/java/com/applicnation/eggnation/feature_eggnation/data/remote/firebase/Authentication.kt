@@ -138,7 +138,7 @@ class Authentication {
      * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
      * @note If the user tried to verify their email while not signed in, something is horribly wrong. I need to force stop the app
      */
-    suspend fun verifyUserEmail(email: String) {
+    suspend fun sendVerificationEmail() {
         try {
             if (auth.currentUser != null) {
                 // TODO - need to add deep link into email that links into VerifyEmailScreen
@@ -332,7 +332,7 @@ class Authentication {
      * @exception FirebaseAuthInvalidUserException The user's account is either disabled, deleted or credentials are no longer valid
      * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
      */
-    suspend fun updateProfilePicture(newProfilePictureUri: Uri) {
+    suspend fun updateUserProfilePicture(newProfilePictureUri: Uri) {
         try {
             val profileUpdates = userProfileChangeRequest { photoUri = newProfilePictureUri }
 

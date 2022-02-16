@@ -7,6 +7,7 @@ interface PreferencesRepository {
     fun getTapCount(): Flow<Int>
     fun getReceivesNotifications(): Flow<Boolean>
     fun getLastResetTime(): Flow<Long>
+
     suspend fun updateSelectedSkin(skin: Int)
     suspend fun updateTapCount(tapCount: Int)
     suspend fun updateReceiveNotifications(receivesNotifications: Boolean)

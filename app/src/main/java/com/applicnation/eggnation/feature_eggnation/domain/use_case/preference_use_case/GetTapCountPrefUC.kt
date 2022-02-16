@@ -4,10 +4,9 @@ import com.applicnation.eggnation.feature_eggnation.domain.repository.Preference
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class PreferencesGetTapCount @Inject constructor(
+class GetTapCountPrefUC @Inject constructor(
     private val preferencesManager: PreferencesRepository
 ) {
-
     operator fun invoke(): Flow<Int> {
         return preferencesManager.getTapCount()
     }

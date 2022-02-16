@@ -117,14 +117,14 @@ private fun WonPrizeItem(
                         viewModel.onEvent(
                             WonPrizesScreenEvent.SetPrizeInfo(
                                 prizeImage = image,
-                                prizeTitle = itemData.prizeName,
+                                prizeTitle = itemData.prizeTitle,
                                 prizeDesc = itemData.prizeDesc
                             )
                         )
                         viewModel.onEvent(WonPrizesScreenEvent.ShowPrizeInfo(true))
                     }
             )
-            Text(text =itemData.prizeName)
+            Text(text =itemData.prizeTitle)
         }
     }
 }

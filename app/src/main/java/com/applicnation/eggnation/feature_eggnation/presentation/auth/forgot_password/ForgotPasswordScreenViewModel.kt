@@ -4,14 +4,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AllAuthUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordScreenViewModel @Inject constructor(
-    private val authUseCases: AuthUseCases
+    private val authUseCases: AllAuthUseCases
 ): ViewModel() {
 
     /**
@@ -30,8 +31,8 @@ class ForgotPasswordScreenViewModel @Inject constructor(
                 _emailText.value = event.value
             }
             is ForgotPasswordScreenEvent.SendResetPasswordEmail -> {
-                viewModelScope.launch {
-                    authUseCases.userPasswordReset(event.email)
+                viewModelScope.launch(Dispatchers.IO) {
+                    authUseCases.sendUserPasswordResetEmailUC(event.email)
                 }
                 //TODO - Send reset email using Firebase Authentication
             }

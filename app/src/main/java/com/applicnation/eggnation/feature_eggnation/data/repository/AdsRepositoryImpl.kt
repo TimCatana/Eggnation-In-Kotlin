@@ -14,5 +14,4 @@ class AdsRepositoryImpl @Inject constructor(
     override suspend fun showAd() {
         adMob.playInterstitialAd()
     }
-
 }

@@ -1,6 +1,5 @@
 package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
-import android.util.Log
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.util.Constants
 import com.google.firebase.database.FirebaseDatabase
@@ -39,7 +38,7 @@ class RealtimeDatabase {
      */
     // TODO - probably return a flow
     // TODO - there are probably more specific errors for me to check
-    suspend fun getAvailablePrizes(): ArrayList<AvailablePrize> {
+    suspend fun getAllAvailablePrizes(): ArrayList<AvailablePrize> {
         val prizeList = ArrayList<AvailablePrize>()
 
         try {

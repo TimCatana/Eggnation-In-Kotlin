@@ -1,6 +1,5 @@
 package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
-import android.util.Log
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 import com.applicnation.eggnation.util.Constants
@@ -40,6 +39,63 @@ class Firestore {
         } catch (e: Exception) {
             // TODO - propogate error via a boolean. If failed, retry this function. if failed again, delete user from Firebase Authentication
             Timber.e("Failed to add user to firestore: An unexpected error occurred --> $e")
+        }
+    }
+
+    /**
+     * Updates the user email in firestore
+     * @param userId The user's user ID (usually always from Firebase auth). user documents are named after the user's uid
+     * @param newEmail The new email the email field should be updated to
+     * @exception FirebaseFirestoreException This is the only exception Firestore can throw as of now (according to documentation)
+     * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
+     * // TODO - there may also be other specific exceptions thrown, but I think I only need to tell the user that it failed to fetch
+     * // TODO - the specific error catch blocks are used to make debugging easier when there is a problem
+     */
+    suspend fun updateUserEmail(userId: String, newEmail: String) {
+        val userDocument = firestore.collection(Constants.USERS_COLLECTION).document(userId)
+
+        try {
+            userDocument.update(Constants.USER_EMAIL_FIELD, newEmail).await()
+        } catch (e: FirebaseFirestoreException) {
+            // TODO - maybe throw an exception?
+            // TODO - propogate error via a boolean. If failed, retry this function. if failed again... rip
+            Timber.e("Failed to add prize to firestore: An unexpected FIRESTORE error occurred --> $e")
+            throw Exception()
+        } catch (e: Exception) {
+            Timber.e("Failed to update user emaul in firestore: An unexpected error occurred --> $e")
+        }
+    }
+
+    /**
+     * Updates the user username in firestore
+     * @param userId The user's user ID (usually always from Firebase auth). user documents are named after the user's uid
+     * @param newUsername The new username the email field should be updated to
+     * @exception FirebaseFirestoreException This is the only exception Firestore can throw as of now (according to documentation)
+     * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
+     * // TODO - there may also be other specific exceptions thrown, but I think I only need to tell the user that it failed to fetch
+     * // TODO - the specific error catch blocks are used to make debugging easier when there is a problem
+     */
+    suspend fun updateUserUsername(userId: String, newUsername: String) {
+        val userDocument = firestore.collection(Constants.USERS_COLLECTION).document(userId)
+
+        try {
+            userDocument.update(Constants.USER_USERNAME_FIELD, newUsername).await()
+        } catch (e: FirebaseFirestoreException) {
+            // TODO - maybe throw an exception?
+            // TODO - propogate error via a boolean. If failed, retry this function. if failed again... rip
+            Timber.e("Failed to add prize to firestore: An unexpected FIRESTORE error occurred --> $e")
+            throw Exception()
+        } catch (e: Exception) {
+            Timber.e("Failed to update user emaul in firestore: An unexpected error occurred --> $e")
+        }
+    }
+
+    // TODO will probably delete the user account using a cloud function. The docs reccommend using a cloud function plus client side deletions are a secutiry hazard
+    suspend fun deleteUser() {
+        try {
+
+        } catch (e: Exception) {
+
         }
     }
 
@@ -155,74 +211,40 @@ class Firestore {
             Timber.e("Failed to add prize to firestore: An unexpected FIRESTORE error occurred --> $e")
             throw Exception()
         } catch (e: Exception) {
-            Timber.e("Failed to get prize $prizeId from $userId account from firestore: An unexpected error occurred --> $e")
+            Timber.e("Failed to get prize $prizeId from user's account from firestore: An unexpected error occurred --> $e")
             throw Exception()
         }
     }
 
     /**
-     * Updates the user email in firestore
+     * Updates the prize claimed boolean for the prize in the user's account.
+     * This should only ever update the prize claimed field to "true"
      * @param userId The user's user ID (usually always from Firebase auth). user documents are named after the user's uid
-     * @param newEmail The new email the email field should be updated to
+     * @param prizeId The prize's prize ID (I will always have gotten a list of all prizes before I get a specific prize. Each prize
+     *                document has the prizeId contained inside it, and that is where I get the ID from). prize documents are names
+     *                after the prize's id
+     * @param prizeClaimed This should always be passed in as true since a prize can never be "unclaimed"
      * @exception FirebaseFirestoreException This is the only exception Firestore can throw as of now (according to documentation)
      * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
      * // TODO - there may also be other specific exceptions thrown, but I think I only need to tell the user that it failed to fetch
      * // TODO - the specific error catch blocks are used to make debugging easier when there is a problem
      */
-    suspend fun updateUserEmail(userId: String, newEmail: String) {
-        val userDocument = firestore.collection(Constants.USERS_COLLECTION).document(userId)
+    suspend fun updateWonPrizeClaimed(userId: String, prizeId: String, prizeClaimed: Boolean) {
+        val prizeDocument = firestore.collection(Constants.USERS_COLLECTION).document(userId)
+            .collection(Constants.WON_PRIZE_COLLECTION).document(prizeId)
 
         try {
-            userDocument.update(Constants.USER_EMAIL_FIELD, newEmail).await()
+            prizeDocument.update(Constants.PRIZE_CLAIMED_FIELD, prizeClaimed).await()
+            // TODO - maybe pass a success boolean?
         } catch (e: FirebaseFirestoreException) {
             // TODO - maybe throw an exception?
             // TODO - propogate error via a boolean. If failed, retry this function. if failed again... rip
             Timber.e("Failed to add prize to firestore: An unexpected FIRESTORE error occurred --> $e")
             throw Exception()
         } catch (e: Exception) {
-            Timber.e("Failed to update user emaul in firestore: An unexpected error occurred --> $e")
+            Timber.e("Failed to update ${Constants.PRIZE_CLAIMED_FIELD} field for prize $prizeId at user's account in firestore : An unexpected error occurred --> $e")
         }
     }
-
-    /**
-     * Updates the user username in firestore
-     * @param userId The user's user ID (usually always from Firebase auth). user documents are named after the user's uid
-     * @param newUsername The new username the email field should be updated to
-     * @exception FirebaseFirestoreException This is the only exception Firestore can throw as of now (according to documentation)
-     * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
-     * // TODO - there may also be other specific exceptions thrown, but I think I only need to tell the user that it failed to fetch
-     * // TODO - the specific error catch blocks are used to make debugging easier when there is a problem
-     */
-    suspend fun UpdateUserUsername(userId: String, newUsername: String) {
-        val userDocument = firestore.collection(Constants.USERS_COLLECTION).document(userId)
-
-        try {
-            userDocument.update(Constants.USER_USERNAME_FIELD, newUsername).await()
-        } catch (e: FirebaseFirestoreException) {
-            // TODO - maybe throw an exception?
-            // TODO - propogate error via a boolean. If failed, retry this function. if failed again... rip
-            Timber.e("Failed to add prize to firestore: An unexpected FIRESTORE error occurred --> $e")
-            throw Exception()
-        } catch (e: Exception) {
-            Timber.e("Failed to update user emaul in firestore: An unexpected error occurred --> $e")
-        }
-    }
-
-    // TODO will probably delete the user account using a cloud function. The docs reccommend using a cloud function plus client side deletions are a secutiry hazard
-    suspend fun deleteUser() {
-        try {
-
-        } catch (e: Exception) {
-
-        }
-    }
-
-
-
-//    fun getCurrentUserId(): String {
-//        val currentUser = FirebaseAuth.getInstance().currentUser
-//        return currentUser?.uid ?: ""
-//    }
 
 }
 

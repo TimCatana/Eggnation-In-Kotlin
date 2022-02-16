@@ -4,19 +4,19 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.DatabaseUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AllAuthUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.AllDatabaseUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WonPrizesScreenViewModel @Inject constructor(
-    private val databaseUseCases: DatabaseUseCases,
-    private val authUseCases: AuthUseCases
+    private val databaseUseCases: AllDatabaseUseCases,
+    private val authUseCases: AllAuthUseCases
 //    private val preferencesUseCases: PreferencesUseCases
 ) : ViewModel() {
 
@@ -41,8 +41,8 @@ class WonPrizesScreenViewModel @Inject constructor(
 
     init {
         // TODO - need to get the firebase authentication user id
-        fetchPrzesJob = viewModelScope.launch {
-            _prizes.value = databaseUseCases.databaseGetWonPrizes("bKHSxBGQ4nPp4KKk7yIbLdOFalX2") // TODO - get uid from auth  probably send in a empty string if userGetId returns null
+        fetchPrzesJob = viewModelScope.launch(Dispatchers.IO) {
+            _prizes.value = databaseUseCases.wonPrizeGetAllUC("bKHSxBGQ4nPp4KKk7yIbLdOFalX2") // TODO - get uid from auth  probably send in a empty string if userGetId returns null
         }
 
         // TODO - check if fetching is completed before displaying stuff. probably do this in actual composavble code through an if statement? But then I will need to make these mutableSatteOf's

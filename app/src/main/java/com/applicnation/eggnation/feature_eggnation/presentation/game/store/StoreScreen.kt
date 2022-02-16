@@ -39,7 +39,6 @@ fun StoreScreen(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-
     val skin = SkinsList.skins
 
     Box(

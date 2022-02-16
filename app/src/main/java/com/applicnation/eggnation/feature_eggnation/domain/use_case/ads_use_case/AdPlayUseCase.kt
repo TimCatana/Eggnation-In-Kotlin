@@ -6,9 +6,7 @@ import javax.inject.Inject
 class AdPlayUseCase @Inject constructor(
     private val adMob: AdMob
 ) {
-
-    suspend operator fun invoke() {
+    operator fun invoke() {
         adMob.loadInterstitialAd()
     }
-
 }

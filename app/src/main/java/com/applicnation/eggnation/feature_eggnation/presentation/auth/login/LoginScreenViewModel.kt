@@ -4,9 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.UserSignIn
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AllAuthUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val authUseCases: AuthUseCases
+    private val authUseCases: AllAuthUseCases
 ) : ViewModel() {
 
     /**
@@ -40,8 +40,8 @@ class LoginScreenViewModel @Inject constructor(
                 _passwordText.value = event.value
             }
             is LoginScreenEvent.SignIn -> {
-                viewModelScope.launch {
-                    authUseCases.userSignIn(email = event.email, password = event.password)
+                viewModelScope.launch(Dispatchers.IO) {
+                    authUseCases.signInUserUC(event.email, event.password)
                     // TODO - need to propogate potential errors somehow
                 }
             }

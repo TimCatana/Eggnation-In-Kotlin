@@ -5,15 +5,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.UserSignUp
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AllAuthUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterScreenViewModel @Inject constructor(
-    private val authUseCases: AuthUseCases
+    private val authUseCases: AllAuthUseCases
 ): ViewModel() {
 
     /**
@@ -53,9 +53,8 @@ class RegisterScreenViewModel @Inject constructor(
                 _confirmPasswordText.value = event.value
             }
             is RegisterScreenEvent.SignUp -> {
-                viewModelScope.launch {
-                    Log.i("signUp", "in viewmodel function: ${event.email}")
-                    authUseCases.userSignUp(email = event.email, password = event.password)
+                viewModelScope.launch(Dispatchers.IO) {
+                    authUseCases.signUpUserUC(event.email, event.password)
                 }
 
                 //TODO - Add the user to Firebase Firestore

@@ -4,10 +4,9 @@ import com.applicnation.eggnation.feature_eggnation.domain.repository.Preference
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class PreferencesGetSelectedSkin @Inject constructor(
+class GetSelectedSkinPrefUC @Inject constructor(
     private val preferencesManager: PreferencesRepository
 ) {
-
     operator fun invoke(): Flow<Int> {
         return preferencesManager.getSelectedSkin()
     }

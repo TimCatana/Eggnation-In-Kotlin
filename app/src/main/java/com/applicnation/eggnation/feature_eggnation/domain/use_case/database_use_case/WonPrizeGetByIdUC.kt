@@ -2,13 +2,12 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.database_us
 
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
+import javax.inject.Inject
 
-class DatabaseGetWonPrizes(
+class WonPrizeGetByIdUC @Inject constructor(
     private val repository: DatabaseRepository
 ) {
-
-    suspend operator fun invoke(userId: String): ArrayList<WonPrize>  {
-        // TODO - make a getWonPrizes() function
-        return repository.getWonPrizes(userId)
+    suspend operator fun invoke(userId: String, prizeId: String): WonPrize {
+        return repository.getWonPrizeById(userId, prizeId)
     }
 }

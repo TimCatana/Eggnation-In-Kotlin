@@ -3,11 +3,11 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.authenticat
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import javax.inject.Inject
 
-class UserSignOut @Inject constructor(
+class UpdateUserUsernameUC @Inject constructor(
     private val authenticator: AuthenticationRepository
-){
-    operator fun invoke() {
-        // TODO - maybe add a try catch here? to propogate the error
-        authenticator.signOutUser()
+) {
+    suspend operator fun invoke(newUsername: String) {
+        // TODO - maybe add a try catch here? to propogate potential thrown errors
+        authenticator.updateUserUsername(newUsername)
     }
 }

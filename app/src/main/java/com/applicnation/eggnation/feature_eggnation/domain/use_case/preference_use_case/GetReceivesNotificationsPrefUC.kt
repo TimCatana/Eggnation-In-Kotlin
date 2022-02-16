@@ -1,14 +1,13 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.PreferencesRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class PreferencesUpdateLastResetTime @Inject constructor(
+class GetReceivesNotificationsPrefUC @Inject constructor(
     private val preferencesManager: PreferencesRepository
-
 ) {
-
-    suspend operator fun invoke(resetTime: Long){
-        preferencesManager.updateLastResetTime(resetTime)
+    operator fun invoke(): Flow<Boolean> {
+        return preferencesManager.getReceivesNotifications()
     }
 }

@@ -1,8 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
 import android.app.Activity
-import android.content.Context
-import android.util.Log
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -65,6 +63,7 @@ class AdMob constructor(
 
     /**
      * Plays an interstitial ad if the add is loaded
+     * @helperFunction setInterstitialCallbacks()
      */
     fun playInterstitialAd() {
         setInterstitialCallbacks()
@@ -77,7 +76,8 @@ class AdMob constructor(
     }
 
     /**
-     * Set's the callback functions for then an interstitial ad is played
+     * Set's the callback functions for then an interstitial ad is played.
+     * Helper function for playInterstitialAd()
      */
     private fun setInterstitialCallbacks() {
         interstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {

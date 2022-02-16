@@ -1,15 +1,13 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case
 
-import com.applicnation.eggnation.feature_eggnation.data.local.PreferencesManager
 import com.applicnation.eggnation.feature_eggnation.domain.repository.PreferencesRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class PreferencesUpdateSelectedSkin @Inject constructor(
+class GetLastResetTimePrefUC @Inject constructor(
     private val preferencesManager: PreferencesRepository
-
 ) {
-
-    suspend operator fun invoke(selectedSkin: Int){
-        preferencesManager.updateSelectedSkin(selectedSkin)
+    operator fun invoke(): Flow<Long> {
+        return preferencesManager.getLastResetTime()
     }
 }

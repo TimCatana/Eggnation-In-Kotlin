@@ -1,7 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.domain.modal
 
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * @param username (String) the user's username

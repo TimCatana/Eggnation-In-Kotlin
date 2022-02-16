@@ -46,10 +46,11 @@ class MainActivity : ComponentActivity() {
                 // design meets code
                 // (material you)
 
-
                 // TODO - need a way to find out how to logout... it's not working with mAuth.currentUser
 
                 // TODO - use preferences to keep the user's logged in status
+                // TODO - to avoid being in the home page while not logged in auth, check both preferences and current user
+                // TODO - if logged in prefernce and auth are out of sync really bad things can happen...
 
                 if (mAuth.currentUser != null) {
                     GameNavGraph(

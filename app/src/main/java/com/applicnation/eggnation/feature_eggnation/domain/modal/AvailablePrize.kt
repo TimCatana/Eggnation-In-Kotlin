@@ -1,7 +1,5 @@
 package com.applicnation.eggnation.feature_eggnation.domain.modal
 
-import java.util.*
-
 // TODO - might add the images I want to show in cloud storage
 // TODO - might need two models, one for won prizes and one for available prizes
 /**

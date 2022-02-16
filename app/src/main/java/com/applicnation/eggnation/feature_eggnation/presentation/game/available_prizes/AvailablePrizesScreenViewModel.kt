@@ -5,8 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case.AuthUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.DatabaseUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.AllDatabaseUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -15,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AvailablePrizesScreenViewModel @Inject constructor(
 //    private val preferencesUseCases: PreferencesUseCases
-    private val databaseUseCases: DatabaseUseCases
+    private val databaseUseCases: AllDatabaseUseCases
 ) : ViewModel() {
 
     private val _showPrizeInfo = mutableStateOf(false)
@@ -38,7 +37,7 @@ class AvailablePrizesScreenViewModel @Inject constructor(
 
     init {
         fetchPrzesJob = viewModelScope.launch {
-            _prizes.value = databaseUseCases.databaseGetAvailablePrizes()
+            _prizes.value = databaseUseCases.availablePrizeGetAllUC()
         }
         // TODO - find a way to wait for init block to finish
         // TODO - probably use one of the states (like iActive or isFinished etc...) but place this somewhere else and maybe show a loading bar when it is active but not completed.

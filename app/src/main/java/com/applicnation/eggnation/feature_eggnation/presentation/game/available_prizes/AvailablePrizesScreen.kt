@@ -1,6 +1,5 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -24,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,7 +50,6 @@ fun AvailablePrizesScreen(
                 .padding(top = 55.dp, start = 45.dp, end = 45.dp),
         ) {
             items(list) { prize ->
-                Log.d("qqq", "inside lazyGrid with ${prize}")
                 AvaialblePrizeItem(
                     itemData = prize,
                     viewModel = viewModel
@@ -106,18 +102,17 @@ private fun AvaialblePrizeItem(
     itemData: AvailablePrize,
     viewModel: AvailablePrizesScreenViewModel
 ) {
-    Log.d("qqq", "inside availablePrizesItem with ${itemData}")
-    var image: Int
 
-    when (itemData.prizeType) {
+
+    val image = when (itemData.prizeType) {
         "phone" -> {
-            image = R.drawable.egg
+            R.drawable.egg
         }
         "laptop" -> {
-            image = R.drawable.egg_four
+            R.drawable.egg_four
         }
         else -> {
-            image = R.drawable.egg_three
+            R.drawable.egg_three
         }
     }
 
@@ -140,18 +135,18 @@ private fun AvaialblePrizeItem(
                 modifier = Modifier
                     .size(120.dp)
                     .clickable {
-                        // TODO - only do below if viewmodel.showinfo is false
+                        // TODO - only do below if viewModel.showInfo is false
                         viewModel.onEvent(
                             AvailablePrizesScreenEvent.SetPrizeInfo(
                                 prizeImage = image,
-                                prizeTitle = itemData.prizeName,
+                                prizeTitle = itemData.prizeTitle,
                                 prizeDesc = itemData.prizeDesc
                             )
                         )
                         viewModel.onEvent(AvailablePrizesScreenEvent.ShowPrizeInfo(true))
                     }
             )
-            Text(text = itemData.prizeName)
+            Text(text = itemData.prizeTitle)
         }
     }
 }
@@ -188,7 +183,7 @@ fun AvailablePrizeItemInfoCard(
             text = viewModel.prizeTitleInfo.value
         )
         Spacer(modifier = Modifier.height(24.dp))
-        LazyColumn() {
+        LazyColumn {
             item {
                 Text(
                     style = MaterialTheme.typography.body1,
@@ -218,8 +213,8 @@ fun AvailablePrizesScreenPreview() {
                 .fillMaxSize()
                 .padding(top = 55.dp, start = 45.dp, end = 45.dp),
         ) {
-            items(3) { count ->
-                Card() {
+            items(3) {
+                Card {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceEvenly,
@@ -278,7 +273,7 @@ fun AvailablePrizesScreenPreview() {
                     text = "Title"
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                LazyColumn() {
+                LazyColumn {
                     item {
                         Text(
                             style = MaterialTheme.typography.body1,
