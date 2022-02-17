@@ -6,8 +6,16 @@ import javax.inject.Inject
 class GetUserEmailVerificationStatusUC @Inject constructor(
     private val authenticator: AuthenticationRepository
 ) {
-    operator fun invoke(): Boolean? {
-        // TODO - maybe add a try catch here? to propogate the error
-        return authenticator.getUserEmailVerificationStatus()
+    /**
+     * Get's the user's email verification status from Firebase Authentication
+     * @note authenticator.getUserEmailVerificationStatus() will never return null because the current user logged in status is checked beforehand
+     */
+    operator fun invoke(): Boolean {
+        if (authenticator.getUserLoggedInStatus() == null) {
+            return false
+            // TODO - throw exception? I ned t
+        } else {
+            return authenticator.getUserEmailVerificationStatus()!!
+        }
     }
 }

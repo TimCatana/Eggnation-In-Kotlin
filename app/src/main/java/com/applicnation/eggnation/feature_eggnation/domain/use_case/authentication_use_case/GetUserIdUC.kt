@@ -6,8 +6,16 @@ import javax.inject.Inject
 class GetUserIdUC @Inject constructor(
     private val authenticator: AuthenticationRepository
 ) {
-    operator fun invoke(): String? {
-        // TODO - maybe add a try catch here? to propogate the error
-        return authenticator.getUserId()
+    /**
+     * Get's the user's uid from Firebase Authentication
+     * @note authenticator.getUserId() will never return null because the current user logged in status is checked beforehand
+     */
+    operator fun invoke(): String {
+        if (authenticator.getUserLoggedInStatus() == null) {
+            return "very bad case"
+            // TODO - throw exception? I ned t
+        } else {
+            return authenticator.getUserId()!!
+        }
     }
 }

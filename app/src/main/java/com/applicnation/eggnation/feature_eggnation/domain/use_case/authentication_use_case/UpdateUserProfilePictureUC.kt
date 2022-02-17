@@ -2,13 +2,46 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.authenticat
 
 import android.net.Uri
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
 
 class UpdateUserProfilePictureUC @Inject constructor(
     private val authenticator: AuthenticationRepository
 ) {
+
+
+
+
+    /**
+     * Updates the user's profile picture.
+     * TODO - fix up documentation
+     * @param newProfilePictureUri The new profile picture's uri to set for the user's profile
+     * @exception FirebaseAuthInvalidUserException The user's account is either disabled, deleted or credentials are no longer valid
+     * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
+     */
     suspend operator fun invoke(newProfilePictureUri: Uri) {
-        // TODO - maybe add a try catch here? to propogate potential thrown errors
-        authenticator.updateUserProfilePicture(newProfilePictureUri)
+
+
+        if (authenticator.getUserLoggedInStatus() == null) {
+            throw Exception()
+            // TODO - throw exception?
+            // TODO - this is a really bad situation to be in
+        }
+
+
+
+        try {
+            authenticator.updateUserProfilePicture(newProfilePictureUri)
+            Timber.i("SUCCESS: User profile picture updated")
+        } catch (e: FirebaseAuthInvalidUserException) {
+            // TODO - propogate UI message saying the profile picture was not updated
+            // TODO - maybe if the user changes their email this may be thrown? maybe I'll need to re-authenticate then
+            Timber.e("Failed to update user profile picture: The user's account is either disabled, deleted or the credentials are now invalid --> $e")
+        } catch (e: Exception) {
+            // TODO - propogate UI message saying the profile picture was not updated
+            Timber.e("Failed to update user profile picture: An unexpected error occurred --> $e")
+        }
     }
 }

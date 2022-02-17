@@ -52,7 +52,9 @@ class MainActivity : ComponentActivity() {
                 // TODO - to avoid being in the home page while not logged in auth, check both preferences and current user
                 // TODO - if logged in prefernce and auth are out of sync really bad things can happen...
 
-                if (mAuth.currentUser != null) {
+                // TODO - maybe inject the authentication repo? It's a singleton so it should work
+
+                if (!lol) {
                     GameNavGraph(
                         navController = navController,
                         adMob = adMob

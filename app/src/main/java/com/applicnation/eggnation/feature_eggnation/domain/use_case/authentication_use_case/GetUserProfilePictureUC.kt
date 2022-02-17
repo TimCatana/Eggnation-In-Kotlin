@@ -7,8 +7,16 @@ import javax.inject.Inject
 class GetUserProfilePictureUC @Inject constructor(
     private val authenticator: AuthenticationRepository
 ) {
-    operator fun invoke(): Uri? {
-        // TODO - maybe add a try catch here? to propogate the error
-        return authenticator.getUserProfilePicture()
+    /**
+     * Get's the user's profile picture Uri from Firebase Authentication
+     * @note authenticator.getUserProfilePicture() will never return null because the current user logged in status is checked beforehand
+     */
+    operator fun invoke(): Uri {
+        if (authenticator.getUserLoggedInStatus() == null) {
+           throw Exception()
+            // TODO - throw exception? I ned t
+        } else {
+            return authenticator.getUserProfilePicture()!!
+        }
     }
 }

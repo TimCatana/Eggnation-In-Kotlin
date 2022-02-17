@@ -6,8 +6,16 @@ import javax.inject.Inject
 class GetUserEmailUC @Inject constructor(
     private val authenticator: AuthenticationRepository
 ) {
-    operator fun invoke(): String? {
-        // TODO - maybe add a try catch here? to propogate the error
-        return authenticator.getUserEmail()
+    /**
+     * Get's the user's email address from Firebase Authentication
+     * @note authenticator.getUserEmail() will never return null because the current user logged in status is checked beforehand
+     */
+    operator fun invoke(): String {
+        if (authenticator.getUserLoggedInStatus() == null) {
+            return "very bad case"
+            // TODO - throw exception? I ned t
+        } else {
+            return authenticator.getUserEmail()!!
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.applicnation.eggnation.feature_eggnation.data.repository
 import android.net.Uri
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Authentication
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
+import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(
@@ -28,6 +29,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
         authenticator.deleteUserAccount(email, password)
     }
 
+    override suspend fun authenticateUser(email: String, password: String) {
+        authenticator.authenticateUser(email, password)
+    }
+
     /**
      * User Account Modifications
      */
@@ -40,8 +45,12 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     /**
-     * Getters For User Account
+     * Getters
      */
+    override fun getUserLoggedInStatus(): FirebaseUser? {
+        return authenticator.getUserLoggedInStatus()
+    }
+
     override fun getUserId(): String? {
         return authenticator.getUserId()
     }
@@ -65,12 +74,12 @@ class AuthenticationRepositoryImpl @Inject constructor(
     /**
      * Setters For User Account
      */
-    override suspend fun updateUserEmailAddress(email: String, password: String, newEmail: String) {
-        authenticator.updateUserEmailAddress(email, password, newEmail)
+    override suspend fun updateUserEmailAddress(newEmail: String) {
+        authenticator.updateUserEmailAddress(newEmail)
     }
 
-    override suspend fun updateUserPassword(email: String, password: String, newPassword: String) {
-        authenticator.updateUserPassword(email, password, newPassword)
+    override suspend fun updateUserPassword(newPassword: String) {
+        authenticator.updateUserPassword(newPassword)
     }
 
     override suspend fun updateUserUsername(newUsername: String) {
