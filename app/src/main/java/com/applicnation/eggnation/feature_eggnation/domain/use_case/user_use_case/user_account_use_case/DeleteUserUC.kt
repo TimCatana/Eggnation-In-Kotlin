@@ -1,28 +1,22 @@
-package com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case
+package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.user_account_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
-import com.applicnation.eggnation.feature_eggnation.domain.util.FailedToDeleteAccountException
-import com.applicnation.eggnation.feature_eggnation.domain.util.FailedToReauthenticateException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import timber.log.Timber
 import javax.inject.Inject
 
-class DeleteUserAccountUC @Inject constructor(
+class DeleteUserUC @Inject constructor(
     private val authenticator: AuthenticationRepository
 ) {
 
-    /** Deletes a user from Firebase authentication. This action is irreversable.
-     * @param email The user email
-     * @param password The user password
-     * TODO - fix up this documentation
-     * @exception FirebaseAuthInvalidUserException Either the account re-authentication failed (the user inputted an incorrect password)
-     *                                             OR The re-authentication failed and the program attempted to delete the user (this should never happen)
-     * @exception FirebaseAuthInvalidCredentialsException Either the user's credentials are incorrect
-     *                                                    OR the user tried to delete someone else's account (malicous behaviour)
+    // TODO - clean up documentation
+
+    /**
+     * Permenantly deletes the user's account
      * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
-     * */
+     */
     suspend operator fun invoke(email: String, password: String) {
 
         if (authenticator.getUserLoggedInStatus() == null) {
@@ -56,5 +50,7 @@ class DeleteUserAccountUC @Inject constructor(
             Timber.wtf("Failed to delete user account: An unexpected error occurred --> $e")
 //            throw FailedToDeleteAccountException("Failed to delete account!")
         }
+
+        // TODO - run cloud function to delete user from database as well so that there's no garbage data in the db
     }
 }

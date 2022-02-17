@@ -41,7 +41,7 @@ class DatabaseRepositoryImpl @Inject constructor(
         return database.getAllWonPrizes(userId)
     }
 
-    override suspend fun getWonPrizeById(userId: String, prizeId: String): WonPrize {
+    override suspend fun getWonPrizeById(userId: String, prizeId: String): WonPrize? {
         return database.getWonPrizeById(userId, prizeId)
     }
 
@@ -60,7 +60,7 @@ class DatabaseRepositoryImpl @Inject constructor(
         return realtimeDatabase.getAllAvailablePrizes()
     }
 
-    override suspend fun getAvailablePrizeByRNG(rng: String): AvailablePrize {
+    override suspend fun getAvailablePrizeByRNG(rng: String): AvailablePrize? {
         return realtimeDatabase.getAvailablePrizeByRNG(rng)
     }
 }

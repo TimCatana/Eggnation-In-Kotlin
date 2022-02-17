@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case
+package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.user_account_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -31,5 +31,7 @@ class SignInUserUC @Inject constructor(
             Timber.wtf("Failed to sign user in: An unexpected error occurred --> $e")
 //            throw FailedToSignInException("Failed to sign in!")
         }
+
+        // TODO - add user to database as well
     }
 }

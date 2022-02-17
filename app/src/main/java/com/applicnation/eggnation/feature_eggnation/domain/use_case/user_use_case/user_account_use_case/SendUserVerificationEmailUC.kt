@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.domain.use_case.authentication_use_case
+package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.user_account_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import com.google.firebase.auth.FirebaseAuthEmailException
