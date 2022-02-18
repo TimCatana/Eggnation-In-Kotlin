@@ -11,6 +11,7 @@ sealed class RegisterScreenEvent {
      * */
     data class SignUp(
         val email: String,
-        val password: String
+        val password: String,
+        val username: String
     ) : RegisterScreenEvent()
 }

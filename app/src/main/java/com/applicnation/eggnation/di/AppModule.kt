@@ -20,6 +20,8 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_ca
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeGetByIdUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeUpdatePrizeClaimedUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.MainGameLogicUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
@@ -140,6 +142,14 @@ object AppModule {
 
             availablePrizeGetAllUC = AvailablePrizeGetAllUC(databaseRepo),
             availablePrizeGetByRNGUC = AvailablePrizeGetByRNGUC(databaseRepo),
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMainGameLogicUseCases(databaseRepo: DatabaseRepository): MainGameLogicUseCases {
+        return  MainGameLogicUseCases(
+            incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo)
         )
     }
 

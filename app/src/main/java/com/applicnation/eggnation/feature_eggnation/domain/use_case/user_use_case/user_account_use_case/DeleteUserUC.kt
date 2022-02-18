@@ -39,7 +39,7 @@ class DeleteUserUC @Inject constructor(
         }
 
         try {
-            authenticator.deleteUserAccount(email, password)
+            authenticator.deleteUserAccount()
         } catch (e: FirebaseAuthInvalidUserException) {
             Timber.e("Failed to delete user: The account has either been deleted or disabled --> $e")
 //            throw FailedToDeleteAccountException("Something went wrong. Please try again")

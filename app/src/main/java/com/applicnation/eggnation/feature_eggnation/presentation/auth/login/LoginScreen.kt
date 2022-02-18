@@ -48,24 +48,29 @@ fun LoginScreen(
                 text = "Login Screen",
                 style = MaterialTheme.typography.h5
             )
-            Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             StandardTextField(
                 text = viewModel.emailText.value,
+                maxLength = 75,
                 onValueChange = {
                     viewModel.onEvent(LoginScreenEvent.EnteredEmail(it))
                 },
-                label = "email" // use string resources
+                isError = viewModel.isEmailError.value,
+                errorText = "Invalid email address",
+                label = "email" // TODO - use string resources
             )
-            Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             StandardTextField(
                 text = viewModel.passwordText.value,
                 onValueChange = {
                     viewModel.onEvent(LoginScreenEvent.EnteredPassword(it))
                 },
+                isError = viewModel.isPasswordError.value,
+                errorText = "Please enter a password",
                 keyboardType = KeyboardType.Password,
-                label = "password" // use string resources
+                label = "password" // TODO - use string resources
             )
-            Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "forgot password?",
                 modifier = Modifier
@@ -74,14 +79,15 @@ fun LoginScreen(
                         navController.navigate(AuthScreen.ForgotPassword.route)
                     }
             )
-            Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
+                enabled = !viewModel.isEmailError.value && !viewModel.isPasswordError.value,
                 onClick = {
                     viewModel.onEvent(
                         LoginScreenEvent.SignIn(
                             viewModel.emailText.value,
                             viewModel.passwordText.value
-                        // TODO - need to propogate error here
+                            // TODO - need to propogate error here
                         )
                     )
                 },

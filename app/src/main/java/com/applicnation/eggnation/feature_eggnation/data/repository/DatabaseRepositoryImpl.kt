@@ -17,8 +17,8 @@ class DatabaseRepositoryImpl @Inject constructor(
     /*******************
      **** Firestore ****
      *******************/
-    override suspend fun registerUser(userId: String, userInfo: User) {
-        database.registerUser(userId, userInfo)
+    override suspend fun registerUser(userId: String, userEmail: String, userUsername: String) {
+        database.registerUser(userId, userEmail, userUsername)
     }
 
     override suspend fun updateUserEmail(userId: String, newEmail: String) {

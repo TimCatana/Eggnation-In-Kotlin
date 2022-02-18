@@ -25,8 +25,8 @@ class AuthenticationRepositoryImpl @Inject constructor(
         authenticator.signOutUser()
     }
 
-    override suspend fun deleteUserAccount(email: String, password: String) {
-        authenticator.deleteUserAccount(email, password)
+    override suspend fun deleteUserAccount() {
+        authenticator.deleteUserAccount()
     }
 
     override suspend fun authenticateUser(email: String, password: String) {

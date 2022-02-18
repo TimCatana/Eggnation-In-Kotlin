@@ -54,6 +54,8 @@ fun RegisterScreen(
                 onValueChange = {
                     viewModel.onEvent(RegisterScreenEvent.EnteredUsername(it))
                 },
+                isError = viewModel.isUsernameError.value,
+                errorText = "Username must be at least 5 characters long",
                 label = "username" // use string resources
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -62,6 +64,8 @@ fun RegisterScreen(
                 onValueChange = {
                     viewModel.onEvent(RegisterScreenEvent.EnteredEmail(it))
                 },
+                isError = viewModel.isEmailError.value,
+                errorText = "Invalid email address",
                 label = "email" // use string resources
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -70,8 +74,10 @@ fun RegisterScreen(
                 onValueChange = {
                     viewModel.onEvent(RegisterScreenEvent.EnteredPassword(it))
                 },
+                isError = viewModel.isPasswordError.value,
+                errorText = "Password must be at least 8 characters, contain no whitespace and have numbers, lowercase and uppercase letters",
+                label = "password", //TODO - use string resources
                 keyboardType = KeyboardType.Password,
-                label = "password" // use string resources
             )
             Spacer(modifier = Modifier.height(16.dp))
             StandardTextField(
@@ -79,16 +85,23 @@ fun RegisterScreen(
                 onValueChange = {
                     viewModel.onEvent(RegisterScreenEvent.EnteredConfirmPassword(it))
                 },
+                isError = viewModel.isConfirmPasswordError.value,
+                errorText = "Passwords must match!",
                 keyboardType = KeyboardType.Password,
                 label = "confirm password" // use string resources
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
+                enabled = !viewModel.isUsernameError.value
+                        && !viewModel.isEmailError.value
+                        && !viewModel.isPasswordError.value
+                        && !viewModel.isConfirmPasswordError.value,
                 onClick = {
                     viewModel.onEvent(
                         RegisterScreenEvent.SignUp(
                             viewModel.emailText.value,
-                            viewModel.passwordText.value
+                            viewModel.passwordText.value,
+                            viewModel.usernameText.value
                             // TODO - need to propogate potential errors here.
                         )
                     )

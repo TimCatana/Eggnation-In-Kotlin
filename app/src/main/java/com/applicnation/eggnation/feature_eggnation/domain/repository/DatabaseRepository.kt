@@ -9,7 +9,7 @@ interface DatabaseRepository {
     /**
      * Firestore
      */
-    suspend fun registerUser(userId: String, userInfo: User)
+    suspend fun registerUser(userId: String, userEmail: String, userUsername: String)
     suspend fun updateUserEmail(userId: String, newEmail: String)
     suspend fun  updateUserUsername(userId: String, newUsername: String)
     suspend fun deleteUser()

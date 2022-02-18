@@ -23,11 +23,16 @@ class Firestore {
      *       Because of this, Firestore writes should hardly ever fail
      * @note Errors are caught and dealt with in use-case
      */
-    suspend fun registerUser(userId: String, userInfo: User) {
+    suspend fun registerUser(userId: String, userEmail: String, userUsername: String) {
+        val user = User().apply {
+            this.email = userEmail
+            this.username = userUsername
+        }
+
         firestore
             .collection(Constants.USERS_COLLECTION)
             .document(userId)
-            .set(userInfo)
+            .set(user)
             .await()
     }
 

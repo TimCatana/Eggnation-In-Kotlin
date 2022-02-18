@@ -38,7 +38,7 @@ class SignUpUserUC @Inject constructor(
      * @exception FirebaseAuthUserCollisionException The user already exists (the email is already in use)
      * @exception Exception All exceptions caught in this block are UNEXPECTED and should not ever exist
      */
-    suspend operator fun invoke(email: String, password: String, userInfo: User) {
+    suspend operator fun invoke(email: String, password: String, username: String) {
         // TODO - send a something to UI saying success or failure
 
         try {
@@ -57,12 +57,13 @@ class SignUpUserUC @Inject constructor(
 
 
         // TODO - need to fix database registration prcess this up a bit
-
+        // TODO - if firebase registration fails, delete the user from authentication cause the game won't work without the user registered in the database
 
         val userId = authenticator.getUserId()
 
+
         try {
-            repository.registerUser(userId!!, userInfo) // TODO - fix this dangerous !!
+            repository.registerUser(userId!!, email, username) // TODO - fix this dangerous !!
             Timber.i("SUCCESS: User added to firestore database")
 
         } catch (e: FirebaseFirestoreException) {

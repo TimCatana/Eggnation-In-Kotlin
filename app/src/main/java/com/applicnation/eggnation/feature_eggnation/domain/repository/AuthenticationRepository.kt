@@ -7,7 +7,7 @@ interface AuthenticationRepository {
     suspend fun signUpUser(email: String, password: String)
     suspend fun signInUser(email: String, password: String)
     fun signOutUser()
-    suspend fun deleteUserAccount(email: String, password: String)
+    suspend fun deleteUserAccount()
     suspend fun authenticateUser(email: String, password: String)
 
     suspend fun sendPasswordResetEmail(email: String)

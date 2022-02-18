@@ -36,10 +36,13 @@ fun ForgotPasswordScreen(
             onValueChange = {
                 viewModel.onEvent(ForgotPasswordScreenEvent.EnteredEmail(it))
             },
+            isError = viewModel.isEmailError.value,
+            errorText = "Invalid email address",
             label = "email" // use string resources
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(
+            enabled = !viewModel.isEmailError.value,
             onClick = {
                 viewModel.onEvent(
                     ForgotPasswordScreenEvent.SendResetPasswordEmail(

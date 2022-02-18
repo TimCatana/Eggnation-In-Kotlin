@@ -5,8 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.database_use_case.AllDatabaseUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.AllPreferencesUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.PrizeUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.MainGameLogicUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val preferencesUseCases: AllPreferencesUseCases,
-    private val databaseUseCases: AllDatabaseUseCases
+    private val mainGameLogicUseCases: MainGameLogicUseCases,
+    private val prizeUseCases: PrizeUseCases
 //    private val adUseCases: AdUseCases TODO - get hilt working to for this... kinda difficult with the scoping
 ) : ViewModel() {
 
@@ -46,7 +48,7 @@ class HomeScreenViewModel @Inject constructor(
         when (event) {
             HomeScreenEvent.IncrementGlobalCounter -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    databaseUseCases.incrementGlobalCounterUC()
+                    mainGameLogicUseCases.incrementGlobalCounterUC()
                 }
             }
             is HomeScreenEvent.DecrementCounter -> {
@@ -59,7 +61,7 @@ class HomeScreenViewModel @Inject constructor(
                 val rng = (0..5).random()
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    val prize = databaseUseCases.availablePrizeGetByRNGUC(rng.toString())
+                    val prize = prizeUseCases.availablePrizeGetByRNGUC(rng.toString())
                     _userWon.value = prize.prizeId.isNotBlank()
                     // above is true if it contains characters, false if not
                 }
