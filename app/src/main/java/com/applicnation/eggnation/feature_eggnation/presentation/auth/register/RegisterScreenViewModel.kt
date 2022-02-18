@@ -5,9 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.UserUseCases
+import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,6 +52,18 @@ class RegisterScreenViewModel @Inject constructor(
     private val _isConfirmPasswordError = mutableStateOf(true)
     val isConfirmPasswordError: State<Boolean> = _isConfirmPasswordError
 
+    private val _signUpResultStatus = mutableStateOf("")
+    val signUpResultStatus: State<String> = _signUpResultStatus
+
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+
+    // TODO - add isLoading state
+
     /**
      * events
      */
@@ -62,47 +80,49 @@ class RegisterScreenViewModel @Inject constructor(
             is RegisterScreenEvent.EnteredPassword -> {
                 _passwordText.value = event.value
                 validatePassword()
-
-                // confirm password becomes invalid if password changes because they will not match.
-                if(!_isConfirmPasswordError.value) {
-                    validateConfirmPassword()
-                }
+                validateConfirmPassword()
             }
             is RegisterScreenEvent.EnteredConfirmPassword -> {
                 _confirmPasswordText.value = event.value
                 validateConfirmPassword()
             }
             is RegisterScreenEvent.SignUp -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    userUseCases.signUpUserUC(event.email, event.password, event.username)
-                }
-
-                // TODO - check if username is unique in firebase. but probably do this on submit
-
-                //TODO - Add the user to Firebase Firestore
-                //TODO - Check for errors along the way
+                // TODO - check if username is unique in firebase database here
+                userUseCases.signUpUserUC(event.email, event.password, event.username)
+                    .onEach { result ->
+                        when (result) {
+                            is Resource.Loading -> {
+                                _isLoading.value = true
+                            }
+                            is Resource.Success -> {
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.Login
+                                )
+                            }
+                            is Resource.Error -> {
+                                _signUpResultStatus.value = result.message!!
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.ShowSnackbar(
+                                        message = result.message
+                                    )
+                                )
+                            }
+                        }
+                    }.launchIn(viewModelScope)
             }
         }
     }
-
 
 
     private fun validateUsername() {
-        if(_usernameText.value.length >= 5) {
-            _isUsernameError.value = false
-        }
+        _isUsernameError.value = _usernameText.value.length < 5
     }
 
     private fun validateEmail() {
-        if(!_isEmailError.value) {
-            if(!android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()) {
-                _isEmailError.value = true
-            }
-        } else {
-            if(android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()) {
-                _isEmailError.value = false
-            }
-        }
+        _isEmailError.value =
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()
     }
 
     private fun validatePassword() {
@@ -113,27 +133,28 @@ class RegisterScreenViewModel @Inject constructor(
 
         var isError = false
 
-        if(_passwordText.value == _confirmPasswordText.value) {
+        if (_passwordText.value.length < 8) {
+            Timber.d("password error = TRUE --> password length less than 8")
             isError = true
         }
 
-        if(_passwordText.value.length < 8) {
+        if (_passwordText.value.contains(mWhiteSpaceChars)) {
+            Timber.d("password error = TRUE --> password contains whitespace")
             isError = true
         }
 
-        if(_passwordText.value.contains(mWhiteSpaceChars)) {
+        if (!_passwordText.value.contains(mLowerCaseChars)) {
+            Timber.d("password error = TRUE --> password does not contain lowercase letters")
             isError = true
         }
 
-        if(!_passwordText.value.contains(mLowerCaseChars)) {
+        if (!_passwordText.value.contains(mUpperCaseChars)) {
+            Timber.d("password error = TRUE --> password does not contain uppercase letters")
             isError = true
         }
 
-        if(!_passwordText.value.contains(mUpperCaseChars)) {
-            isError = true
-        }
-
-        if(!_passwordText.value.contains(mNumberChars)) {
+        if (!_passwordText.value.contains(mNumberChars)) {
+            Timber.d("password error = TRUE --> password does not contain numbers")
             isError = true
         }
 
@@ -141,12 +162,13 @@ class RegisterScreenViewModel @Inject constructor(
     }
 
     private fun validateConfirmPassword() {
-        if(_isPasswordError.value) {
-            _isConfirmPasswordError.value = true
-        } else {
-            _isConfirmPasswordError.value = (_confirmPasswordText.value != _passwordText.value)
-        }
+        _isConfirmPasswordError.value = _confirmPasswordText.value != _passwordText.value
+    }
 
+
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent()
+        object Login : UiEvent()
     }
 
 

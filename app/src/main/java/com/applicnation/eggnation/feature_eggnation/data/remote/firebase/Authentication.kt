@@ -100,7 +100,8 @@ class Authentication {
 
     /**
      * @note Errors are caught and dealt with in use-case
-     * @importantNote Current user MUST be logged in before thus function is run. Check that getUserLoggedInStatus is not null.
+     * @importantNote Sometimes current user MUST be logged in before this function is run to prevent errors.
+     *                Check that getUserLoggedInStatus is not null.
      */
     fun getUserId(): String? {
         return auth.currentUser?.uid
@@ -108,7 +109,8 @@ class Authentication {
 
     /**
      * @note Errors are caught and dealt with in use-case
-     * @importantNote Current user MUST be logged in before thus function is run. Check that getUserLoggedInStatus is not null.
+     * @importantNote Sometimes current user MUST be logged in before this function is run to prevent errors.
+     *                Check that getUserLoggedInStatus is not null.
      */
     fun getUserEmail(): String? {
         return auth.currentUser?.email
@@ -116,7 +118,8 @@ class Authentication {
 
     /**
      * @note Errors are caught and dealt with in use-case
-     * @importantNote Current user MUST be logged in before thus function is run. Check that getUserLoggedInStatus is not null.
+     * @importantNote Sometimes current user MUST be logged in before this function is run to prevent errors.
+     *                Check that getUserLoggedInStatus is not null.
      */
     fun getUserUsername(): String? {
         return auth.currentUser?.displayName
@@ -124,7 +127,8 @@ class Authentication {
 
     /**
      * @note Errors are caught and dealt with in use-case
-     * @importantNote Current user MUST be logged in before thus function is run. Check that getUserLoggedInStatus is not null.
+     * @importantNote Sometimes current user MUST be logged in before this function is run to prevent errors.
+     *                Check that getUserLoggedInStatus is not null.
      */
     fun getUserProfilePicture(): Uri? {
         return auth.currentUser?.photoUrl
@@ -132,7 +136,8 @@ class Authentication {
 
     /**
      * @note Errors are caught and dealt with in use-case
-     * @importantNote Current user MUST be logged in before thus function is run. Check that getUserLoggedInStatus is not null.
+     * @importantNote Sometimes current user MUST be logged in before this function is run to prevent errors.
+     *                Check that getUserLoggedInStatus is not null.
      */
     fun getUserEmailVerificationStatus(): Boolean? {
         return auth.currentUser?.isEmailVerified

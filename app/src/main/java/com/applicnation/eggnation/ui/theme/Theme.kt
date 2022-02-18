@@ -6,11 +6,10 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 
-private val GamePalette = darkColors(
+private val GamePalette = lightColors(
     primary = Purple200,
     primaryVariant = Purple700,
     secondary = Teal200,
-    background = StoreBG
 
     /* Other default colors to override
      background = Color.White,

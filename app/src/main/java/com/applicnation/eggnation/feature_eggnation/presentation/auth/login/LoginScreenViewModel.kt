@@ -57,15 +57,7 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     private fun validateEmail() {
-        if(!_isEmailError.value) {
-            if(!android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()) {
-                _isEmailError.value = true
-            }
-        } else {
-            if(android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()) {
-                _isEmailError.value = false
-            }
-        }
+        _isEmailError.value = !android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()
     }
 
     private fun validatePassword() {

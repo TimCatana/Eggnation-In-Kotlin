@@ -49,11 +49,11 @@ fun StandardTextField(
         isError = isError && text.isNotEmpty(),
         singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Purple200,
-            focusedLabelColor = Purple200,
-            unfocusedBorderColor = Gray,
-            unfocusedLabelColor = Gray,
-            trailingIconColor = Gray
+//            focusedBorderColor = Purple200,
+//            focusedLabelColor = Purple200,
+//            unfocusedBorderColor = Gray,
+//            unfocusedLabelColor = Gray,
+//            trailingIconColor = Gray
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = keyboardType
