@@ -1,7 +1,7 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.settings
 
 import androidx.lifecycle.ViewModel
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

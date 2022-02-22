@@ -5,14 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.AllPreferencesUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.PrizeUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.MainGameLogicUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.AllPreferencesUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
+import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -36,6 +39,25 @@ class HomeScreenViewModel @Inject constructor(
     private var getTapCountJob: Job? = null
     private var getSkinJob: Job? = null
 
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
+    private val _showWonPrize = mutableStateOf<Boolean>(false)
+    val showWonPrize: State<Boolean> = _showWonPrize
+
+    // TODO - probably make the below three it's own component with viewModel in the future
+    private val _prizeTitleInfo = mutableStateOf("")
+    val prizeTitleInfo: State<String> = _prizeTitleInfo
+
+    private val _prizeDescInfo = mutableStateOf("")
+    val prizeDescInfo: State<String> = _prizeDescInfo
+
+    private val _prizeTypeInfo = mutableStateOf("")
+    val prizeTypeInfo: State<String> = _prizeTypeInfo
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
     init {
         resetCountIfNeeded()
         getUserSkin()
@@ -58,13 +80,53 @@ class HomeScreenViewModel @Inject constructor(
                 }
             }
             is HomeScreenEvent.MainGameLogic -> {
-                val rng = (0..5).random()
+                // TODO - load add if not loaded (once I get hilt working for this)
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    val prize = prizeUseCases.availablePrizeGetByRNGUC(rng.toString())
-                    _userWon.value = prize.prizeId.isNotBlank()
-                    // above is true if it contains characters, false if not
-                }
+                mainGameLogicUseCases.doGameLogicUC().onEach { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _isLoading.value = true
+                        }
+                        is Resource.Success -> {
+                            _isLoading.value = false
+
+                            if (result.data == null) {
+                                _eventFlow.emit(
+                                    // TODO - emit play lose animation and get rid of snackbar
+                                    UiEvent.ShowSnackbar(
+                                        message = result.message ?: "LOLL"
+                                    )
+                                )
+                            } else {
+                                Timber.i("PRIZE WON! Should show image card now ${result.data}")
+                                _prizeTitleInfo.value = result.data.prizeTitle
+                                _prizeDescInfo.value = result.data.prizeDesc
+                                _prizeTypeInfo.value = result.data.prizeType
+
+                                // TODO - emit play win animation here and get rid of snackbar
+
+                                _showWonPrize.value = true // TODO - make sure this comes after the animation
+
+                                _eventFlow.emit(
+                                    UiEvent.ShowSnackbar(
+                                        message = result.message ?: "LOLL"
+                                    )
+                                )
+                            }
+
+                        }
+                        is Resource.Error -> {
+                            _isLoading.value = false
+                            // TODO - play lose animation and get rid of snackbar
+
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = result.message ?: "LOLL"
+                                )
+                            )
+                        }
+                    }
+                }.launchIn(viewModelScope)
             }
             is HomeScreenEvent.LoadAd -> {
 //                adUseCases.adLoadUseCase
@@ -74,7 +136,9 @@ class HomeScreenViewModel @Inject constructor(
 //                adUseCases.adPlayUseCase
                 event.adMob.playInterstitialAd()
             }
-
+            HomeScreenEvent.DismissWonPrizeCard -> {
+                _showWonPrize.value = false
+            }
         }
     }
 
@@ -111,5 +175,11 @@ class HomeScreenViewModel @Inject constructor(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent()
+        object PlayLoseAnimation : UiEvent()
+        object PlayWinAnimation : UiEvent()
     }
 }

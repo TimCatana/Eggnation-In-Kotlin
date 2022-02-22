@@ -1,4 +1,6 @@
-package com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case
+package com.applicnation.eggnation.feature_eggnation.domain.use_case
+
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.*
 
 data class AllPreferencesUseCases(
     val getSelectedSkinPrefUC: GetSelectedSkinPrefUC,

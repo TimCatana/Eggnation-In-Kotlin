@@ -68,7 +68,6 @@ class Authentication {
      * If user is not logged in when they reach the VerifyEmailScreen, then do not do anything. That is a security hazard
      * @param email The email to send password reset link to
      * @note Errors are caught and dealt with in use-case
-     * @importantNote Current user MUST be logged in before thus function is run. Check that getUserLoggedInStatus is not null.
      */
     suspend fun sendPasswordResetEmail(email: String) {
         auth.sendPasswordResetEmail(email).await()

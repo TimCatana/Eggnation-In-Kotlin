@@ -4,15 +4,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -52,9 +50,6 @@ class RegisterScreenViewModel @Inject constructor(
     private val _isConfirmPasswordError = mutableStateOf(true)
     val isConfirmPasswordError: State<Boolean> = _isConfirmPasswordError
 
-    private val _signUpResultStatus = mutableStateOf("")
-    val signUpResultStatus: State<String> = _signUpResultStatus
-
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
@@ -90,31 +85,29 @@ class RegisterScreenViewModel @Inject constructor(
                 // TODO - check if username is unique in firebase database here
                 userUseCases.signUpUserUC(event.email, event.password, event.username)
                     .onEach { result ->
-                        when (result) {
-                            is Resource.Loading -> {
-                                _isLoading.value = true
-                            }
-                            is Resource.Success -> {
-                                _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.Login
-                                )
-                            }
-                            is Resource.Error -> {
-                                _signUpResultStatus.value = result.message!!
-                                _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message
+                            when (result) {
+                                is Resource.Loading -> {
+                                    _isLoading.value = true
+                                }
+                                is Resource.Success -> {
+                                    _isLoading.value = false
+                                    _eventFlow.emit(
+                                        UiEvent.ChangeStacks
                                     )
-                                )
+                                }
+                                is Resource.Error -> {
+                                    _isLoading.value = false
+                                    _eventFlow.emit(
+                                        UiEvent.ShowSnackbar(
+                                            message = result.message!!
+                                        )
+                                    )
+                                }
                             }
-                        }
                     }.launchIn(viewModelScope)
             }
         }
     }
-
 
     private fun validateUsername() {
         _isUsernameError.value = _usernameText.value.length < 5
@@ -165,11 +158,8 @@ class RegisterScreenViewModel @Inject constructor(
         _isConfirmPasswordError.value = _confirmPasswordText.value != _passwordText.value
     }
 
-
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
-        object Login : UiEvent()
+        object ChangeStacks : UiEvent()
     }
-
-
 }

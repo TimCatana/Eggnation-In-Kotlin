@@ -81,27 +81,26 @@ class RealtimeDatabase {
      * Helper function for getAllAvailablePrizes
      * @param snapShot data snapshot of availablePrizes in Database
      * @return A single AvailablePrize
-     * TODO - need to test this
      */
     private fun convertToAvailablePrizeObject(snapShot: DataSnapshot): AvailablePrize {
         val prize = AvailablePrize()
 
         snapShot.children.forEach {
-            when (snapShot.key.toString()) {
+            when (it.key.toString()) {
                 "prizeId" -> {
-                    prize.prizeId = snapShot.value.toString()
+                    prize.prizeId = it.value.toString()
                 }
                 "prizeTitle" -> {
-                    prize.prizeTitle = snapShot.value.toString()
+                    prize.prizeTitle = it.value.toString()
                 }
                 "prizeDesc" -> {
-                    prize.prizeDesc = snapShot.value.toString()
+                    prize.prizeDesc = it.value.toString()
                 }
                 "prizeType" -> {
-                    prize.prizeType = snapShot.value.toString()
+                    prize.prizeType = it.value.toString()
                 }
                 "prizeTier" -> {
-                    prize.prizeTier = snapShot.value.toString()
+                    prize.prizeTier = it.value.toString()
                 }
             }
         }

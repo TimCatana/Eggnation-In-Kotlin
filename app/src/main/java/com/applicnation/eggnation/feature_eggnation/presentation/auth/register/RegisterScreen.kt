@@ -1,6 +1,5 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.auth.register
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -8,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -17,13 +15,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.ui.theme.EggNationTheme
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
+
+
+//TODO - use string resources
 
 @Composable
 fun RegisterScreen(
@@ -40,7 +39,7 @@ fun RegisterScreen(
                         message = event.message,
                     )
                 }
-                is RegisterScreenViewModel.UiEvent.Login -> {
+                is RegisterScreenViewModel.UiEvent.ChangeStacks -> {
                     Timber.i("REGISTERED SUCCESSFULLY, TIME TO CHANGE STACKS")
                 }
             }
@@ -99,7 +98,7 @@ fun RegisterScreen(
                     },
                     isError = viewModel.isPasswordError.value,
                     errorText = "Password must be at least 8 characters, contain no whitespace and have numbers, lowercase and uppercase letters",
-                    label = "password", //TODO - use string resources
+                    label = "password",
                     keyboardType = KeyboardType.Password,
                 )
                 Spacer(modifier = Modifier.height(16.dp))

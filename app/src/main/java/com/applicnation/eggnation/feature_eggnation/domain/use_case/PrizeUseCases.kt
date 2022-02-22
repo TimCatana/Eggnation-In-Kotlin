@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case
+package com.applicnation.eggnation.feature_eggnation.domain.use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetAllUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetByRNGUC

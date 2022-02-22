@@ -1,10 +1,9 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,46 +12,82 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
 import com.applicnation.eggnation.ui.theme.EggNationTheme
+import kotlinx.coroutines.flow.collectLatest
+
+//TODO - use string resources
+//TODO - Add back arrow button and navigate to login screen when user taps it (remember to pop back stack)
 
 @Composable
 fun ForgotPasswordScreen(
     navController: NavController,
     viewModel: ForgotPasswordScreenViewModel = hiltViewModel()
 ) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 40.dp)
-    ) {
-        Text(
-            text = "Forgot Password Screen",
-            style = MaterialTheme.typography.h5
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        StandardTextField(
-            text = viewModel.emailText.value,
-            onValueChange = {
-                viewModel.onEvent(ForgotPasswordScreenEvent.EnteredEmail(it))
-            },
-            isError = viewModel.isEmailError.value,
-            errorText = "Invalid email address",
-            label = "email" // use string resources
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            enabled = !viewModel.isEmailError.value,
-            onClick = {
-                viewModel.onEvent(
-                    ForgotPasswordScreenEvent.SendResetPasswordEmail(
-                        viewModel.emailText.value
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is ForgotPasswordScreenViewModel.UiEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message,
                     )
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    top = 24.dp,
+                    bottom = 50.dp
                 )
-                // TODO - send forgot password email with Firebase Authentication
-            },
         ) {
-            Text(text = "send email")
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 40.dp)
+            ) {
+                Text(
+                    text = "Forgot Password Screen",
+                    style = MaterialTheme.typography.h5
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                StandardTextField(
+                    text = viewModel.emailText.value,
+                    onValueChange = {
+                        viewModel.onEvent(ForgotPasswordScreenEvent.EnteredEmail(it))
+                    },
+                    isError = viewModel.isEmailError.value,
+                    errorText = "Invalid email address",
+                    label = "email"
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    enabled = !viewModel.isEmailError.value,
+                    onClick = {
+                        viewModel.onEvent(
+                            ForgotPasswordScreenEvent.SendResetPasswordEmail(
+                                viewModel.emailText.value
+                            )
+                        )
+                    },
+                ) {
+                    Text(text = "send email")
+                }
+            }
+
+            if (viewModel.isLoading.value) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 }

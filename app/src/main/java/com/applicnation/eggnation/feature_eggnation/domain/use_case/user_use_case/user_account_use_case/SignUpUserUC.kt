@@ -8,8 +8,11 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestoreException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -29,7 +32,7 @@ class SignUpUserUC @Inject constructor(
      * @exception FirebaseNetworkException
      * @exception FirebaseAuthUserCollisionException
      * @exception FirebaseFirestoreException
-     * @exception Exception All exceptions caught in this block are UNEXPECTED and should not ever exist
+     * @exception Exception All exceptions caught in this block are UNEXPECTED and should not ever occur
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
     operator fun invoke(email: String, password: String, username: String): Flow<Resource<String>> =
@@ -113,5 +116,5 @@ class SignUpUserUC @Inject constructor(
                 emit(Resource.Error<String>("An unexpected error occurred"))
             }
 
-        }
+        }.flowOn(Dispatchers.IO)
 }

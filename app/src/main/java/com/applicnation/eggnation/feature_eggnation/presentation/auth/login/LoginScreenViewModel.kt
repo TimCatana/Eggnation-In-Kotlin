@@ -4,10 +4,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
+import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 // private cal savedStateHandle: SavedStateHandle - contains navigation parameters
@@ -34,6 +37,12 @@ class LoginScreenViewModel @Inject constructor(
     private val _isPasswordError = mutableStateOf(true)
     val isPasswordError: State<Boolean> = _isPasswordError
 
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
     /**
      * events
      */
@@ -48,22 +57,45 @@ class LoginScreenViewModel @Inject constructor(
                 validatePassword()
             }
             is LoginScreenEvent.SignIn -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    userUseCases.signInUserUC(event.email, event.password)
-                    // TODO - need to propogate potential errors somehow
-                }
+                userUseCases.signInUserUC(event.email, event.password)
+                    .onEach { result ->
+                        when (result) {
+                            is Resource.Loading -> {
+                                _isLoading.value = true
+                            }
+                            is Resource.Success -> {
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.ChangeStacks
+                                )
+                            }
+                            is Resource.Error -> {
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.ShowSnackbar(
+                                        message = result.message!!
+                                    )
+                                )
+                            }
+                        }
+                    }.launchIn(viewModelScope)
             }
         }
     }
 
     private fun validateEmail() {
-        _isEmailError.value = !android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()
+        _isEmailError.value =
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()
     }
 
     private fun validatePassword() {
         _isPasswordError.value = _passwordText.value.isEmpty()
     }
 
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent()
+        object ChangeStacks : UiEvent()
+    }
 }
 
 

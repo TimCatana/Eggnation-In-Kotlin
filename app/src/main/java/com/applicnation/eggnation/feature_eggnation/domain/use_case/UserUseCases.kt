@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case
+package com.applicnation.eggnation.feature_eggnation.domain.use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC

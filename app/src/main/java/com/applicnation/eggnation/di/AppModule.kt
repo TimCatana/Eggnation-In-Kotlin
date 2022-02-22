@@ -1,5 +1,6 @@
 package com.applicnation.eggnation.di
 
+import DoGameLogicUC
 import android.content.Context
 import com.applicnation.eggnation.feature_eggnation.data.local.PreferencesManager
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Authentication
@@ -11,17 +12,18 @@ import com.applicnation.eggnation.feature_eggnation.data.repository.PreferencesR
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 import com.applicnation.eggnation.feature_eggnation.domain.repository.PreferencesRepository
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.AllPreferencesUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.*
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.PrizeUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetAllUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetByRNGUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeAddToUserAccountUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeGetAllUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeGetByIdUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeUpdatePrizeClaimedUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.MainGameLogicUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
@@ -147,17 +149,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMainGameLogicUseCases(databaseRepo: DatabaseRepository): MainGameLogicUseCases {
+    fun provideMainGameLogicUseCases(databaseRepo: DatabaseRepository, availablePrizeUseCases: PrizeUseCases): MainGameLogicUseCases {
         return  MainGameLogicUseCases(
-            incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo)
+            incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo),
+            doGameLogicUC = DoGameLogicUC(availablePrizeUseCases)
         )
     }
-
 
 
     /**
      * Preferences Injections
      */
+
     @Provides
     @Singleton
     fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {

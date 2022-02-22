@@ -3,6 +3,7 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_c
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
 
 class AvailablePrizeGetByRNGUC @Inject constructor(
@@ -18,25 +19,13 @@ class AvailablePrizeGetByRNGUC @Inject constructor(
      * @param rng the node name to query
      * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
      */
-    suspend operator fun invoke(rng: String): AvailablePrize {
-
-        // TODO - propogate success or error
-
-
+    suspend operator fun invoke(rng: String): AvailablePrize? {
         try {
-            val prize = repository.getAvailablePrizeByRNG(rng)
-
-            if (prize == null) {
-                // User lost
-                // TODO - maybe throw userLostException? but that's not an optimal way to do what I want to do. Maybe I can just pass null to viewmodel and do final check there
-                throw Exception()
-            } else {
-                return prize
-                // User won
-            }
+            return repository.getAvailablePrizeByRNG(rng)
         } catch (e: Exception) {
             Timber.e("Failed to fetch available prizes with rng number $rng from realtime database: An unexpected error occurred --> $e")
-            throw Exception()
+            return null
         }
     }
+
 }

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.PrizeUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
