@@ -9,6 +9,10 @@ import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email.EditEmailScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_language.EditLanguageScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password.EditPasswordScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_username.EditUsernameScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.ClaimPrizeScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
@@ -84,6 +88,22 @@ fun GameNavGraph(
         }
         composable(route = GameScreen.EmailVerification.route) {
             VerifyEmailScreen(navController = navController)
+        }
+
+        /**
+         * Settings screen
+         */
+        composable(route = SettingScreen.EditUsername.route) {
+            EditUsernameScreen(navController = navController)
+        }
+        composable(route =  SettingScreen.EditEmail.route) {
+            EditEmailScreen(navController = navController)
+        }
+        composable(route =  SettingScreen.EditPassword.route) {
+            EditPasswordScreen(navController = navController)
+        }
+        composable(route =  SettingScreen.EditLanguage.route) {
+            EditLanguageScreen(navController = navController)
         }
 
         /**

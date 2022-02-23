@@ -1,6 +1,7 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
+import timber.log.Timber
 import javax.inject.Inject
 
 class GetUserEmailVerificationStatusUC @Inject constructor(
@@ -11,11 +12,14 @@ class GetUserEmailVerificationStatusUC @Inject constructor(
      * @note authenticator.getUserEmailVerificationStatus() will never return null because the current user logged in status is checked beforehand
      */
     operator fun invoke(): Boolean {
-        if (authenticator.getUserLoggedInStatus() == null) {
+        val emailVerificationStatus = authenticator.getUserEmailVerificationStatus()
+
+        if (emailVerificationStatus == null) {
+            // TODO - this is a very bad case... need to do something
+            Timber.wtf("!!! User is signed out while trying to go to settings screen")
             return false
-            // TODO - throw exception? I ned t
         } else {
-            return authenticator.getUserEmailVerificationStatus()!!
+            return emailVerificationStatus
         }
     }
 }

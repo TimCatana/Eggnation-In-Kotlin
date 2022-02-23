@@ -11,6 +11,6 @@ fun PrivacyPolicyScreen(
     navController: NavController
 ) {
     Column() {
-        Text(text = "test test")
+        Text(text = "Privacy Policy Screen")
     }
 }

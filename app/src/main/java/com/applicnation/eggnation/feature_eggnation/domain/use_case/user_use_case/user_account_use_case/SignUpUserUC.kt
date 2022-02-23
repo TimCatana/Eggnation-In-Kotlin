@@ -105,15 +105,30 @@ class SignUpUserUC @Inject constructor(
             try {
                 repository.registerUser(userId, email, username) // TODO - fix this dangerous !!
                 Timber.i("SUCCESS Database (Firestore): User added to Firestore database")
-                emit(Resource.Success<String>(message = "Registered Successfully"))
             } catch (e: FirebaseFirestoreException) {
                 authenticator.deleteUserAccount()
                 Timber.e("Database (Firestore): Failed to add user to Firestore: An unexpected FIRESTORE error:: deleting user from Firebase Authentication --> $e")
+                // TODO - delete user from firebase database using firebase authentication (try catch it as well) (probably only have one catch with difference if statements for this one
                 emit(Resource.Error<String>("An unexpected error occurred"))
             } catch (e: Exception) {
                 authenticator.deleteUserAccount()
                 Timber.e("Database (Firestore): Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
                 emit(Resource.Error<String>("An unexpected error occurred"))
+            }
+
+            /**
+             * Adding the user to database.
+             * @exception FirebaseFirestoreException
+             * @exception Exception
+             */
+            try {
+                authenticator.updateUserUsername(username)
+                emit(Resource.Success<String>(message = "Registered Successfully"))
+            } catch (e: Exception) {
+                Timber.e("Firebase Authentication: Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
+                // TODO - delete user from firebase database using firebase authentication (try catch it as well)
+                // TODO - delete user from firebase firestore (try catch it as well)
+                emit(Resource.Success<String>(message = "Registered Successfully")) // Yes, emit success because this isn't necessary
             }
 
         }.flowOn(Dispatchers.IO)

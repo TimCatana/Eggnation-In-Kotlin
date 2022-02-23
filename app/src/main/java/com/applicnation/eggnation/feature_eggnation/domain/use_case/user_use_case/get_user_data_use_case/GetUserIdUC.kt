@@ -1,6 +1,7 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
+import timber.log.Timber
 import javax.inject.Inject
 
 class GetUserIdUC @Inject constructor(
@@ -11,11 +12,14 @@ class GetUserIdUC @Inject constructor(
      * @note authenticator.getUserId() will never return null because the current user logged in status is checked beforehand
      */
     operator fun invoke(): String {
-        if (authenticator.getUserLoggedInStatus() == null) {
-            return "very bad case"
-            // TODO - throw exception? I ned t
+        val userId = authenticator.getUserId()
+
+        if (userId == null) {
+            // TODO - this is a very bad case... need to do something
+            Timber.wtf("!!! User is signed out while trying to go to settings screen")
+            return ""
         } else {
-            return authenticator.getUserId()!!
+            return userId
         }
     }
 }

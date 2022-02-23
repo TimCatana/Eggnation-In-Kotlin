@@ -11,6 +11,6 @@ fun TermsOfServiceScreen(
     navController: NavController
 ) {
     Column {
-        Text(text = "test text")
+        Text(text = "Terms of Service Screen")
     }
 }

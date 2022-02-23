@@ -18,6 +18,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -29,6 +30,9 @@ class MainActivity : ComponentActivity() {
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mAuth = FirebaseAuth.getInstance()
+
+        val lol = false
 
         // TODO - sync ROOM database with online db here?, then the user will always get the most up to date info
         // TODO - if they want to pull to refresh they can, pull to refresh will just add info from online db to local ROOM db
@@ -38,9 +42,6 @@ class MainActivity : ComponentActivity() {
 
             EggNationTheme {
                 navController = rememberNavController()
-                mAuth = FirebaseAuth.getInstance()
-
-                val lol = false
 
                 // android basics in kotlin
                 // design meets code
@@ -63,7 +64,7 @@ class MainActivity : ComponentActivity() {
                     AuthNavGraph(navController = navController)
                 }
 
-                Log.d("eeeerrrr", "${mAuth.currentUser}")
+                Timber.i("${mAuth.currentUser}") // TODO delete this
             }
         }
     }
