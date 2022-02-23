@@ -14,6 +14,7 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_priz
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.store.StoreScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.game.verify_email.VerifyEmailScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.privacy_policy.PrivacyPolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.terms_of_service.TermsOfServiceScreen
@@ -81,9 +82,9 @@ fun GameNavGraph(
         composable(route = GameScreen.Settings.route) {
             SettingsScreen(navController = navController)
         }
-//        composable(route = GameScreen.EmailVerification.route) {
-//            EmailVerificationScreen(navController = navController)
-//        }
+        composable(route = GameScreen.EmailVerification.route) {
+            VerifyEmailScreen(navController = navController)
+        }
 
         /**
          * @note these screens are in both stacks. The user will not be visiting these often though

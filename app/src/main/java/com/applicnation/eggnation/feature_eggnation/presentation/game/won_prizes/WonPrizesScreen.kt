@@ -26,7 +26,10 @@ import androidx.navigation.NavController
 import com.applicnation.eggnation.R
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
+import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 @ExperimentalFoundationApi
 @Composable
@@ -36,48 +39,70 @@ fun WonPrizesScreen(
 ) {
     val list = viewModel.prizes.value
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colors.background)
-    ) {
-        LazyVerticalGrid(
-            cells = GridCells.Fixed(2),
-            contentPadding = PaddingValues(),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 55.dp, start = 45.dp, end = 45.dp),
-        ) {
-            items(list) { prize ->
-                Log.d("qqq", "inside lazyGrid with ${prize}")
-                WonPrizeItem(
-                    itemData = prize,
-                    viewModel = viewModel,
-                )
+    // TODO - show some kind of progress bar when is loading is true
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is WonPrizesScreenViewModel.UiEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message,
+                    )
+                }
+                is WonPrizesScreenViewModel.UiEvent.NavToClaimPrizeScreen -> {
+                    Timber.i("time to nav")
+                    navController.navigate(GameScreen.ClaimPrize.route)
+                }
             }
-        }
-
-        Image(
-            painter = painterResource(id = R.drawable.store_screen_bg),
-            contentDescription = "availablePrizes background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-
-
-        if (viewModel.showPrizeInfo.value) {
-            WonPrizeItemInfoCard(
-                viewModel = viewModel,
-                navController = navController,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .background(Color.Red)
-                    .width(400.dp)
-                    .height(400.dp), // TODO - make width and height based on screen dimensions
-            )
         }
     }
 
+    Scaffold(
+        scaffoldState = scaffoldState,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.background)
+        ) {
+            LazyVerticalGrid(
+                cells = GridCells.Fixed(2),
+                contentPadding = PaddingValues(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 55.dp, start = 45.dp, end = 45.dp),
+            ) {
+                items(list) { prize ->
+                    Log.d("qqq", "inside lazyGrid with ${prize}")
+                    WonPrizeItem(
+                        itemData = prize,
+                        viewModel = viewModel,
+                    )
+                }
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.store_screen_bg),
+                contentDescription = "availablePrizes background",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+
+
+            if (viewModel.showPrizeInfo.value) {
+                WonPrizeItemInfoCard(
+                    viewModel = viewModel,
+                    navController = navController,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .background(Color.Red)
+                        .width(400.dp)
+                        .height(400.dp), // TODO - make width and height based on screen dimensions
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -85,7 +110,6 @@ private fun WonPrizeItem(
     itemData: WonPrize,
     viewModel: WonPrizesScreenViewModel
 ) {
-    Log.d("qqq", "inside availablePrizesItem with ${itemData}")
     var image: Int
 
     when (itemData.prizeType) {
@@ -124,7 +148,7 @@ private fun WonPrizeItem(
                         viewModel.onEvent(WonPrizesScreenEvent.ShowPrizeInfo(true))
                     }
             )
-            Text(text =itemData.prizeTitle)
+            Text(text = itemData.prizeTitle)
         }
     }
 }
@@ -135,7 +159,6 @@ fun WonPrizeItemInfoCard(
     viewModel: WonPrizesScreenViewModel,
     navController: NavController,
 ) {
-
 
     Column(
         modifier = modifier,
@@ -153,7 +176,7 @@ fun WonPrizeItemInfoCard(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Image(
-            painter = painterResource(id =  viewModel.prizeImageInfo.value),
+            painter = painterResource(id = viewModel.prizeImageInfo.value),
             contentDescription = "prize Image",
             modifier = Modifier.size(180.dp)
         )
@@ -164,8 +187,7 @@ fun WonPrizeItemInfoCard(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = {
-            navController.navigate(GameScreen.ClaimPrize.route)
-            // TODO - pass the item info to the screen
+            viewModel.onEvent(WonPrizesScreenEvent.ClaimPrize)
         }) {
             Text(text = "Claim")
         }
@@ -180,7 +202,6 @@ fun WonPrizeItemInfoCard(
         }
     }
 }
-
 
 
 @ExperimentalFoundationApi

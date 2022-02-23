@@ -5,15 +5,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
+import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
+import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class WonPrizesScreenViewModel @Inject constructor(
+    private val authenticationRepository: AuthenticationRepository,
+    private val mainGameLogicUseCases: MainGameLogicUseCases,
+//    private val userUseCases: UserUseCases,
     private val prizeUseCases: PrizeUseCases
 //    private val preferencesUseCases: PreferencesUseCases
 ) : ViewModel() {
@@ -34,6 +47,12 @@ class WonPrizesScreenViewModel @Inject constructor(
     private val _prizeImageInfo = mutableStateOf(0)
     val prizeImageInfo: State<Int> = _prizeImageInfo
 
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
 
     private var fetchPrzesJob: Job? = null
 
@@ -41,7 +60,9 @@ class WonPrizesScreenViewModel @Inject constructor(
         // TODO - need to get the firebase authentication user id
         fetchPrzesJob = viewModelScope.launch(Dispatchers.IO) {
             _prizes.value =
-                prizeUseCases.wonPrizeGetAllUC("bKHSxBGQ4nPp4KKk7yIbLdOFalX2") // TODO - get uid from auth  probably send in a empty string if userGetId returns null
+                prizeUseCases.wonPrizeGetAllUC(
+                    authenticationRepository.getUserId() ?: ""
+                ) // TODO - get uid from auth  probably send in a empty string if userGetId returns null
         }
 
         // TODO - check if fetching is completed before displaying stuff. probably do this in actual composavble code through an if statement? But then I will need to make these mutableSatteOf's
@@ -59,7 +80,7 @@ class WonPrizesScreenViewModel @Inject constructor(
 
                 // TODO - set title and desc to "" after the model is dismissed, I will check for "" and show an error message if no text is loaded (maybe)
             }
-            WonPrizesScreenEvent.FetchAvailablePrizes -> {
+            is WonPrizesScreenEvent.FetchAvailablePrizes -> {
 
             }
             is WonPrizesScreenEvent.SetPrizeInfo -> {
@@ -67,7 +88,47 @@ class WonPrizesScreenViewModel @Inject constructor(
                 _prizeDescInfo.value = event.prizeDesc
                 _prizeImageInfo.value = event.prizeImage
             }
+            is WonPrizesScreenEvent.ClaimPrize -> {
+
+                mainGameLogicUseCases.claimPrizeUC()
+                    .onEach { result ->
+                        when (result) {
+                            is Resource.Loading -> {
+                                _isLoading.value = true
+                            }
+                            is Resource.Success -> {
+                                _isLoading.value = false
+
+                                if (result.data!!) { // TODO - probably make all error and success resources non-nullable mandatory
+                                    _eventFlow.emit(
+                                        UiEvent.NavToClaimPrizeScreen
+                                    )
+                                } else {
+                                    _eventFlow.emit(
+                                        UiEvent.ShowSnackbar(
+                                            message = result.message!!
+                                        )
+                                    )
+                                }
+                            }
+                            is Resource.Error -> {
+                                Timber.w("In Error")
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.ShowSnackbar(
+                                        message = result.message!!
+                                    )
+                                )
+                            }
+                        }
+                    }.launchIn(viewModelScope)
+            }
         }
+    }
+
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent()
+        object NavToClaimPrizeScreen : UiEvent()
     }
 
 }
