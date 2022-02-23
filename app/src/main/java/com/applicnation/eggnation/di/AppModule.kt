@@ -17,13 +17,11 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_u
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetAllUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetByRNGUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeAddToUserAccountUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeGetAllUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeGetByIdUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.WonPrizeUpdatePrizeClaimedUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeDeleteUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
@@ -138,21 +136,27 @@ object AppModule {
     fun providePrizeUseCases(databaseRepo: DatabaseRepository): PrizeUseCases {
         return PrizeUseCases(
             wonPrizeAddToUserAccountUC = WonPrizeAddToUserAccountUC(databaseRepo),
+            wonPrizesAddToAllWonPrizesUC = WonPrizeAddToAllWonPrizesUC(databaseRepo),
             wonPrizeUpdatePrizeClaimedUC = WonPrizeUpdatePrizeClaimedUC(databaseRepo),
             wonPrizeGetAllUC = WonPrizeGetAllUC(databaseRepo),
             wonPrizeGetByIdUC = WonPrizeGetByIdUC(databaseRepo),
 
             availablePrizeGetAllUC = AvailablePrizeGetAllUC(databaseRepo),
             availablePrizeGetByRNGUC = AvailablePrizeGetByRNGUC(databaseRepo),
+            availablePrizeDeleteUC = AvailablePrizeDeleteUC(databaseRepo)
         )
     }
 
     @Provides
     @Singleton
-    fun provideMainGameLogicUseCases(databaseRepo: DatabaseRepository, availablePrizeUseCases: PrizeUseCases): MainGameLogicUseCases {
-        return  MainGameLogicUseCases(
+    fun provideMainGameLogicUseCases(
+        databaseRepo: DatabaseRepository,
+        authenticationRepo: AuthenticationRepository,
+        availablePrizeUseCases: PrizeUseCases
+    ): MainGameLogicUseCases {
+        return MainGameLogicUseCases(
             incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo),
-            doGameLogicUC = DoGameLogicUC(availablePrizeUseCases)
+            doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases)
         )
     }
 

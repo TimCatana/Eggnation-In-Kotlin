@@ -6,7 +6,7 @@ import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
-class WonPrizeAddToUserAccountUC @Inject constructor(
+class WonPrizeAddToAllWonPrizesUC @Inject constructor(
     private val repository: DatabaseRepository
 ) {
     /**
@@ -32,7 +32,7 @@ class WonPrizeAddToUserAccountUC @Inject constructor(
     ): Boolean {
 
         try {
-            repository.addWonPrizeToUserAccount(
+            repository.addWonPrizeToAllWonPrizes(
                 userId = userId,
                 prizeId = prizeId,
                 prizeTitle = prizeTitle,
@@ -42,10 +42,10 @@ class WonPrizeAddToUserAccountUC @Inject constructor(
             )
             return true
         } catch (e: FirebaseFirestoreException) {
-            Timber.e("Failed to add won prize to firestore: An unexpected FIRESTORE error occurred --> $e")
+            Timber.e("Failed to add won prize to firestore allWonPrizes node: An unexpected FIRESTORE error occurred --> $e")
             return false
         } catch (e: Exception) {
-            Timber.e("Failed to add won prize to firestore: An unexpected error occurred --> $e")
+            Timber.e("Failed to add won prize to firestore allWonPrizes node: An unexpected error occurred --> $e")
             return false
         }
 

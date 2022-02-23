@@ -108,4 +108,16 @@ class RealtimeDatabase {
         return prize
     }
 
+    /**
+     * Deletes a prize node from realtime dataabase
+     */
+    suspend fun deleteAvailablePrize(rng: String) {
+        database
+            .reference
+            .child(Constants.PRIZE_NODE)
+            .child(rng)
+            .removeValue()
+            .await()
+    }
+
 }

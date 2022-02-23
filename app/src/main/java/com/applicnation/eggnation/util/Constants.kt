@@ -13,6 +13,7 @@ object Constants {
      */
     const val USERS_COLLECTION: String = "users"
     const val WON_PRIZE_COLLECTION: String = "wonPrizes"
+    const val ALL_WON_PRIZE_COLLECTION: String = "allWonPrizes"
 
     /**
      * Firestore Document Field Names

@@ -82,6 +82,7 @@ class HomeScreenViewModel @Inject constructor(
             is HomeScreenEvent.MainGameLogic -> {
                 // TODO - load add if not loaded (once I get hilt working for this)
 
+                // TODO - disable egg image button while this is running
                 mainGameLogicUseCases.doGameLogicUC().onEach { result ->
                     when (result) {
                         is Resource.Loading -> {
@@ -126,6 +127,8 @@ class HomeScreenViewModel @Inject constructor(
                             )
                         }
                     }
+
+                    // TODO - re-enable egg image button while this is running
                 }.launchIn(viewModelScope)
             }
             is HomeScreenEvent.LoadAd -> {

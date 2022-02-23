@@ -11,10 +11,25 @@ interface DatabaseRepository {
      */
     suspend fun registerUser(userId: String, userEmail: String, userUsername: String)
     suspend fun updateUserEmail(userId: String, newEmail: String)
-    suspend fun  updateUserUsername(userId: String, newUsername: String)
+    suspend fun updateUserUsername(userId: String, newUsername: String)
     suspend fun deleteUser()
 
-    suspend fun addWonPrizeToUserAccount(userId: String, prizeId: String, prizeTitle: String, prizeDesc: String, prizeTier: String)
+    suspend fun addWonPrizeToUserAccount(
+        userId: String,
+        prizeId: String,
+        prizeTitle: String,
+        prizeDesc: String,
+        prizeType: String,
+        prizeTier: String
+    )
+    suspend fun addWonPrizeToAllWonPrizes(
+        userId: String,
+        prizeId: String,
+        prizeTitle: String,
+        prizeDesc: String,
+        prizeType: String,
+        prizeTier: String,
+    )
     suspend fun getAllWonPrizes(userId: String): ArrayList<WonPrize>
     suspend fun getWonPrizeById(userId: String, prizeId: String): WonPrize?
     suspend fun updateWonPrizeClaimed(userId: String, prizeId: String, prizeClaimed: Boolean)
@@ -26,4 +41,6 @@ interface DatabaseRepository {
 
     suspend fun getAllAvailablePrizes(): ArrayList<AvailablePrize>
     suspend fun getAvailablePrizeByRNG(rng: String): AvailablePrize?
+
+    suspend fun deleteAvailablePrize(rng: String)
 }

@@ -1,5 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AllWonPrize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.User
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 import com.applicnation.eggnation.util.Constants
@@ -85,9 +86,11 @@ class Firestore {
         prizeId: String,
         prizeTitle: String,
         prizeDesc: String,
+        prizeType: String,
         prizeTier: String,
     ) {
-        val prizeDocument = firestore.collection(Constants.USERS_COLLECTION)
+        val prizeDocument = firestore
+            .collection(Constants.USERS_COLLECTION)
             .document(userId)
             .collection(Constants.WON_PRIZE_COLLECTION)
             .document(prizeId)
@@ -96,6 +99,33 @@ class Firestore {
             this.prizeId = prizeId
             this.prizeTitle = prizeTitle
             this.prizeDesc = prizeDesc
+            this.prizeType = prizeType
+            this.prizeTier = prizeTier
+        }
+
+        prizeDocument.set(prize).await()
+    }
+
+    /**
+     * Add won prize to the wonPrizes node representing all won prizes
+     */
+    suspend fun addWonPrizeToAllWonPrizes(
+        userId: String,
+        prizeId: String,
+        prizeTitle: String,
+        prizeDesc: String,
+        prizeType: String,
+        prizeTier: String,
+    ) {
+        val prizeDocument = firestore
+            .collection(Constants.ALL_WON_PRIZE_COLLECTION)
+            .document(prizeId)
+
+        val prize = AllWonPrize().apply {
+            this.winnerUserId = userId
+            this.prizeTitle = prizeTitle
+            this.prizeDesc = prizeDesc
+            this.prizeType = prizeType
             this.prizeTier = prizeTier
         }
 

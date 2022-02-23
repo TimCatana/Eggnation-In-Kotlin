@@ -33,8 +33,20 @@ class DatabaseRepositoryImpl @Inject constructor(
         // TODO - use a cloud function to delete user as recommended by firestore docs
     }
 
-    override suspend fun addWonPrizeToUserAccount(userId: String, prizeId: String, prizeTitle: String, prizeDesc: String, prizeTier: String) {
-        database.addWonPrizeToUserAccount(userId, prizeId, prizeTitle, prizeDesc, prizeTier)
+    override suspend fun addWonPrizeToUserAccount(userId: String, prizeId: String, prizeTitle: String, prizeDesc: String, prizeType: String, prizeTier: String) {
+        database.addWonPrizeToUserAccount(userId, prizeId, prizeTitle, prizeDesc, prizeType, prizeTier)
+    }
+
+    override suspend fun addWonPrizeToAllWonPrizes(
+        userId: String,
+        prizeId: String,
+        prizeTitle: String,
+        prizeDesc: String,
+        prizeType: String,
+        prizeTier: String
+    ) {
+
+        database.addWonPrizeToAllWonPrizes(userId, prizeId, prizeTitle, prizeDesc, prizeType, prizeTier)
     }
 
     override suspend fun getAllWonPrizes(userId: String): java.util.ArrayList<WonPrize> {
@@ -62,5 +74,9 @@ class DatabaseRepositoryImpl @Inject constructor(
 
     override suspend fun getAvailablePrizeByRNG(rng: String): AvailablePrize? {
         return realtimeDatabase.getAvailablePrizeByRNG(rng)
+    }
+
+    override suspend fun deleteAvailablePrize(rng: String) {
+        realtimeDatabase.deleteAvailablePrize(rng)
     }
 }
