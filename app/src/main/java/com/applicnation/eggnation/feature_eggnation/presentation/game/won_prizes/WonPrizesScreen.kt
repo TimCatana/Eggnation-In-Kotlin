@@ -51,7 +51,6 @@ fun WonPrizesScreen(
                     )
                 }
                 is WonPrizesScreenViewModel.UiEvent.NavToClaimPrizeScreen -> {
-                    Timber.i("time to nav")
                     navController.navigate(GameScreen.ClaimPrize.route)
                 }
             }
@@ -187,7 +186,7 @@ fun WonPrizeItemInfoCard(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = {
-            viewModel.onEvent(WonPrizesScreenEvent.ClaimPrize)
+            viewModel.onEvent(WonPrizesScreenEvent.ClaimPrize) // TODO - c
         }) {
             Text(text = "Claim")
         }

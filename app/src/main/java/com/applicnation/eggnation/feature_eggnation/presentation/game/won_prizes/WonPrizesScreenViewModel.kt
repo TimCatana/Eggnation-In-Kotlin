@@ -14,10 +14,7 @@ import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,7 +23,7 @@ import javax.inject.Inject
 class WonPrizesScreenViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
     private val mainGameLogicUseCases: MainGameLogicUseCases,
-//    private val userUseCases: UserUseCases,
+    private val userUseCases: UserUseCases,
     private val prizeUseCases: PrizeUseCases
 //    private val preferencesUseCases: PreferencesUseCases
 ) : ViewModel() {
@@ -61,7 +58,7 @@ class WonPrizesScreenViewModel @Inject constructor(
         fetchPrzesJob = viewModelScope.launch(Dispatchers.IO) {
             _prizes.value =
                 prizeUseCases.wonPrizeGetAllUC(
-                    authenticationRepository.getUserId() ?: ""
+                    "stcRONGZHnWe6g74sHlpBl3xad92" // TODO need to change in production
                 ) // TODO - get uid from auth  probably send in a empty string if userGetId returns null
         }
 
@@ -89,39 +86,23 @@ class WonPrizesScreenViewModel @Inject constructor(
                 _prizeImageInfo.value = event.prizeImage
             }
             is WonPrizesScreenEvent.ClaimPrize -> {
+                val isEmailVerified = userUseCases.getUserEmailVerificationStatusUC()
 
-                mainGameLogicUseCases.claimPrizeUC()
-                    .onEach { result ->
-                        when (result) {
-                            is Resource.Loading -> {
-                                _isLoading.value = true
-                            }
-                            is Resource.Success -> {
-                                _isLoading.value = false
-
-                                if (result.data!!) { // TODO - probably make all error and success resources non-nullable mandatory
-                                    _eventFlow.emit(
-                                        UiEvent.NavToClaimPrizeScreen
-                                    )
-                                } else {
-                                    _eventFlow.emit(
-                                        UiEvent.ShowSnackbar(
-                                            message = result.message!!
-                                        )
-                                    )
-                                }
-                            }
-                            is Resource.Error -> {
-                                Timber.w("In Error")
-                                _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message!!
-                                    )
-                                )
-                            }
-                        }
-                    }.launchIn(viewModelScope)
+                if (isEmailVerified) {
+                    viewModelScope.launch {
+                        _eventFlow.emit(
+                            UiEvent.NavToClaimPrizeScreen
+                        )
+                    }
+                } else {
+                    viewModelScope.launch {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = "You need to verify your email before you can claim your prize"
+                            )
+                        )
+                    }
+                }
             }
         }
     }
