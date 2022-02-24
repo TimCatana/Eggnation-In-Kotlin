@@ -2,8 +2,14 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_ca
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
+import com.applicnation.eggnation.util.Resource
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.FirebaseFirestoreException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
@@ -26,7 +32,6 @@ class UpdateUserUsernameUC @Inject constructor(
 //     */
 
 
-
     /**
      * Updates the user's username.
      * @param newUsername The new username to set for the user's profile
@@ -34,35 +39,66 @@ class UpdateUserUsernameUC @Inject constructor(
      * @exception Exception All exceptions caught in this block are UNEXPECTED
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
-    suspend operator fun invoke(userId: String, newUsername: String) {
-        if (authenticator.getUserLoggedInStatus() == null) {
-            throw Exception()
-            // TODO - throw exception?
+    operator fun invoke(newUsername: String, password: String): Flow<Resource<String>> = flow {
+        emit(Resource.Loading<String>())
+
+        val userId = authenticator.getUserId()
+        val email = authenticator.getUserEmail()
+        val currentUsername = authenticator.getUserUsername()
+
+        Timber.i("$email, $password, $currentUsername")
+
+        if (userId == null || email == null || currentUsername == null) {
             // TODO - this is a really bad situation to be in
+            Timber.e("!!!! User is logged out but is trying to update username. Something is horribly wrong")
+            emit(Resource.Error<String>("Failed to update username"))
+            return@flow
         }
 
-        // TODO - propogate successes and errors to UI
+        try {
+            authenticator.authenticateUser(email, password)
+            Timber.i("AUTHENTICATION SUCCESS: User re-authenticated successfully")
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Timber.e("AUTHENTICATION Failed to re-authenticate user: The account has either been deleted or disabled --> $e")
+            emit(Resource.Error<String>("Invalid Credentials"))
+            return@flow
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Timber.e("AUTHENTICATION Failed to re-authenticate: Invalid credentials (password is incorrect) --> $e")
+            emit(Resource.Error<String>("Invalid Credentials"))
+            return@flow
+        } catch (e: Exception) {
+            Timber.wtf("AUTHENTICATION Failed to delete user account: An unexpected error occurred --> $e")
+            emit(Resource.Error<String>("Failed to update email"))
+            return@flow
+        }
+
         try {
             authenticator.updateUserUsername(newUsername)
-            Timber.i("SUCCESS: User username updated")
+            Timber.i("FIREBASE AUTHENTICATION: SUCCESS: User username updated")
         } catch (e: FirebaseAuthInvalidUserException) {
-            // TODO - maybe if the user changes their email this may be thrown? maybe I'll need to re-authenticate then
             Timber.e("Failed to update user username: The user's account is either disabled, deleted or the credentials are now invalid --> $e")
+            emit(Resource.Error<String>("Failed to update username"))
+            return@flow
         } catch (e: Exception) {
             Timber.e("Failed to update user username: An unexpected error occurred --> $e")
+            emit(Resource.Error<String>("Failed to update username"))
+            return@flow
         }
 
-
-        // TODO - update in firestore as well
         try {
             repository.updateUserUsername(userId, newUsername)
+            Timber.i("FIREBASE FIRESTORE: SUCCESS: User username updated")
         } catch (e: FirebaseFirestoreException) {
-            // TODO - maybe throw an exception?
-            // TODO - propogate error via a boolean. If failed, retry this function. if failed again... rip
+            // TODO - change username back to current username in auth
             Timber.e("Failed to add prize to firestore: An unexpected FIRESTORE error occurred --> $e")
-            throw Exception()
+            emit(Resource.Error<String>("Failed to update username"))
+            return@flow
         } catch (e: Exception) {
-            Timber.e("Failed to update user emaul in firestore: An unexpected error occurred --> $e")
+            Timber.e("Failed to update user username in firestore: An unexpected error occurred --> $e")
+            emit(Resource.Error<String>("Failed to update username"))
+            return@flow
         }
-    }
+
+        emit(Resource.Success<String>( message = "Username updated successfully"))
+    }.flowOn(Dispatchers.IO)
 }

@@ -1,16 +1,19 @@
-package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_language
+package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,14 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.ContactSettingsSection
+import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.PrivacySettingsSection
+import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsItem
 import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.SettingScreen
 
 @Composable
-fun EditLanguageScreen(
+fun EmailSettingsScreen(
     navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
@@ -41,13 +49,13 @@ fun EditLanguageScreen(
                 .background(color = Color.Black),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LanguagesSelectionSection(navController = navController, viewModel = viewModel)
+            EmailSettingsSection(navController = navController, viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun LanguagesSelectionSection(
+fun EmailSettingsSection(
     navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
@@ -58,22 +66,22 @@ fun LanguagesSelectionSection(
             .clip(RoundedCornerShape(20.dp)),
     ) {
         SettingsItem(
-            settingsTitle = "English",
-            icon = Icons.Filled.Check,
+            settingsTitle = "Change Email",
+            settingsInfo = viewModel.email.value,
+            icon = Icons.Filled.Edit,
             isLast = false,
-            onClick = {}
+            onClick = {
+                navController.navigate(SettingScreen.EditEmail.route)
+            }
         )
         SettingsItem(
-            settingsTitle = "Romanian",
-            icon = Icons.Filled.Close,
-            isLast = false,
-            onClick = {}
-        )
-        SettingsItem(
-            settingsTitle = "Spanish",
-            icon = Icons.Filled.Close,
+            settingsTitle = "Not Verified",
+            settingsInfo = viewModel.email.value,
+            icon = Icons.Filled.ChevronRight,
             isLast = true,
-            onClick = {}
+            onClick = {
+                // TODO - send verification email
+            }
         )
     }
 }

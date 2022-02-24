@@ -1,5 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_username
-
+package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings.edit_email
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -16,7 +15,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class EditUsernameScreenViewModel @Inject constructor(
+class EditEmailScreenViewModel @Inject constructor(
     private val userUseCases: UserUseCases
 ) : ViewModel() {
 
@@ -24,11 +23,11 @@ class EditUsernameScreenViewModel @Inject constructor(
      * States:
      * - email (String)
      */
-    private val _usernameText = mutableStateOf("")
-    val usernameText: State<String> = _usernameText
+    private val _emailText = mutableStateOf("")
+    val emailText: State<String> = _emailText
 
-    private val _isUsernameError = mutableStateOf(true)
-    val isUsernameError: State<Boolean> = _isUsernameError
+    private val _isEmailError = mutableStateOf(true)
+    val isEmailError: State<Boolean> = _isEmailError
 
     private val _passwordText = mutableStateOf("")
     val passwordText: State<String> = _passwordText
@@ -45,17 +44,17 @@ class EditUsernameScreenViewModel @Inject constructor(
     /**
      * events
      */
-    fun onEvent(event: EditUsernameScreenEvent) {
+    fun onEvent(event: EditEmailScreenEvent) {
         when (event) {
-            is EditUsernameScreenEvent.EnteredUsername -> {
-                _usernameText.value = event.value
-                validateUsername()
+            is EditEmailScreenEvent.EnteredEmail -> {
+                _emailText.value = event.value
+                validateEmail()
             }
-            is EditUsernameScreenEvent.EnteredPassword -> {
+            is EditEmailScreenEvent.EnteredPassword -> {
                 _passwordText.value = event.value
             }
-            is EditUsernameScreenEvent.UpdateUsername -> {
-                userUseCases.updateUserUsernameUC(newUsername = event.newUsername ,password = event.password)
+            is EditEmailScreenEvent.UpdateEmail -> {
+                userUseCases.updateUserEmailAddressUC(newEmail = event.newEmail,password = event.password)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {
@@ -65,7 +64,7 @@ class EditUsernameScreenViewModel @Inject constructor(
                                 _isLoading.value = false
                                 _eventFlow.emit(
                                     UiEvent.ShowSnackbar(
-                                        message = result.message ?: "Username updated successfully"
+                                        message = result.message ?: "Email updated successfully"
                                     )
                                 )
                             }
@@ -73,7 +72,7 @@ class EditUsernameScreenViewModel @Inject constructor(
                                 _isLoading.value = false
                                 _eventFlow.emit(
                                     UiEvent.ShowSnackbar(
-                                        message = result.message ?: "Username failed to update"
+                                        message = result.message ?: "Email failed to update"
                                     )
                                 )
                             }
@@ -84,8 +83,9 @@ class EditUsernameScreenViewModel @Inject constructor(
     }
 
 
-    private fun validateUsername() {
-        _isUsernameError.value = _usernameText.value.length < 5
+    private fun validateEmail() {
+        _isEmailError.value =
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()
     }
 
     sealed class UiEvent {

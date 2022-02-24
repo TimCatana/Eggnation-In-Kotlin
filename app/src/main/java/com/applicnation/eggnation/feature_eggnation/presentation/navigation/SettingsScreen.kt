@@ -5,4 +5,5 @@ sealed class SettingScreen(val route: String) {
     object EditEmail: SettingScreen(route = "editEmailScreen")
     object EditPassword: SettingScreen(route = "editPasswordScreen")
     object EditLanguage: SettingScreen(route = "editLanguageScreen")
+    object EmailSettings: SettingScreen(route = "editSettingsScreen")
 }

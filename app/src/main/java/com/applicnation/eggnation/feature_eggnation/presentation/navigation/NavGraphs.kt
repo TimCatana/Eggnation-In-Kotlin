@@ -9,10 +9,11 @@ import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreen
-import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email.EditEmailScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings.edit_email.EditEmailScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_language.EditLanguageScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password.EditPasswordScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_username.EditUsernameScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings.EmailSettingsScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.ClaimPrizeScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
@@ -22,8 +23,6 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.verify_ema
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.privacy_policy.PrivacyPolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.terms_of_service.TermsOfServiceScreen
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.interstitial.InterstitialAd
 
 @Composable
 fun AuthNavGraph(
@@ -93,16 +92,19 @@ fun GameNavGraph(
         /**
          * Settings screen
          */
+        composable(route = SettingScreen.EmailSettings.route) {
+            EmailSettingsScreen(navController = navController)
+        }
         composable(route = SettingScreen.EditUsername.route) {
             EditUsernameScreen(navController = navController)
         }
-        composable(route =  SettingScreen.EditEmail.route) {
+        composable(route = SettingScreen.EditEmail.route) {
             EditEmailScreen(navController = navController)
         }
-        composable(route =  SettingScreen.EditPassword.route) {
+        composable(route = SettingScreen.EditPassword.route) {
             EditPasswordScreen(navController = navController)
         }
-        composable(route =  SettingScreen.EditLanguage.route) {
+        composable(route = SettingScreen.EditLanguage.route) {
             EditLanguageScreen(navController = navController)
         }
 

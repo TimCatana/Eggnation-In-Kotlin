@@ -39,6 +39,8 @@ class SignUpUserUC @Inject constructor(
         flow {
             emit(Resource.Loading<String>())
 
+            // TODO - put email to lowercase
+
             /**
              * Adding the user to Firebase Authentication.
              * @exception FirebaseAuthInvalidCredentialsException
@@ -123,7 +125,6 @@ class SignUpUserUC @Inject constructor(
              */
             try {
                 authenticator.updateUserUsername(username)
-                emit(Resource.Success<String>(message = "Registered Successfully"))
             } catch (e: Exception) {
                 Timber.e("Firebase Authentication: Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
                 // TODO - delete user from firebase database using firebase authentication (try catch it as well)
@@ -131,5 +132,6 @@ class SignUpUserUC @Inject constructor(
                 emit(Resource.Success<String>(message = "Registered Successfully")) // Yes, emit success because this isn't necessary
             }
 
+            emit(Resource.Success<String>(message = "Registered Successfully"))
         }.flowOn(Dispatchers.IO)
 }

@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,7 +86,7 @@ fun UserSettingsSection(
         SettingsItem(
             settingsTitle = "Username",
             settingsInfo = viewModel.username.value,
-            icon = Icons.Filled.ChevronRight,
+            icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
                 navController.navigate(SettingScreen.EditUsername.route)
@@ -97,13 +98,13 @@ fun UserSettingsSection(
             icon = Icons.Filled.ChevronRight,
             isLast = false,
             onClick = {
-                navController.navigate(SettingScreen.EditEmail.route)
+                navController.navigate(SettingScreen.EmailSettings.route)
             }
         )
         SettingsItem(
             settingsTitle = "Password",
             settingsInfo = "...",
-            icon = Icons.Filled.ChevronLeft,
+            icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
                 navController.navigate(SettingScreen.EditPassword.route)
