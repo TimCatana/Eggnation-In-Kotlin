@@ -8,15 +8,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,10 +26,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenEvent
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.PolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.SettingScreen
 import com.google.common.cache.RemovalListener
+import kotlinx.coroutines.flow.collectLatest
 
 // TODO - need to decide on a settings screen style
 
@@ -40,33 +42,60 @@ fun SettingsScreen(
     navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is SettingsScreenViewModel.UiEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message,
+                    )
+                }
+                is SettingsScreenViewModel.UiEvent.ChangeStacks -> {
+                    navController.navigate(AuthScreen.Login.route) {
+                        popUpTo(GameScreen.Home.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Scaffold(
+        scaffoldState = scaffoldState,
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp, 10.dp)
-                .background(color = Color.Black),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .background(Color.Black)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.egg),
-                contentDescription = "Profile Pircture",
+            Column(
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(100.dp)
-                    .padding(0.dp, 10.dp)
-                    .clip(CircleShape)
-                    .border(color = Color.DarkGray, shape = CircleShape, width = 10.dp)
-            )
-            UserSettingsSection(navController = navController, viewModel = viewModel)
-            ContactSettingsSection(navController = navController, viewModel = viewModel)
-            PrivacySettingsSection(navController = navController, viewModel = viewModel)
-            Button(onClick = {}) {
-                Text(text = "Logout")
+                    .fillMaxWidth()
+                    .padding(10.dp, 10.dp)
+                    .background(color = Color.Black),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.egg),
+                    contentDescription = "Profile Pircture",
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(100.dp)
+                        .padding(0.dp, 10.dp)
+                        .clip(CircleShape)
+                        .border(color = Color.DarkGray, shape = CircleShape, width = 10.dp)
+                )
+                UserSettingsSection(navController = navController, viewModel = viewModel)
+                ContactSettingsSection(navController = navController, viewModel = viewModel)
+                PrivacySettingsSection(navController = navController, viewModel = viewModel)
+                Button(onClick = {
+                    viewModel.onEvent(SettingsScreenEvent.SignOut)
+                }) {
+                    Text(text = "Logout")
+                }
             }
         }
     }

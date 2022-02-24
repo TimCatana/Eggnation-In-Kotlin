@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.ui.theme.EggNationTheme
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
@@ -40,7 +41,7 @@ fun RegisterScreen(
                     )
                 }
                 is RegisterScreenViewModel.UiEvent.ChangeStacks -> {
-                    Timber.i("REGISTERED SUCCESSFULLY, TIME TO CHANGE STACKS")
+                    navController.navigate(GameScreen.Home.route)
                 }
             }
         }

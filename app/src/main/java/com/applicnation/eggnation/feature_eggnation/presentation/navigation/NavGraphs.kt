@@ -24,14 +24,20 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.privacy_policy.PrivacyPolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.terms_of_service.TermsOfServiceScreen
 
+@ExperimentalFoundationApi
 @Composable
-fun AuthNavGraph(
-    navController: NavHostController
+fun GameNavGraph(
+    navController: NavHostController,
+    adMob: AdMob,
+    startDestination: String
 ) {
     NavHost(
         navController = navController,
-        startDestination = AuthScreen.Login.route
+        startDestination = startDestination
     ) {
+        /**
+         *
+         */
         composable(route = AuthScreen.Login.route) {
             LoginScreen(navController = navController)
         }
@@ -42,28 +48,6 @@ fun AuthNavGraph(
             ForgotPasswordScreen(navController = navController)
         }
 
-        /**
-         * @note these screens are in both stacks. The user will not be visiting these often though
-         */
-        composable(route = PolicyScreen.PrivacyPolicy.route) {
-            PrivacyPolicyScreen(navController = navController)
-        }
-        composable(route = PolicyScreen.TermsOfService.route) {
-            TermsOfServiceScreen(navController = navController)
-        }
-    }
-}
-
-@ExperimentalFoundationApi
-@Composable
-fun GameNavGraph(
-    navController: NavHostController,
-    adMob: AdMob
-) {
-    NavHost(
-        navController = navController,
-        startDestination = GameScreen.Home.route
-    ) {
         composable(route = GameScreen.Home.route) {
             HomeScreen(
                 navController = navController,

@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.ui.theme.EggNationTheme
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
@@ -28,6 +29,8 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginScreenViewModel = hiltViewModel()
 ) {
+
+
     val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(key1 = true) {
@@ -39,7 +42,11 @@ fun LoginScreen(
                     )
                 }
                 is LoginScreenViewModel.UiEvent.ChangeStacks -> {
-                    Timber.i("LOGGEDIN SUCCESSFULLY, TIME TO CHANGE STACKS")
+                    navController.navigate(GameScreen.Home.route) {
+                            popUpTo(AuthScreen.Login.route) {
+                                inclusive = true
+                            }
+                    }
                 }
             }
         }

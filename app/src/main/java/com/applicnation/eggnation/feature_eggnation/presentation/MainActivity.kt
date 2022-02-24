@@ -9,62 +9,47 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthNavGraph
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameNavGraph
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.ui.theme.EggNationTheme
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     lateinit var navController: NavHostController
-    private lateinit var mAuth: FirebaseAuth
-
+    private var mAuth = FirebaseAuth.getInstance()
     private val adMob = AdMob(this)
+
 
     @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAuth = FirebaseAuth.getInstance()
 
-        val lol = false
+        val startDest: String
 
-        // TODO - sync ROOM database with online db here?, then the user will always get the most up to date info
-        // TODO - if they want to pull to refresh they can, pull to refresh will just add info from online db to local ROOM db
-        // TODO - maybe only have ROOM db for wonPrizes? cause AvailablePrizes uses realtime database for which reads are free?
+        if (mAuth.currentUser != null) {
+            startDest = GameScreen.Home.route
+        } else {
+            startDest = AuthScreen.Login.route
+        }
 
         setContent {
-
             EggNationTheme {
                 navController = rememberNavController()
-
-                // android basics in kotlin
-                // design meets code
-                // (material you)
-
-                // TODO - need a way to find out how to logout... it's not working with mAuth.currentUser
-
-                // TODO - use preferences to keep the user's logged in status
-                // TODO - to avoid being in the home page while not logged in auth, check both preferences and current user
-                // TODO - if logged in prefernce and auth are out of sync really bad things can happen...
-
-                // TODO - maybe inject the authentication repo? It's a singleton so it should work
-
-                if (!lol) {
-                    GameNavGraph(
-                        navController = navController,
-                        adMob = adMob
-                    )
-                } else {
-                    AuthNavGraph(navController = navController)
-                }
-
-                Timber.i("${mAuth.currentUser}") // TODO delete this
+                GameNavGraph(
+                    navController = navController,
+                    adMob = adMob,
+                    startDestination = startDest
+                )
             }
         }
     }
