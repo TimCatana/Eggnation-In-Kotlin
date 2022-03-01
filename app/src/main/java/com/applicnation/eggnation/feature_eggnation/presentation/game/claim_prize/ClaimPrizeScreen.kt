@@ -3,65 +3,64 @@ package com.applicnation.eggnation.feature_eggnation.presentation.game.claim_pri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
-import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
-import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
+import com.applicnation.eggnation.feature_eggnation.domain.modal.Country
+import com.applicnation.eggnation.feature_eggnation.domain.modal.Region
+import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.components.CountryPickerBottomSheet
+import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.components.CountryTextField
 
+@ExperimentalMaterialApi
 @Composable
 fun ClaimPrizeScreen(
     navController: NavController
 ) {
-    val scaffoldState = rememberScaffoldState()
+    var expanded by remember { mutableStateOf(false) }
+    var selectedCountry by remember { mutableStateOf<Country?>(null) }
 
-    Scaffold(
-        scaffoldState = scaffoldState,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    top = 24.dp,
-                    bottom = 50.dp
+    Box {
+        CountryPickerBottomSheet(
+            title = {
+                Text(
+                    text = "Select Country",
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 )
+            },
+            onItemSelected = {
+                selectedCountry = it
+                expanded = false
+            },
+            show = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+            CountryTextField(
+                label = "Select Country",
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(top = 50.dp)
+                    .align(Alignment.TopCenter),
+                expanded = expanded,
+                selectedCountry = selectedCountry
             ) {
-                StandardTextField(
-                    text = "",
-                    onValueChange = {},
-                    isError = false,
-                    errorText = "Username must be at least 5 characters long",
-                    label = "username" // use string resources
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                StandardTextField(
-                    text = "",
-                    onValueChange = {},
-                    isError = false,
-                    errorText = "Invalid email address",
-                    label = "email" // use string resources
-                )
+                expanded = !expanded
             }
         }
+
     }
 }
+

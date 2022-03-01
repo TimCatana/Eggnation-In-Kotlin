@@ -2,6 +2,11 @@ package com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_c
 
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
+import com.applicnation.eggnation.util.Resource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -14,16 +19,15 @@ class AvailablePrizeGetAllUC @Inject constructor(
      * Gets the list of all currently availablePrizes
      * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
      */
-    suspend operator fun invoke(): ArrayList<AvailablePrize> {
-
-        // TODO - propogate success or error
-
+    operator fun invoke(): Flow<Resource<ArrayList<AvailablePrize>>> = flow {
+        emit(Resource.Loading<ArrayList<AvailablePrize>>())
 
         try{
-            return repository.getAllAvailablePrizes()
+            val prizes = repository.getAllAvailablePrizes()
+            emit(Resource.Success<ArrayList<AvailablePrize>>(data = prizes, message = "No prizes available")) // If prizes is empty
         } catch (e: Exception) {
             Timber.e("Failed to fetch available prizes from realtime database: An unexpected error occurred --> $e")
-            throw Exception()
+            emit(Resource.Error<ArrayList<AvailablePrize>>(data = ArrayList(), message = "Failed to fetch prizes"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

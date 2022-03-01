@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings.edit_email
+package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -29,12 +29,6 @@ class EditEmailScreenViewModel @Inject constructor(
     private val _isEmailError = mutableStateOf(true)
     val isEmailError: State<Boolean> = _isEmailError
 
-    private val _passwordText = mutableStateOf("")
-    val passwordText: State<String> = _passwordText
-
-    private val _isPasswordError = mutableStateOf(true)
-    val isPasswordError: State<Boolean> = _isPasswordError
-
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
@@ -50,11 +44,8 @@ class EditEmailScreenViewModel @Inject constructor(
                 _emailText.value = event.value
                 validateEmail()
             }
-            is EditEmailScreenEvent.EnteredPassword -> {
-                _passwordText.value = event.value
-            }
             is EditEmailScreenEvent.UpdateEmail -> {
-                userUseCases.updateUserEmailAddressUC(newEmail = event.newEmail,password = event.password)
+                userUseCases.updateUserEmailAddressUC(newEmail = event.newEmail)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {
@@ -81,7 +72,6 @@ class EditEmailScreenViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun validateEmail() {
         _isEmailError.value =

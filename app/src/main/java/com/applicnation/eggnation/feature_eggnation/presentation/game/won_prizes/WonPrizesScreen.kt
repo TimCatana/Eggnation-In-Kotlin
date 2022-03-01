@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
@@ -73,7 +74,6 @@ fun WonPrizesScreen(
                     .padding(top = 55.dp, start = 45.dp, end = 45.dp),
             ) {
                 items(list) { prize ->
-                    Log.d("qqq", "inside lazyGrid with ${prize}")
                     WonPrizeItem(
                         itemData = prize,
                         viewModel = viewModel,
@@ -100,6 +100,10 @@ fun WonPrizesScreen(
                         .height(400.dp), // TODO - make width and height based on screen dimensions
                 )
             }
+
+            if (viewModel.isLoading.value) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 }
@@ -109,7 +113,9 @@ private fun WonPrizeItem(
     itemData: WonPrize,
     viewModel: WonPrizesScreenViewModel
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
     var image: Int
+
 
     when (itemData.prizeType) {
         "phone" -> {
@@ -135,16 +141,19 @@ private fun WonPrizeItem(
 
                 modifier = Modifier
                     .size(120.dp)
-                    .clickable {
-                        // TODO - only do below if viewmodel.showinfo is false
-                        viewModel.onEvent(
-                            WonPrizesScreenEvent.SetPrizeInfo(
-                                prizeImage = image,
-                                prizeTitle = itemData.prizeTitle,
-                                prizeDesc = itemData.prizeDesc
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        if (!viewModel.showPrizeInfo.value) {
+                            viewModel.onEvent(
+                                WonPrizesScreenEvent.ShowPrizeInfo(
+                                    showInfo = true, prizeImage = image,
+                                    prizeTitle = itemData.prizeTitle,
+                                    prizeDesc = itemData.prizeDesc
+                                )
                             )
-                        )
-                        viewModel.onEvent(WonPrizesScreenEvent.ShowPrizeInfo(true))
+                        }
                     }
             )
             Text(text = itemData.prizeTitle)

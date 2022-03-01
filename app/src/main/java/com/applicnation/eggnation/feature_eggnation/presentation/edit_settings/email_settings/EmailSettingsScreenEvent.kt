@@ -1,2 +1,0 @@
-package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings
-

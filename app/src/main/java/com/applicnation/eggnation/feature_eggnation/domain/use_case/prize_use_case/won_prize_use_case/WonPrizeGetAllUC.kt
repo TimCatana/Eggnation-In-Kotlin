@@ -1,16 +1,25 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case
 
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
+import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
+import com.applicnation.eggnation.util.Resource
 import com.google.firebase.firestore.FirebaseFirestoreException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
 
 class WonPrizeGetAllUC @Inject constructor(
-    private val repository: DatabaseRepository
+    private val repository: DatabaseRepository,
+    private val authenticationRepository: AuthenticationRepository,
 ) {
     // TODO - clean up documentation
+    // TODO - make sure all flows emit correct values and if necessary, return@flow at correct spots
 
     /**
      * Gets the list of all won prizes for the user's account
@@ -20,22 +29,33 @@ class WonPrizeGetAllUC @Inject constructor(
      * // TODO - there may also be other specific exceptions thrown, but I think I only need to tell the user that it failed to fetch
      * // TODO - the specific error catch blocks are used to make debugging easier when there is a problem
      * @return ArrayList<WonPrize> The list of won prizes
-     * // TODO maybe paginate prizes? But probably not cause no one should have like 100 prizes at any given moment in time
      */
-    suspend operator fun invoke(userId: String): ArrayList<WonPrize> {
+    operator fun invoke(): Flow<Resource<ArrayList<WonPrize>>> = flow {
+        emit(Resource.Loading<ArrayList<WonPrize>>())
+
+        val userId = authenticationRepository.getUserId()
+
+        if (userId == null) {
+            Timber.wtf("!!!! Failed to fetch won prizes: UserId is null.")
+            emit(
+                Resource.Error<ArrayList<WonPrize>>(
+                    data = ArrayList(),
+                    message = "Failed to fetch prizes"
+                )
+            )
+            return@flow
+        }
 
         try {
-            // TODO - add a val to get the results, then return so that exceptions have time to be caught
-            return repository.getAllWonPrizes(userId)
+            val prizes = repository.getAllWonPrizes(userId)
+            emit(Resource.Success<ArrayList<WonPrize>>(data = prizes, message = "No prizes available")) // If prizes is empty
         } catch (e: FirebaseFirestoreException) {
-            // TODO - maybe throw an exception?
-            // TODO - propogate error via a boolean. If failed, retry this function. if failed again... rip
             Timber.e("Failed to add prize to firestore: An unexpected FIRESTORE error occurred --> $e")
-            throw Exception()
+            emit(Resource.Error<ArrayList<WonPrize>>(data = ArrayList(), message = "Failed to fetch prizes"))
         } catch (e: Exception) {
-            // TODO - propogate error via a boolean. If failed, retry this function. if failed again... rip
             Timber.e("Failed to add prize to firestore: An unexpected error occurred --> $e")
-            throw Exception()
+            emit(Resource.Error<ArrayList<WonPrize>>(data = ArrayList(), message = "Failed to fetch prizes"))
         }
-    }
+
+    }.flowOn(Dispatchers.IO)
 }

@@ -6,9 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenViewModel
+import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,23 +40,42 @@ class AvailablePrizesScreenViewModel @Inject constructor(
     private val _prizeImageInfo = mutableStateOf(0)
     val prizeImageInfo: State<Int> = _prizeImageInfo
 
-    private var fetchPrzesJob: Job? = null
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        fetchPrzesJob = viewModelScope.launch {
-            _prizes.value = prizeUseCases.availablePrizeGetAllUC()
-        }
-        // TODO - find a way to wait for init block to finish
-        // TODO - probably use one of the states (like iActive or isFinished etc...) but place this somewhere else and maybe show a loading bar when it is active but not completed.
-        fetchPrzesJob?.isCompleted
+        prizeUseCases.availablePrizeGetAllUC()
+            .onEach { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        _isLoading.value = false
+                        _prizes.value = result.data!!
+                    }
+                    is Resource.Error -> {
+                        _isLoading.value = false
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = result.message!!
+                            )
+                        )
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 
 
     fun onEvent(event: AvailablePrizesScreenEvent) {
         when (event) {
             is AvailablePrizesScreenEvent.ShowPrizeInfo -> {
-                // TODO - only do the below if event.showInfo is true
-                // TODO - fetch the prize title and name from database and after that's done set showInfo to value
+                _prizeTitleInfo.value = event.prizeTitle
+                _prizeDescInfo.value = event.prizeDesc
+                _prizeImageInfo.value = event.prizeImage
 
                 _showPrizeInfo.value = event.showInfo
             }
@@ -57,12 +83,10 @@ class AvailablePrizesScreenViewModel @Inject constructor(
             AvailablePrizesScreenEvent.FetchAvailablePrizes -> {
                 TODO()
             }
-            is AvailablePrizesScreenEvent.SetPrizeInfo -> {
-                _prizeTitleInfo.value = event.prizeTitle
-                _prizeDescInfo.value = event.prizeDesc
-                _prizeImageInfo.value = event.prizeImage
-            }
         }
     }
 
+    sealed class UiEvent {
+        data class ShowSnackbar(val message: String) : UiEvent()
+    }
 }

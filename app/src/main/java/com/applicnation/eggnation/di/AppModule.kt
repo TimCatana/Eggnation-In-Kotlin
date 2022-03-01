@@ -115,6 +115,7 @@ object AppModule {
             signInUserUC = SignInUserUC(authenticationRepo),
             signOutUserUC = SignOutUserUC(authenticationRepo),
             deleteUserUC = DeleteUserUC(authenticationRepo),
+            reauthenticateUser = ReauthenticateUser(authenticationRepo),
 
             sendUserPasswordResetEmailUC = SendUserPasswordResetEmailUC(authenticationRepo),
             sendUserVerificationEmailUC = SendUserVerificationEmailUC(authenticationRepo),
@@ -134,12 +135,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePrizeUseCases(databaseRepo: DatabaseRepository): PrizeUseCases {
+    fun providePrizeUseCases(
+        databaseRepo: DatabaseRepository,
+        authenticationRepo: AuthenticationRepository,
+    ): PrizeUseCases {
         return PrizeUseCases(
             wonPrizeAddToUserAccountUC = WonPrizeAddToUserAccountUC(databaseRepo),
             wonPrizesAddToAllWonPrizesUC = WonPrizeAddToAllWonPrizesUC(databaseRepo),
             wonPrizeUpdatePrizeClaimedUC = WonPrizeUpdatePrizeClaimedUC(databaseRepo),
-            wonPrizeGetAllUC = WonPrizeGetAllUC(databaseRepo),
+            wonPrizeGetAllUC = WonPrizeGetAllUC(databaseRepo, authenticationRepo),
             wonPrizeGetByIdUC = WonPrizeGetByIdUC(databaseRepo),
 
             availablePrizeGetAllUC = AvailablePrizeGetAllUC(databaseRepo),

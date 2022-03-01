@@ -1,4 +1,4 @@
-package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings.edit_email
+package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -61,16 +61,6 @@ fun EditEmailScreen(
                         errorText = "Invalid email address",
                         label = "email",
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    StandardTextField(
-                        text = viewModel.passwordText.value,
-                        onValueChange = {
-                            viewModel.onEvent(EditEmailScreenEvent.EnteredPassword(it))
-                        },
-                        isError = false,
-                        errorText = "enter a valid password",
-                        label = "password",
-                    )
                 }
                 Button(
                     enabled = !viewModel.isEmailError.value, // TODO - check that password is filled in as well
@@ -78,7 +68,6 @@ fun EditEmailScreen(
                         viewModel.onEvent(
                             EditEmailScreenEvent.UpdateEmail(
                                 viewModel.emailText.value,
-                                viewModel.passwordText.value
                             )
                         )
                     },

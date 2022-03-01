@@ -1,10 +1,15 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
+import com.applicnation.eggnation.util.Resource
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -23,37 +28,37 @@ class UpdateUserPasswordUC @Inject constructor(
      * @exception Exception All exceptions caught in this block are UNEXPECTED
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
-    suspend operator fun invoke(email: String, password: String, newPassword: String) {
-        if (authenticator.getUserLoggedInStatus() == null) {
-            throw Exception()
-            // TODO - throw exception?
-            // TODO - this is a really bad situation to be in
-        }
+    operator fun invoke(newPassword: String): Flow<Resource<String>> = flow {
+        emit(Resource.Loading<String>())
 
-        // TODO - propogate successes and errors to UI
+        val userId = authenticator.getUserId()
 
-        try {
-            authenticator.authenticateUser(email, password)
-        } catch (e: FirebaseAuthInvalidUserException) {
-            Timber.e("Failed to re-authenticate user: The account has either been deleted or disabled --> $e")
-        } catch (e: FirebaseAuthInvalidCredentialsException) {
-            Timber.e("Failed to re-authenticate user: Invalid credentials (password is incorrect) --> $e")
-        } catch (e: Exception) {
-            Timber.wtf("Failed to re-authenticate user: An unexpected error occurred --> $e")
+        if (userId == null) {
+            // TODO - this is a really bad situation to be in.
+            // TODO - just lgout and say that something went horribly wrong
+            Timber.e("!!!! User is logged out but is trying to update password. Something is horribly wrong")
+            emit(Resource.Error<String>("Failed to update username"))
+            return@flow
         }
 
         try {
             authenticator.updateUserPassword(newPassword)
+            emit(Resource.Success<String>(message = "Password updated successfully"))
         } catch (e: FirebaseAuthInvalidUserException) {
             Timber.e("Failed to update user password: Either user's account is disabled or deleted and re-authentication failed OR user's account is disabled, deleted or credentials are no longer valid --> $e")
+            emit(Resource.Error<String>("Failed to update Password"))
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             Timber.e("Failed to update user password: Either re-authentication failed to due Invalid email/password or if user is trying to access someone else's account OR the new password address is not formatted correctly and invalid --> $e")
+            emit(Resource.Error<String>("Failed to update Password"))
         } catch (e: FirebaseAuthWeakPasswordException) {
             Timber.e("Failed to update user password: Weak Password (needs to be greater than 6 characters) --> $e")
+            emit(Resource.Error<String>("Failed to update Password"))
         } catch (e: FirebaseAuthRecentLoginRequiredException) {
             Timber.wtf("!!!! Failed to update user password: The re-authentication failed but the program still tried to update the user's email. An exception should have been thrown from reauthenticate() and prevented all code following it from running --> $e")
+            emit(Resource.Error<String>("Failed to update Password"))
         } catch (e: Exception) {
             Timber.e("Failed to update user password: An unexpected error occurred --> $e")
+            emit(Resource.Error<String>("Failed to update Password"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }

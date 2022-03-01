@@ -64,24 +64,13 @@ fun EditUsernameScreen(
                         errorText = "Username must be greater than 5 characters",
                         label = "username",
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    StandardTextField(
-                        text = viewModel.passwordText.value,
-                        onValueChange = {
-                            viewModel.onEvent(EditUsernameScreenEvent.EnteredPassword(it))
-                        },
-                        isError = false,
-                        errorText = "enter a valid password",
-                        label = "password",
-                    )
                 }
                 Button(
                     enabled = !viewModel.isUsernameError.value, // TODO - check that password is filled in as well
                     onClick = {
                         viewModel.onEvent(
                             EditUsernameScreenEvent.UpdateUsername(
-                                viewModel.usernameText.value,
-                                viewModel.passwordText.value
+                                viewModel.usernameText.value
                             )
                         )
                     },

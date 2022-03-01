@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDirection.Companion.Content
@@ -39,6 +40,9 @@ fun StoreScreen(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
+    val matrix = ColorMatrix()
+    matrix.setToSaturation(0F)
+
     val skin = SkinsList.skins
 
     Box(
@@ -56,12 +60,14 @@ fun StoreScreen(
                     // TODO - set id to the image in the datastore I want to make
                     painter = painterResource(id = skin[index].skinImage),
                     contentDescription = "Tappable Egg",
+//                    if(skin[index] )
                     modifier = Modifier.clickable(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
                         viewModel.onEvent(StoreScreenEvent.SelectSkin(skin[index].skinImage))
                     }
+
                 )
             }
         }

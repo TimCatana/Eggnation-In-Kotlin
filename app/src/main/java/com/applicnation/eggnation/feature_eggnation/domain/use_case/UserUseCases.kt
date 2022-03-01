@@ -12,6 +12,7 @@ data class UserUseCases(
     val signInUserUC: SignInUserUC,
     val signOutUserUC: SignOutUserUC,
     val deleteUserUC: DeleteUserUC,
+    val reauthenticateUser: ReauthenticateUser,
 
     val sendUserPasswordResetEmailUC: SendUserPasswordResetEmailUC,
     val sendUserVerificationEmailUC: SendUserVerificationEmailUC,

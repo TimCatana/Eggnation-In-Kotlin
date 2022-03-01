@@ -10,6 +10,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogi
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreenViewModel
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -50,20 +51,27 @@ class WonPrizesScreenViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-
-    private var fetchPrzesJob: Job? = null
-
     init {
-        // TODO - need to get the firebase authentication user id
-        fetchPrzesJob = viewModelScope.launch(Dispatchers.IO) {
-            _prizes.value =
-                prizeUseCases.wonPrizeGetAllUC(
-                    "stcRONGZHnWe6g74sHlpBl3xad92" // TODO need to change in production
-                ) // TODO - get uid from auth  probably send in a empty string if userGetId returns null
-        }
-
-        // TODO - check if fetching is completed before displaying stuff. probably do this in actual composavble code through an if statement? But then I will need to make these mutableSatteOf's
-        fetchPrzesJob?.isCompleted
+        prizeUseCases.wonPrizeGetAllUC()
+            .onEach { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        _isLoading.value = false
+                        _prizes.value = result.data!!
+                    }
+                    is Resource.Error -> {
+                        _isLoading.value = false
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = result.message!!
+                            )
+                        )
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 
 
@@ -72,6 +80,9 @@ class WonPrizesScreenViewModel @Inject constructor(
             is WonPrizesScreenEvent.ShowPrizeInfo -> {
                 // TODO - only do the below if event.showInfo is true
                 // TODO - fetch the prize title and name from database and after that's done set showInfo to value
+                _prizeTitleInfo.value = event.prizeTitle
+                _prizeDescInfo.value = event.prizeDesc
+                _prizeImageInfo.value = event.prizeImage
 
                 _showPrizeInfo.value = event.showInfo
 

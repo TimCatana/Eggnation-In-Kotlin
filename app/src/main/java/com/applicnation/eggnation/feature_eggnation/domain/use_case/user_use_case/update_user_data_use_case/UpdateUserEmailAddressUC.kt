@@ -44,7 +44,6 @@ class UpdateUserEmailAddressUC @Inject constructor(
 //     */
 
     operator fun invoke(
-        password: String,
         newEmail: String
     ): Flow<Resource<String>> =
         flow {
@@ -56,23 +55,6 @@ class UpdateUserEmailAddressUC @Inject constructor(
             if (email == null || userId == null) {
                 // TODO - this is a really bad situation to be in
                 Timber.e("!!!! User is logged out but is trying to update email. Something is horribly wrong")
-                emit(Resource.Error<String>("Failed to update email"))
-                return@flow
-            }
-
-            try {
-                authenticator.authenticateUser(email, password)
-                Timber.i("AUTHENTICATION SUCCESS: User re-authenticated successfully")
-            } catch (e: FirebaseAuthInvalidUserException) {
-                Timber.e("AUTHENTICATION Failed to re-authenticate user: The account has either been deleted or disabled --> $e")
-                emit(Resource.Error<String>("Invalid Credentials"))
-                return@flow
-            } catch (e: FirebaseAuthInvalidCredentialsException) {
-                Timber.e("AUTHENTICATION Failed to re-authenticate: Invalid credentials (password is incorrect) --> $e")
-                emit(Resource.Error<String>("Invalid Credentials"))
-                return@flow
-            } catch (e: Exception) {
-                Timber.wtf("AUTHENTICATION Failed to delete user account: An unexpected error occurred --> $e")
                 emit(Resource.Error<String>("Failed to update email"))
                 return@flow
             }

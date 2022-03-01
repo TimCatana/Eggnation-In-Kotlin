@@ -58,6 +58,19 @@ class HomeScreenViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    // Lottie
+    private val _isAnimationPlaying = mutableStateOf<Boolean>(false)
+    val isAnimationPlaying: State<Boolean> = _isAnimationPlaying
+
+//    private val _isLoseAnimationPlaying = mutableStateOf<Boolean>(false)
+//    val isLoseAnimationPlaying: State<Boolean> = _isLoseAnimationPlaying
+
+    private val _animationToPlay = mutableStateOf<Int>(R.raw.winner)
+    val animationToPlay: State<Int> = _animationToPlay
+
+
+
+
     init {
         resetCountIfNeeded()
         getUserSkin()
@@ -90,14 +103,18 @@ class HomeScreenViewModel @Inject constructor(
                         }
                         is Resource.Success -> {
                             _isLoading.value = false
+//                            _animationToPlay.value = R.raw.winner
 
                             if (result.data == null) {
-                                _eventFlow.emit(
-                                    // TODO - emit play lose animation and get rid of snackbar
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message ?: "LOLL"
-                                    )
-                                )
+//                                _animationToPlay.value = R.raw.winner // TODO change to lost
+                                _isAnimationPlaying.value = true
+
+//                                _eventFlow.emit(
+//                                    // TODO - emit play lose animation and get rid of snackbar
+//                                    UiEvent.ShowSnackbar(
+//                                        message = result.message ?: "LOLL"
+//                                    )
+//                                )
                             } else {
                                 Timber.i("PRIZE WON! Should show image card now ${result.data}")
                                 _prizeTitleInfo.value = result.data.prizeTitle
@@ -105,14 +122,16 @@ class HomeScreenViewModel @Inject constructor(
                                 _prizeTypeInfo.value = result.data.prizeType
 
                                 // TODO - emit play win animation here and get rid of snackbar
+//                                _animationToPlay.value = R.raw.lost
+                                _isAnimationPlaying.value = true
 
-                                _showWonPrize.value = true // TODO - make sure this comes after the animation
+//                                _showWonPrize.value = true // TODO - make sure this comes after the animation - miight make a different event for this
 
-                                _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message ?: "LOLL"
-                                    )
-                                )
+//                                _eventFlow.emit(
+//                                    UiEvent.ShowSnackbar(
+//                                        message = result.message ?: "LOLL"
+//                                    )
+//                                )
                             }
 
                         }
@@ -130,6 +149,9 @@ class HomeScreenViewModel @Inject constructor(
 
                     // TODO - re-enable egg image button while this is running
                 }.launchIn(viewModelScope)
+            }
+            is HomeScreenEvent.PlayAnimation -> {
+                _isAnimationPlaying.value = event.isPlaying
             }
             is HomeScreenEvent.LoadAd -> {
 //                adUseCases.adLoadUseCase

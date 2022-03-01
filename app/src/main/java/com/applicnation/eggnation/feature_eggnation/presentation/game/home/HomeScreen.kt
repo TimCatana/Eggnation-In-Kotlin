@@ -18,6 +18,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.LottieComposition
+import com.airbnb.lottie.compose.*
 import com.applicnation.eggnation.R
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreenViewModel
@@ -47,6 +51,18 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
+    val compositionWon by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
+    val compositionWonProgress by animateLottieCompositionAsState(composition = compositionWon, isPlaying = viewModel.isAnimationPlaying.value, restartOnPlay = true)
+//    val compositionWonResult: LottieCompositionResult = rememberLottieComposition(spec =compositionWon)
+
+//    val compositionLost = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.lost)) // TODO - add onRetry for both compositions. This retries in case the parsing fails. I can et onRetry to false
+//    val compositionLostProgress = animateLottieCompositionAsState(composition = compositionLost.value, isPlaying = false)
+
+//    if(compositionWonResult.isComplete) {
+//        Timber.i("Animation is complete")
+//        viewModel.onEvent(HomeScreenEvent.PlayAnimation(false))
+//    }
 
     val ctx = LocalContext.current
 
@@ -73,6 +89,8 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            LottieAnimation(composition = compositionWon, progress = compositionWonProgress, modifier = Modifier.align(Alignment.CenterEnd))
+
             Icon(
                 imageVector = Icons.Filled.Settings,
                 contentDescription = "exit",
@@ -156,6 +174,20 @@ fun HomeScreen(
             }
         }
     }
+}
+
+@Composable
+private fun Loader(
+
+) {
+
+    val compositionWon by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
+//    val compositionLost = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.lost)) // TODO - add onRetry for both compositions. This retries in case the parsing fails. I can et onRetry to false
+
+    val compositionWonProgress by animateLottieCompositionAsState(composition = compositionWon, isPlaying = false)
+//    val compositionLostProgress = animateLottieCompositionAsState(composition = compositionLost.value, isPlaying = false)
+
+    LottieAnimation(composition = compositionWon, progress = compositionWonProgress)
 }
 
 

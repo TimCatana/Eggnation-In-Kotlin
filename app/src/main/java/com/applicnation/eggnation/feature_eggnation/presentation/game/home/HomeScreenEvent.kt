@@ -10,6 +10,7 @@ sealed class HomeScreenEvent {
     object DismissWonPrizeCard: HomeScreenEvent()
     data class LoadAd(val adMob: AdMob): HomeScreenEvent()
     data class PlayAd(val adMob: AdMob): HomeScreenEvent()
+    data class PlayAnimation(val isPlaying: Boolean): HomeScreenEvent()
 //     TODO - when I figure out the hilt problem I will make loadAd and playAd objects with no params
 
 }

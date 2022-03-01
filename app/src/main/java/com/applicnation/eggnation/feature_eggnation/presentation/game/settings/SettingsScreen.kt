@@ -1,33 +1,41 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.settings
 
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
+import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizeItemInfoCard
+import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreenEvent
+import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.PolicyScreen
@@ -53,6 +61,11 @@ fun SettingsScreen(
                     )
                 }
                 is SettingsScreenViewModel.UiEvent.ChangeStacks -> {
+                    viewModel.onEvent(SettingsScreenEvent.EnteredPassword(""))
+                    viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false, ""))
+                    navController.navigate(event.screen)
+                }
+                is SettingsScreenViewModel.UiEvent.GoToLoginScreen -> {
                     navController.navigate(AuthScreen.Login.route) {
                         popUpTo(GameScreen.Home.route) {
                             inclusive = true
@@ -97,8 +110,57 @@ fun SettingsScreen(
                     Text(text = "Logout")
                 }
             }
+
+            if (viewModel.isPasswordModelShowing.value) {
+                PasswordModel(
+                    viewModel = viewModel,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .background(Color.White)
+                        .width(400.dp)
+                        .height(400.dp), // TODO - make width and height based on screen dimensions
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun PasswordModel(
+    viewModel: SettingsScreenViewModel,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Close,
+            contentDescription = "exit",
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 4.dp, top = 4.dp)
+                .clickable {
+                    viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false, ""))
+                }
+        )
+        StandardTextField(
+            text = viewModel.passwordText.value,
+            onValueChange = {
+                viewModel.onEvent(SettingsScreenEvent.EnteredPassword(it))
+            },
+            isError = false,
+            errorText = "Please enter a password",
+            keyboardType = KeyboardType.Password,
+            label = "password" // TODO - use string resources
+        )
+        Button(onClick = {
+            viewModel.onEvent(SettingsScreenEvent.EditProfile(viewModel.passwordText.value))
+        }) {
+            Text(text = "Confirm")
+        }
+    }
+
 }
 
 @Composable
@@ -118,7 +180,13 @@ fun UserSettingsSection(
             icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
-                navController.navigate(SettingScreen.EditUsername.route)
+                viewModel.onEvent(
+                    SettingsScreenEvent.ShowPasswordModel(
+                        true,
+                        SettingScreen.EditUsername.route
+                    )
+                )
+//                navController.navigate(SettingScreen.EditUsername.route)
             }
         )
         SettingsItem(
@@ -127,8 +195,21 @@ fun UserSettingsSection(
             icon = Icons.Filled.ChevronRight,
             isLast = false,
             onClick = {
-                navController.navigate(SettingScreen.EmailSettings.route)
+                viewModel.onEvent(
+                    SettingsScreenEvent.ShowPasswordModel(
+                        true,
+                        SettingScreen.EditEmail.route
+                    )
+                )
+//                navController.navigate(SettingScreen.EmailSettings.route)
             }
+        )
+        SettingsItem(
+            settingsTitle = "Verification Status",
+            settingsInfo = "",
+            icon = Icons.Filled.CheckBox,
+            isLast = false,
+            onClick = {}
         )
         SettingsItem(
             settingsTitle = "Password",
@@ -136,7 +217,13 @@ fun UserSettingsSection(
             icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
-                navController.navigate(SettingScreen.EditPassword.route)
+                viewModel.onEvent(
+                    SettingsScreenEvent.ShowPasswordModel(
+                        true,
+                        SettingScreen.EditPassword.route
+                    )
+                )
+//                navController.navigate(SettingScreen.EditPassword.route)
             }
         )
         SettingsItem(

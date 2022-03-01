@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,6 +38,7 @@ fun AvailablePrizesScreen(
 ) {
     val list = viewModel.prizes.value
 
+    // TODO - probably add a scaffold
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -55,25 +57,6 @@ fun AvailablePrizesScreen(
                     viewModel = viewModel
                 )
             }
-//            items(3) { count ->
-//                Column(
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                    verticalArrangement = Arrangement.SpaceEvenly,
-//                    modifier = Modifier.height(220.dp)
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.egg),
-//                        contentDescription = "image",
-//
-//                        modifier = Modifier
-//                            .size(120.dp)
-//                            .clickable {
-////                            show = true
-//                            }
-//                    )
-//                    Text(text = "name")
-//                }
-//            }
         }
 
         Image(
@@ -94,6 +77,10 @@ fun AvailablePrizesScreen(
             )
         }
 
+        if (viewModel.isLoading.value) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+
     }
 }
 
@@ -102,7 +89,7 @@ private fun AvaialblePrizeItem(
     itemData: AvailablePrize,
     viewModel: AvailablePrizesScreenViewModel
 ) {
-
+    val interactionSource = remember { MutableInteractionSource() }
 
     val image = when (itemData.prizeType) {
         "phone" -> {
@@ -134,16 +121,20 @@ private fun AvaialblePrizeItem(
 
                 modifier = Modifier
                     .size(120.dp)
-                    .clickable {
-                        // TODO - only do below if viewModel.showInfo is false
-                        viewModel.onEvent(
-                            AvailablePrizesScreenEvent.SetPrizeInfo(
-                                prizeImage = image,
-                                prizeTitle = itemData.prizeTitle,
-                                prizeDesc = itemData.prizeDesc
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        if (!viewModel.showPrizeInfo.value) {
+                            viewModel.onEvent(
+                                AvailablePrizesScreenEvent.ShowPrizeInfo(
+                                    showInfo = true,
+                                    prizeImage = image,
+                                    prizeTitle = itemData.prizeTitle,
+                                    prizeDesc = itemData.prizeDesc
+                                )
                             )
-                        )
-                        viewModel.onEvent(AvailablePrizesScreenEvent.ShowPrizeInfo(true))
+                        }
                     }
             )
             Text(text = itemData.prizeTitle)

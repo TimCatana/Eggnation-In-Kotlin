@@ -34,7 +34,6 @@ class RealtimeDatabase {
      * @helperFunction convertToAvailablePrizeObject()
      * @return ArrayList of AvailablePrizes OR empty arrayList
      */
-    // TODO - probably return a flow
     // TODO - break this up into smaller functions
     suspend fun getAllAvailablePrizes(): ArrayList<AvailablePrize> {
         val prizeList = ArrayList<AvailablePrize>()

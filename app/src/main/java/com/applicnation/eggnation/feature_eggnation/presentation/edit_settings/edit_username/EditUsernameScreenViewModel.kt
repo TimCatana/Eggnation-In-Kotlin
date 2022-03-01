@@ -30,12 +30,6 @@ class EditUsernameScreenViewModel @Inject constructor(
     private val _isUsernameError = mutableStateOf(true)
     val isUsernameError: State<Boolean> = _isUsernameError
 
-    private val _passwordText = mutableStateOf("")
-    val passwordText: State<String> = _passwordText
-
-    private val _isPasswordError = mutableStateOf(true)
-    val isPasswordError: State<Boolean> = _isPasswordError
-
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
@@ -51,11 +45,8 @@ class EditUsernameScreenViewModel @Inject constructor(
                 _usernameText.value = event.value
                 validateUsername()
             }
-            is EditUsernameScreenEvent.EnteredPassword -> {
-                _passwordText.value = event.value
-            }
             is EditUsernameScreenEvent.UpdateUsername -> {
-                userUseCases.updateUserUsernameUC(newUsername = event.newUsername ,password = event.password)
+                userUseCases.updateUserUsernameUC(newUsername = event.newUsername)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {

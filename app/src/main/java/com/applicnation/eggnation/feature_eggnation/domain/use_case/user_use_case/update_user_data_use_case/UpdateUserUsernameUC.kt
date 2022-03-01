@@ -39,36 +39,17 @@ class UpdateUserUsernameUC @Inject constructor(
      * @exception Exception All exceptions caught in this block are UNEXPECTED
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
-    operator fun invoke(newUsername: String, password: String): Flow<Resource<String>> = flow {
+    operator fun invoke(newUsername: String): Flow<Resource<String>> = flow {
         emit(Resource.Loading<String>())
 
         val userId = authenticator.getUserId()
-        val email = authenticator.getUserEmail()
         val currentUsername = authenticator.getUserUsername()
 
-        Timber.i("$email, $password, $currentUsername")
-
-        if (userId == null || email == null || currentUsername == null) {
-            // TODO - this is a really bad situation to be in
+        if (userId == null || currentUsername == null) {
+            // TODO - this is a really bad situation to be in.
+            // TODO - just lgout and say that something went horribly wrong
             Timber.e("!!!! User is logged out but is trying to update username. Something is horribly wrong")
             emit(Resource.Error<String>("Failed to update username"))
-            return@flow
-        }
-
-        try {
-            authenticator.authenticateUser(email, password)
-            Timber.i("AUTHENTICATION SUCCESS: User re-authenticated successfully")
-        } catch (e: FirebaseAuthInvalidUserException) {
-            Timber.e("AUTHENTICATION Failed to re-authenticate user: The account has either been deleted or disabled --> $e")
-            emit(Resource.Error<String>("Invalid Credentials"))
-            return@flow
-        } catch (e: FirebaseAuthInvalidCredentialsException) {
-            Timber.e("AUTHENTICATION Failed to re-authenticate: Invalid credentials (password is incorrect) --> $e")
-            emit(Resource.Error<String>("Invalid Credentials"))
-            return@flow
-        } catch (e: Exception) {
-            Timber.wtf("AUTHENTICATION Failed to delete user account: An unexpected error occurred --> $e")
-            emit(Resource.Error<String>("Failed to update email"))
             return@flow
         }
 
@@ -99,6 +80,6 @@ class UpdateUserUsernameUC @Inject constructor(
             return@flow
         }
 
-        emit(Resource.Success<String>( message = "Username updated successfully"))
+        emit(Resource.Success<String>(message = "Username updated successfully"))
     }.flowOn(Dispatchers.IO)
 }
