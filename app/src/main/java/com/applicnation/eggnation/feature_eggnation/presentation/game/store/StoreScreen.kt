@@ -28,6 +28,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.modal.SkinsList
 import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizeItemInfoCard
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizeItemInfoCard
+import com.applicnation.eggnation.ui.theme.StoreBG
 
 // TODO - make a SkinCard
 // TODO - arrange the items correctly
@@ -46,7 +47,7 @@ fun StoreScreen(
     val skin = SkinsList.skins
 
     Box(
-        modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colors.background),
+        modifier = Modifier.fillMaxSize().background(color = StoreBG),
         contentAlignment = Alignment.Center
     ) {
 

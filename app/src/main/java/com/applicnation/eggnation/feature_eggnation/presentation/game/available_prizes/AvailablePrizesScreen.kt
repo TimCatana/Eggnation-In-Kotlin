@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
+import com.applicnation.eggnation.ui.theme.StoreBG
 
 @ExperimentalFoundationApi
 @Composable
@@ -42,7 +43,7 @@ fun AvailablePrizesScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colors.background)
+            .background(color = StoreBG)
     ) {
         LazyVerticalGrid(
             cells = GridCells.Fixed(2),
@@ -106,14 +107,13 @@ private fun AvaialblePrizeItem(
     Card(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Transparent)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .height(220.dp)
-                .background(color = Color.Transparent)
+                .background(color = StoreBG)
         ) {
             Image(
                 painter = painterResource(id = image),
@@ -150,7 +150,7 @@ fun AvailablePrizeItemInfoCard(
 
     Column(
         modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Filled.Close,

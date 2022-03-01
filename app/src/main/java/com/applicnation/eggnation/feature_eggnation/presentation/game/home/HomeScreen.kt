@@ -51,7 +51,9 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
+    val scaffoldState = rememberScaffoldState()
     val interactionSource = remember { MutableInteractionSource() }
+    val ctx = LocalContext.current
 
     val compositionWon by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
     val compositionWonProgress by animateLottieCompositionAsState(
@@ -59,10 +61,6 @@ fun HomeScreen(
         isPlaying = viewModel.isAnimationPlaying.value,
         restartOnPlay = true
     )
-
-    val ctx = LocalContext.current // TODO - use this for ads?
-
-    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -93,7 +91,7 @@ fun HomeScreen(
 
             Icon(
                 imageVector = Icons.Filled.Settings,
-                contentDescription = "exit",
+                contentDescription = "settings icon",
                 modifier = Modifier
                     .padding(start = 4.dp, top = 4.dp)
                     .clickable {
@@ -263,7 +261,6 @@ fun WonPrizeInfoCard(
 @Preview(showBackground = true)
 @Composable
 fun HomePreview() {
-
     Icon(
         imageVector = Icons.Filled.Settings,
         contentDescription = "exit",

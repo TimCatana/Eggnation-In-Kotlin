@@ -1,5 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.settings
 
+import android.graphics.Color.rgb
 import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -40,6 +41,8 @@ import com.applicnation.eggnation.feature_eggnation.presentation.navigation.Auth
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.PolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.SettingScreen
+import com.applicnation.eggnation.ui.theme.SettingsBG
+import com.applicnation.eggnation.ui.theme.SettingsItemBG
 import com.google.common.cache.RemovalListener
 import kotlinx.coroutines.flow.collectLatest
 
@@ -82,13 +85,13 @@ fun SettingsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black)
+                .background(color = SettingsBG)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp, 10.dp)
-                    .background(color = Color.Black),
+                    .background(color = SettingsBG),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
@@ -122,7 +125,7 @@ fun SettingsScreen(
                 )
             }
         }
-    }
+    }// TODO add a delete account option
 }
 
 @Composable
@@ -141,6 +144,7 @@ private fun PasswordModel(
                 .align(Alignment.Start)
                 .padding(start = 4.dp, top = 4.dp)
                 .clickable {
+                    viewModel.onEvent(SettingsScreenEvent.EnteredPassword(""))
                     viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false, ""))
                 }
         )
@@ -186,13 +190,12 @@ fun UserSettingsSection(
                         SettingScreen.EditUsername.route
                     )
                 )
-//                navController.navigate(SettingScreen.EditUsername.route)
             }
         )
         SettingsItem(
             settingsTitle = "Email",
             settingsInfo = viewModel.email.value,
-            icon = Icons.Filled.ChevronRight,
+            icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
                 viewModel.onEvent(
@@ -201,7 +204,6 @@ fun UserSettingsSection(
                         SettingScreen.EditEmail.route
                     )
                 )
-//                navController.navigate(SettingScreen.EmailSettings.route)
             }
         )
         SettingsItem(
@@ -229,7 +231,7 @@ fun UserSettingsSection(
         SettingsItem(
             settingsTitle = "Language",
             settingsInfo = viewModel.language.value,
-            icon = Icons.Filled.ChevronLeft,
+            icon = Icons.Filled.ChevronRight,
             isLast = true,
             onClick = {
                 navController.navigate(SettingScreen.EditLanguage.route)
@@ -305,7 +307,7 @@ fun SettingsItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(color = Color.DarkGray)
+            .background(color = SettingsItemBG)
             .clickable {
                 onClick()
             }
@@ -333,10 +335,10 @@ fun SettingsItem(
                 )
                 Icon(
                     imageVector = icon,
+                    tint = Color.White,
                     contentDescription = "toggle password",
                     modifier = Modifier
                         .padding(10.dp, 0.dp)
-                        .background(Color.Blue)
                 )
             }
         }

@@ -29,6 +29,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
+import com.applicnation.eggnation.ui.theme.StoreBG
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
@@ -64,7 +65,7 @@ fun WonPrizesScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colors.background)
+                .background(color = StoreBG)
         ) {
             LazyVerticalGrid(
                 cells = GridCells.Fixed(2),
@@ -133,7 +134,7 @@ private fun WonPrizeItem(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.height(220.dp)
+            modifier = Modifier.height(220.dp).background(color = StoreBG)
         ) {
             Image(
                 painter = painterResource(id = image),
