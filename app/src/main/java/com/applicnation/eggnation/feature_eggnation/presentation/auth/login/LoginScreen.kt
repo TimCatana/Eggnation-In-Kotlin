@@ -1,12 +1,15 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.auth.login
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -18,6 +21,7 @@ import androidx.navigation.NavController
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.PolicyScreen
 import com.applicnation.eggnation.ui.theme.EggNationTheme
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
@@ -29,7 +33,7 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginScreenViewModel = hiltViewModel()
 ) {
-
+    val interactionSource = remember { MutableInteractionSource() }
 
     val scaffoldState = rememberScaffoldState()
 
@@ -43,9 +47,9 @@ fun LoginScreen(
                 }
                 is LoginScreenViewModel.UiEvent.ChangeStacks -> {
                     navController.navigate(GameScreen.Home.route) {
-                            popUpTo(AuthScreen.Login.route) {
-                                inclusive = true
-                            }
+                        popUpTo(AuthScreen.Login.route) {
+                            inclusive = true
+                        }
                     }
                 }
             }
@@ -103,7 +107,10 @@ fun LoginScreen(
                     text = "forgot password?",
                     modifier = Modifier
                         .align(Alignment.End)
-                        .clickable {
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
                             navController.navigate(AuthScreen.ForgotPassword.route)
                         }
                 )
@@ -115,7 +122,6 @@ fun LoginScreen(
                             LoginScreenEvent.SignIn(
                                 viewModel.emailText.value,
                                 viewModel.passwordText.value
-                                // TODO - need to propogate error here
                             )
                         )
                     },
@@ -123,28 +129,23 @@ fun LoginScreen(
                     Text(text = "Login")
                 }
             }
-            Text(
-                text = buildAnnotatedString {
-                    append("Don't have an account yet?")
-                    append(" ")
-                    // TODO - for string resources, create a val here and put the val in the with styles cause you can't accesss strng rersources from within withStyle
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colors.primary
-                        )
-                    ) {
-                        append("Sign up")
-                    }
-                },
-                style = MaterialTheme.typography.body1,
+            Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .clickable {
+            ) {
+                Text(text = "Don't have an account? ")
+                Text(
+                    text = "Sign up",
+                    color = Color.Blue,
+                    modifier = Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
                         navController.navigate(
                             AuthScreen.Register.route
                         )
-                    }
-            )
+                    })
+            }
 
             if (viewModel.isLoading.value) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

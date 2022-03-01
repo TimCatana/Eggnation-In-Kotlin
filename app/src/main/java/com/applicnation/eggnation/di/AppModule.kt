@@ -3,6 +3,7 @@ package com.applicnation.eggnation.di
 import DoGameLogicUC
 import android.content.Context
 import com.applicnation.eggnation.feature_eggnation.data.local.PreferencesManager
+import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Authentication
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Firestore
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.RealtimeDatabase
@@ -12,14 +13,13 @@ import com.applicnation.eggnation.feature_eggnation.data.repository.PreferencesR
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
 import com.applicnation.eggnation.feature_eggnation.domain.repository.PreferencesRepository
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.AllPreferencesUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.*
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdLoadUseCase
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdPlayUseCase
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.*
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetAllUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetByRNGUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeDeleteUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.ClaimPrizeUC
@@ -40,26 +40,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // TODO - I need to somehow get the activity context to be able to inject admob with the activity context
-//    /**
-//     * Admob
-//     */
-//    @Provides
-//    @Singleton
-//    fun provideAdmob(@ActivityContext activity: Activity): AdMob {
-//        return AdMob(activity)
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideAdUseCases(adMob: AdMob): AdUseCases {
-//        return AdUseCases(
-//            adLoadUseCase = AdLoadUseCase(adMob),
-//            adPlayUseCase = AdPlayUseCase(adMob)
-//        )
-//    }
-
-
     /**
      * Backend Code Providers
      */
@@ -79,6 +59,12 @@ object AppModule {
     @Singleton
     fun provideFirestore(): Firestore {
         return Firestore()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAdmob(): AdMob {
+        return AdMob()
     }
 
 
@@ -166,6 +152,14 @@ object AppModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideAdUseCases(adMob: AdMob): AdUseCases {
+        return AdUseCases(
+            adLoadUseCase = AdLoadUseCase(adMob),
+            adPlayUseCase = AdPlayUseCase(adMob)
+        )
+    }
 
     /**
      * Preferences Injections

@@ -28,8 +28,6 @@ import timber.log.Timber
 class MainActivity : ComponentActivity() {
     lateinit var navController: NavHostController
     private var mAuth = FirebaseAuth.getInstance()
-    private val adMob = AdMob(this)
-
 
     @ExperimentalMaterialApi
     @ExperimentalFoundationApi
@@ -49,7 +47,6 @@ class MainActivity : ComponentActivity() {
                 navController = rememberNavController()
                 GameNavGraph(
                     navController = navController,
-                    adMob = adMob,
                     startDestination = startDest
                 )
             }

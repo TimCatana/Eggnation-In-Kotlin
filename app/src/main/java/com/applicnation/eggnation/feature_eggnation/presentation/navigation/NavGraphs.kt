@@ -14,7 +14,6 @@ import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.e
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_language.EditLanguageScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password.EditPasswordScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_username.EditUsernameScreen
-import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.email_settings.EmailSettingsScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.ClaimPrizeScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
@@ -30,7 +29,6 @@ import com.applicnation.eggnation.feature_eggnation.presentation.policy.terms_of
 @Composable
 fun GameNavGraph(
     navController: NavHostController,
-    adMob: AdMob,
     startDestination: String
 ) {
     NavHost(
@@ -53,7 +51,6 @@ fun GameNavGraph(
         composable(route = GameScreen.Home.route) {
             HomeScreen(
                 navController = navController,
-                adMob = adMob
             )
         }
         composable(route = GameScreen.Store.route) {
@@ -75,12 +72,6 @@ fun GameNavGraph(
             VerifyEmailScreen(navController = navController)
         }
 
-        /**
-         * Settings screen
-         */
-        composable(route = SettingScreen.EmailSettings.route) {
-            EmailSettingsScreen(navController = navController)
-        }
         composable(route = SettingScreen.EditUsername.route) {
             EditUsernameScreen(navController = navController)
         }

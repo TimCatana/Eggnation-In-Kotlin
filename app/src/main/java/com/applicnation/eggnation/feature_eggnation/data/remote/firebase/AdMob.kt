@@ -1,6 +1,7 @@
 package com.applicnation.eggnation.feature_eggnation.data.remote.firebase
 
 import android.app.Activity
+import android.content.Context
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -31,7 +32,7 @@ import timber.log.Timber
  * works and more importantly, how to incorporate it into this clean architecture model.
  */
 class AdMob constructor(
-    private val activityContext: Activity
+//    private val activityContext: Activity
 ) {
     private var interstitialAd: InterstitialAd? = null
     private val adRequest: AdRequest = AdRequest.Builder().build()
@@ -41,7 +42,7 @@ class AdMob constructor(
      * @note I am manually setting the ad to null and thus not laoding the ad every single time the.
      * TODO - maybe run this function in the playInterstitial Ad function? Most likely do that. but then I'll need to get rid of the null if statement
      */
-    fun loadInterstitialAd() {
+    fun loadInterstitialAd(activityContext: Activity) {
         if (interstitialAd == null) {
             InterstitialAd.load(
                 activityContext,
@@ -65,7 +66,7 @@ class AdMob constructor(
      * Plays an interstitial ad if the add is loaded
      * @helperFunction setInterstitialCallbacks()
      */
-    fun playInterstitialAd() {
+    fun playInterstitialAd(activityContext: Activity) {
         setInterstitialCallbacks()
 
         if (interstitialAd != null) {

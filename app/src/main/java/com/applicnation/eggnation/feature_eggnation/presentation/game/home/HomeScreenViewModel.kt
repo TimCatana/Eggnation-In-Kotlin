@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.AdUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.AllPreferencesUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
@@ -23,8 +24,8 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val preferencesUseCases: AllPreferencesUseCases,
     private val mainGameLogicUseCases: MainGameLogicUseCases,
-    private val prizeUseCases: PrizeUseCases
-//    private val adUseCases: AdUseCases TODO - get hilt working to for this... kinda difficult with the scoping
+    private val prizeUseCases: PrizeUseCases,
+    private val adUseCases: AdUseCases // TODO - get hilt working to for this... kinda difficult with the scoping
 ) : ViewModel() {
 
     private val _userWon = mutableStateOf(false)
@@ -67,8 +68,6 @@ class HomeScreenViewModel @Inject constructor(
 
     private val _animationToPlay = mutableStateOf<Int>(R.raw.winner)
     val animationToPlay: State<Int> = _animationToPlay
-
-
 
 
     init {
@@ -154,12 +153,14 @@ class HomeScreenViewModel @Inject constructor(
                 _isAnimationPlaying.value = event.isPlaying
             }
             is HomeScreenEvent.LoadAd -> {
-//                adUseCases.adLoadUseCase
-                event.adMob.loadInterstitialAd()
+                if (event.context != null) {
+                    adUseCases.adLoadUseCase(event.context)
+                }
             }
             is HomeScreenEvent.PlayAd -> {
-//                adUseCases.adPlayUseCase
-                event.adMob.playInterstitialAd()
+                if (event.context != null) {
+                    adUseCases.adPlayUseCase(event.context)
+                }
             }
             HomeScreenEvent.DismissWonPrizeCard -> {
                 _showWonPrize.value = false

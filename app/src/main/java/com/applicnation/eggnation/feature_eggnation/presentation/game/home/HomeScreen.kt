@@ -1,9 +1,11 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.home
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,24 +49,18 @@ import timber.log.Timber
 @Composable
 fun HomeScreen(
     navController: NavController,
-    adMob: AdMob,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
     val compositionWon by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
-    val compositionWonProgress by animateLottieCompositionAsState(composition = compositionWon, isPlaying = viewModel.isAnimationPlaying.value, restartOnPlay = true)
-//    val compositionWonResult: LottieCompositionResult = rememberLottieComposition(spec =compositionWon)
+    val compositionWonProgress by animateLottieCompositionAsState(
+        composition = compositionWon,
+        isPlaying = viewModel.isAnimationPlaying.value,
+        restartOnPlay = true
+    )
 
-//    val compositionLost = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.lost)) // TODO - add onRetry for both compositions. This retries in case the parsing fails. I can et onRetry to false
-//    val compositionLostProgress = animateLottieCompositionAsState(composition = compositionLost.value, isPlaying = false)
-
-//    if(compositionWonResult.isComplete) {
-//        Timber.i("Animation is complete")
-//        viewModel.onEvent(HomeScreenEvent.PlayAnimation(false))
-//    }
-
-    val ctx = LocalContext.current
+    val ctx = LocalContext.current // TODO - use this for ads?
 
     val scaffoldState = rememberScaffoldState()
 
@@ -89,7 +85,11 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            LottieAnimation(composition = compositionWon, progress = compositionWonProgress, modifier = Modifier.align(Alignment.CenterEnd))
+            LottieAnimation(
+                composition = compositionWon,
+                progress = compositionWonProgress,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
 
             Icon(
                 imageVector = Icons.Filled.Settings,
@@ -124,13 +124,12 @@ fun HomeScreen(
                             viewModel.onEvent(HomeScreenEvent.IncrementGlobalCounter)
 
                             if (viewModel.tapCounter.value % 5 == 0) {
-                                viewModel.onEvent(HomeScreenEvent.PlayAd(adMob))
+                                viewModel.onEvent(HomeScreenEvent.PlayAd(ctx.getActivity()))
                                 // TODO - play lost animation, user get's no chance to win when ad is played. sry bro
                             } else {
-                                viewModel.onEvent(HomeScreenEvent.LoadAd(adMob))
+                                viewModel.onEvent(HomeScreenEvent.LoadAd(ctx.getActivity()))
                                 viewModel.onEvent(HomeScreenEvent.MainGameLogic)
                             }
-                            // TODO - add correct egg animation based on whether user won or not
                         }
                 )
                 Row() {
@@ -164,16 +163,27 @@ fun HomeScreen(
                 }
             }
 
-            if(viewModel.showWonPrize.value) {
-                WonPrizeInfoCard(  viewModel = viewModel,
+            if (viewModel.showWonPrize.value) {
+                WonPrizeInfoCard(
+                    viewModel = viewModel,
                     modifier = Modifier
                         .align(Alignment.Center)
                         .background(Color.Red)
                         .width(400.dp)
-                        .height(400.dp),)
+                        .height(400.dp),
+                )
             }
         }
     }
+}
+
+/**
+ * Get the activity
+ */
+fun Context.getActivity(): Activity? = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.getActivity() as Activity
+    else -> null
 }
 
 @Composable
@@ -184,12 +194,14 @@ private fun Loader(
     val compositionWon by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
 //    val compositionLost = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.lost)) // TODO - add onRetry for both compositions. This retries in case the parsing fails. I can et onRetry to false
 
-    val compositionWonProgress by animateLottieCompositionAsState(composition = compositionWon, isPlaying = false)
+    val compositionWonProgress by animateLottieCompositionAsState(
+        composition = compositionWon,
+        isPlaying = false
+    )
 //    val compositionLostProgress = animateLottieCompositionAsState(composition = compositionLost.value, isPlaying = false)
 
     LottieAnimation(composition = compositionWon, progress = compositionWonProgress)
 }
-
 
 
 @Composable
@@ -246,8 +258,6 @@ fun WonPrizeInfoCard(
         }
     }
 }
-
-
 
 
 @Preview(showBackground = true)
@@ -307,8 +317,6 @@ fun HomePreview() {
         }
     }
 }
-
-
 
 
 @Preview(showBackground = true)
