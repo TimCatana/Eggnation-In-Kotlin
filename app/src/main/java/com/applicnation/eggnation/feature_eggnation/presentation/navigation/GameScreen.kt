@@ -1,6 +1,8 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.navigation
 
 sealed class GameScreen(val route: String) {
+    object Test: GameScreen(route = "testScreen")
+
     object Home: GameScreen(route = "homeScreen")
     object Store: GameScreen(route = "storeScreen")
     object WonPrizes: GameScreen(route = "wonPrizesScreen")

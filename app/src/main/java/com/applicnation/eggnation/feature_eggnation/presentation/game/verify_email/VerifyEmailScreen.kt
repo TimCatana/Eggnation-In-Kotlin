@@ -1,6 +1,5 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.verify_email
 
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 

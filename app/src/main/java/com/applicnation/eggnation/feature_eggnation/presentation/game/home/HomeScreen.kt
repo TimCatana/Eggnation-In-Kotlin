@@ -55,12 +55,15 @@ fun HomeScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val ctx = LocalContext.current
 
-    val compositionWon by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
-    val compositionWonProgress by animateLottieCompositionAsState(
-        composition = compositionWon,
-        isPlaying = viewModel.isAnimationPlaying.value,
-        restartOnPlay = true
-    )
+    val winAnimatable = rememberLottieAnimatable()
+    val winComposition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
+
+    val loseAnimatable = rememberLottieAnimatable()
+    val loseComposition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.lost)) // TODO - probably move thi to assets?
+
+
+
+
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -70,11 +73,45 @@ fun HomeScreen(
                         message = event.message,
                     )
                 }
-                is HomeScreenViewModel.UiEvent.PlayLoseAnimation -> {}
-                is HomeScreenViewModel.UiEvent.PlayWinAnimation -> {}
+                is HomeScreenViewModel.UiEvent.PlayLoseAnimation -> {
+                    viewModel.onEvent(
+                        HomeScreenEvent.SetAnimationPlaying(true)
+                    )
+                    loseAnimatable.animate(
+                        loseComposition,
+                        continueFromPreviousAnimate = false,
+                    )
+                    if (loseAnimatable.isAtEnd) {
+                        loseAnimatable.snapTo(progress = 0f)
+                        viewModel.onEvent(
+                            HomeScreenEvent.SetAnimationPlaying(false)
+                        )
+                    }
+                }
+                is HomeScreenViewModel.UiEvent.PlayWinAnimation -> {
+                    viewModel.onEvent(
+                        HomeScreenEvent.ShowWonAnimation(isShowing = true)
+                    )
+                    viewModel.onEvent(
+                        HomeScreenEvent.SetAnimationPlaying(true)
+                    )
+                    winAnimatable.animate(
+                        winComposition,
+                        continueFromPreviousAnimate = false,
+                    )
+                    if (winAnimatable.isAtEnd) {
+                        viewModel.onEvent(
+                            HomeScreenEvent.ShowWonAnimation(isShowing = false)
+                        )
+                        viewModel.onEvent(
+                            HomeScreenEvent.SetAnimationPlaying(false)
+                        )
+                    }
+                }
             }
         }
     }
+
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -83,18 +120,16 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            LottieAnimation(
-                composition = compositionWon,
-                progress = compositionWonProgress,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-
             Icon(
                 imageVector = Icons.Filled.Settings,
                 contentDescription = "settings icon",
                 modifier = Modifier
                     .padding(start = 4.dp, top = 4.dp)
-                    .clickable {
+                    .clickable(
+                        enabled = !viewModel.isAnimationPlaying.value,
+                        interactionSource = interactionSource,
+                        indication = null,
+                    ) {
                         navController.navigate(GameScreen.Settings.route)
                     }
             )
@@ -107,36 +142,51 @@ fun HomeScreen(
                     text = viewModel.tapCounter.value.toString(),
                     style = MaterialTheme.typography.h3,
                 )
-                Image(
-                    // TODO - change the size of egg to make it feel natural
-                    // TODO - get rid of default tap animation
-                    // TODO - set id to the image in the datastore I want to make
-                    painter = painterResource(id = viewModel.eggSkin.value),
-                    contentDescription = "Tappable Egg",
-                    modifier = Modifier
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) {
-                            viewModel.onEvent(HomeScreenEvent.DecrementCounter)
-                            viewModel.onEvent(HomeScreenEvent.IncrementGlobalCounter)
 
-                            if (viewModel.tapCounter.value % 5 == 0) {
-                                viewModel.onEvent(HomeScreenEvent.PlayAd(ctx.getActivity()))
-                                // TODO - play lost animation, user get's no chance to win when ad is played. sry bro
-                            } else {
-                                viewModel.onEvent(HomeScreenEvent.LoadAd(ctx.getActivity()))
-                                viewModel.onEvent(HomeScreenEvent.MainGameLogic)
+
+                if (viewModel.showLoseAnimation.value) {
+                    LottieAnimation(
+                        loseComposition,
+                        loseAnimatable.progress,
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(200.dp)
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
+                                enabled = !viewModel.isAnimationPlaying.value
+                            ) {
+                                viewModel.onEvent(HomeScreenEvent.DecrementCounter)
+                                viewModel.onEvent(HomeScreenEvent.IncrementGlobalCounter)
+
+                                if (viewModel.tapCounter.value % 5 == 0) {
+                                    viewModel.onEvent(HomeScreenEvent.PlayAd(ctx.getActivity()))
+                                } else {
+                                    viewModel.onEvent(HomeScreenEvent.LoadAd(ctx.getActivity()))
+                                    viewModel.onEvent(HomeScreenEvent.MainGameLogic)
+                                }
                             }
-                        }
-                )
+                    )
+                } else if (viewModel.showWinAnimation.value) {
+                    LottieAnimation(
+                        winComposition,
+                        winAnimatable.progress,
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(200.dp)
+                    )
+                }
                 Row() {
                     Image(
                         painter = painterResource(id = R.drawable.store_icon),
                         contentDescription = "store icon",
                         Modifier
                             .size(60.dp)
-                            .clickable {
+                            .clickable(
+                                enabled = !viewModel.isAnimationPlaying.value,
+                                interactionSource = interactionSource,
+                                indication = null,
+                            ) {
                                 navController.navigate(GameScreen.AvailablePrizes.route)
                             }
                     )
@@ -145,7 +195,11 @@ fun HomeScreen(
                         contentDescription = "store icon",
                         Modifier
                             .size(60.dp)
-                            .clickable {
+                            .clickable(
+                                enabled = !viewModel.isAnimationPlaying.value,
+                                interactionSource = interactionSource,
+                                indication = null,
+                            ) {
                                 navController.navigate(GameScreen.Store.route)
                             }
                     )
@@ -154,7 +208,11 @@ fun HomeScreen(
                         contentDescription = "store icon",
                         Modifier
                             .size(60.dp)
-                            .clickable {
+                            .clickable(
+                                enabled = !viewModel.isAnimationPlaying.value,
+                                interactionSource = interactionSource,
+                                indication = null,
+                            ) {
                                 navController.navigate(GameScreen.WonPrizes.route)
                             }
                     )
@@ -183,24 +241,6 @@ fun Context.getActivity(): Activity? = when (this) {
     is ContextWrapper -> baseContext.getActivity() as Activity
     else -> null
 }
-
-@Composable
-private fun Loader(
-
-) {
-
-    val compositionWon by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.winner)) // TODO - probably move thi to assets?
-//    val compositionLost = rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.lost)) // TODO - add onRetry for both compositions. This retries in case the parsing fails. I can et onRetry to false
-
-    val compositionWonProgress by animateLottieCompositionAsState(
-        composition = compositionWon,
-        isPlaying = false
-    )
-//    val compositionLostProgress = animateLottieCompositionAsState(composition = compositionLost.value, isPlaying = false)
-
-    LottieAnimation(composition = compositionWon, progress = compositionWonProgress)
-}
-
 
 @Composable
 fun WonPrizeInfoCard(

@@ -24,21 +24,23 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Countries
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Country
+import com.applicnation.eggnation.feature_eggnation.domain.modal.Region
 import countryList
 import kotlinx.coroutines.coroutineScope
 import localeToEmoji
+import timber.log.Timber
+
 
 @ExperimentalMaterialApi
 @Composable
-fun CountryPickerBottomSheet(
+fun RegionPickerBottomSheet(
     title: @Composable () -> Unit,
     show: Boolean,
-    onItemSelected: (country: Country) -> Unit,
+    availableRegions: ArrayList<Region>,
+    onItemSelected: (region: Region) -> Unit,
     onDismissRequest: () -> Unit,
-    countries: Countries,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     val modalBottomSheetState =
         rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -53,26 +55,24 @@ fun CountryPickerBottomSheet(
         }
     }
 
+    Timber.wtf("Hereeee")
+
     ModalBottomSheetLayout(
         sheetContent = {
             title()
             LazyColumn(
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(countries.countries.size) { index ->
+                items(availableRegions.size) { index ->
                     Row(
                         modifier = Modifier
                             .clickable {
-                                onItemSelected(countries.countries[index])
+                                onItemSelected(availableRegions[index])
                             }
                             .padding(10.dp)
                     ) {
                         Text(
-                            text = localeToEmoji(countryCode = countries.countries[index].countryShortCode)
-                        )
-
-                        Text(
-                            text = countries.countries[index].countryName,
+                            text = availableRegions[index].name,
                             modifier = Modifier
                                 .padding(start = 6.dp)
                                 .weight(2f)
@@ -93,18 +93,18 @@ fun CountryPickerBottomSheet(
 }
 
 @Composable
-fun CountryTextField(
+fun RegionTextField(
     label: String = "",
     isError: Boolean = false,
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.small,
     expanded: Boolean = false,
-    selectedCountry: Country = Country(),
+    selectedRegion: Region = Region(),
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
     onExpandedChange: () -> Unit
 ) {
     OutlinedTextField(
-        value = selectedCountry?.countryName ?: "",
+        value = selectedRegion?.name ?: "",
         onValueChange = {},
         modifier = modifier
             .expandable(menuLabel = label, onExpandedChange = onExpandedChange),

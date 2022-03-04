@@ -345,8 +345,8 @@ fun SettingsItem(
 
         if (!isLast) {
             Divider(
-                color = Color.Gray, thickness = 1.dp, modifier = Modifier
-                    .padding(10.dp, 0.dp)
+                color = Color.Gray, thickness = 0.2.dp, modifier = Modifier
+                    .padding(4.dp, 0.dp)
                     .align(
                         Alignment.BottomCenter
                     )

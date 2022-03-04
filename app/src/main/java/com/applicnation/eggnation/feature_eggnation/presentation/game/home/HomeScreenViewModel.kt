@@ -60,14 +60,14 @@ class HomeScreenViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     // Lottie
+    private val _showWinAnimation = mutableStateOf<Boolean>(false)
+    val showWinAnimation: State<Boolean> = _showWinAnimation
+
+    private val _showLoseAnimation = mutableStateOf<Boolean>(true)
+    val showLoseAnimation: State<Boolean> = _showLoseAnimation
+
     private val _isAnimationPlaying = mutableStateOf<Boolean>(false)
     val isAnimationPlaying: State<Boolean> = _isAnimationPlaying
-
-//    private val _isLoseAnimationPlaying = mutableStateOf<Boolean>(false)
-//    val isLoseAnimationPlaying: State<Boolean> = _isLoseAnimationPlaying
-
-    private val _animationToPlay = mutableStateOf<Int>(R.raw.winner)
-    val animationToPlay: State<Int> = _animationToPlay
 
 
     init {
@@ -75,6 +75,15 @@ class HomeScreenViewModel @Inject constructor(
         getUserSkin()
         getCount()
     }
+
+
+//    if (viewModel.tapCounter.value % 5 == 0) {
+//        viewModel.onEvent(HomeScreenEvent.PlayAd(ctx.getActivity()))
+//        // TODO - play lost animation, user get's no chance to win when ad is played. sry bro
+//    } else {
+//        viewModel.onEvent(HomeScreenEvent.LoadAd(ctx.getActivity()))
+//        viewModel.onEvent(HomeScreenEvent.MainGameLogic)
+//    }
 
 
     // TODO - launch database stuff in IO dispatcher
@@ -102,46 +111,27 @@ class HomeScreenViewModel @Inject constructor(
                         }
                         is Resource.Success -> {
                             _isLoading.value = false
-//                            _animationToPlay.value = R.raw.winner
 
                             if (result.data == null) {
-//                                _animationToPlay.value = R.raw.winner // TODO change to lost
-                                _isAnimationPlaying.value = true
-
-//                                _eventFlow.emit(
-//                                    // TODO - emit play lose animation and get rid of snackbar
-//                                    UiEvent.ShowSnackbar(
-//                                        message = result.message ?: "LOLL"
-//                                    )
-//                                )
+                                Timber.i("playing lose aniatin")
+                                _eventFlow.emit(
+                                    UiEvent.PlayLoseAnimation
+                                )
                             } else {
                                 Timber.i("PRIZE WON! Should show image card now ${result.data}")
                                 _prizeTitleInfo.value = result.data.prizeTitle
                                 _prizeDescInfo.value = result.data.prizeDesc
                                 _prizeTypeInfo.value = result.data.prizeType
 
-                                // TODO - emit play win animation here and get rid of snackbar
-//                                _animationToPlay.value = R.raw.lost
-                                _isAnimationPlaying.value = true
-
-//                                _showWonPrize.value = true // TODO - make sure this comes after the animation - miight make a different event for this
-
-//                                _eventFlow.emit(
-//                                    UiEvent.ShowSnackbar(
-//                                        message = result.message ?: "LOLL"
-//                                    )
-//                                )
+                                _eventFlow.emit(
+                                    UiEvent.PlayWinAnimation
+                                )
                             }
-
                         }
                         is Resource.Error -> {
                             _isLoading.value = false
-                            // TODO - play lose animation and get rid of snackbar
-
                             _eventFlow.emit(
-                                UiEvent.ShowSnackbar(
-                                    message = result.message ?: "LOLL"
-                                )
+                                UiEvent.PlayLoseAnimation
                             )
                         }
                     }
@@ -149,8 +139,11 @@ class HomeScreenViewModel @Inject constructor(
                     // TODO - re-enable egg image button while this is running
                 }.launchIn(viewModelScope)
             }
-            is HomeScreenEvent.PlayAnimation -> {
+            is HomeScreenEvent.SetAnimationPlaying -> {
                 _isAnimationPlaying.value = event.isPlaying
+            }
+            is HomeScreenEvent.ShowWonPrize -> {
+                _showWonPrize.value = event.isShowing
             }
             is HomeScreenEvent.LoadAd -> {
                 if (event.context != null) {
@@ -159,13 +152,34 @@ class HomeScreenViewModel @Inject constructor(
             }
             is HomeScreenEvent.PlayAd -> {
                 if (event.context != null) {
-                    adUseCases.adPlayUseCase(event.context)
+                    var adPlayed = adUseCases.adPlayUseCase(event.context)
+                    if (!adPlayed) {
+                        viewModelScope.launch {
+                            _eventFlow.emit(
+                                UiEvent.PlayLoseAnimation
+                            )
+                        }
+                    }
+                } else {
+                    viewModelScope.launch {
+                        _eventFlow.emit(
+                            UiEvent.PlayLoseAnimation
+                        )
+                    }
                 }
             }
             HomeScreenEvent.DismissWonPrizeCard -> {
                 _showWonPrize.value = false
             }
+            is HomeScreenEvent.ShowWonAnimation -> {
+                _showLoseAnimation.value = !event.isShowing
+                _showWinAnimation.value = event.isShowing
+            }
         }
+    }
+
+    private fun loadAd() {
+
     }
 
     private fun getUserSkin() {

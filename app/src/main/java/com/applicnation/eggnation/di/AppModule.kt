@@ -148,7 +148,7 @@ object AppModule {
         return MainGameLogicUseCases(
             claimPrizeUC = ClaimPrizeUC(authenticationRepo),
             incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo),
-            doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases)
+            doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases, databaseRepo)
         )
     }
 
