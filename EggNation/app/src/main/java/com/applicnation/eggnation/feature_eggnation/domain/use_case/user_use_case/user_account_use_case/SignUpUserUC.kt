@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 class SignUpUserUC @Inject constructor(
     private val authenticator: AuthenticationRepository,
-    private val functions: FunctionsRepository
+    private val repository: DatabaseRepository
 ) {
     /**
      * Creates a new account for the user.
@@ -73,29 +73,62 @@ class SignUpUserUC @Inject constructor(
                 return@flow
             }
 
-            try {
-                functions.updateUserUsername(username)
-                Timber.i("SUCCESS Firebase Authentication: User signed up (registered)")
-            } catch (e: Exception) {
-                // TODO - delete the created user
-                Timber.e("Firebase Functions: Failed to update user username: An unexpected error occurred --> $e")
-                emit(Resource.Error<String>("An unexpected error occurred"))
-                return@flow
+            /**
+             * Fetching the newly created user's Id from Firebase Authentication.
+             * @note if the userId is null, something went horribly wrong. Therefore sign the user
+             *       in and try again. If that fails, then rip... THIS SHOULD NEVER HAPPEN!!!
+             * @exception Exception
+             */
+            var userId = authenticator.getUserId()
+
+            if (userId == null) {
+                try {
+                    authenticator.signInUser(email, password)
+                } catch (e: Exception) {
+                    Timber.wtf("!!!! userId error: User was added to Authentication but not to Database --> userId was fetched as null after user registered in Authentication")
+                    emit(Resource.Error<String>("An unexpected error occurred"))
+                    return@flow
+                }
+
+                userId = authenticator.getUserId()
+                if (userId == null) {
+                    Timber.wtf("!!!! User was added to Authentication but not to Database --> userId was fetched as null after user registered in Authentication")
+                    emit(Resource.Error<String>("An unexpected error occurred"))
+                    return@flow
+                }
             }
 
-//            /**
-//             * Adding the user to database.
-//             * @exception FirebaseFirestoreException
-//             * @exception Exception
-//             */
-//            try {
-//                authenticator.updateUserUsername(username)
-//            } catch (e: Exception) {
-//                Timber.e("Firebase Authentication: Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
-//                // TODO - delete user from firebase database using firebase authentication (try catch it as well)
-//                // TODO - delete user from firebase firestore (try catch it as well)
-//                emit(Resource.Success<String>(message = "Registered Successfully")) // Yes, emit success because this isn't necessary
-//            }
+            /**
+             * Adding the user to database.
+             * @exception FirebaseFirestoreException
+             * @exception Exception
+             */
+            try {
+                repository.registerUser(userId, email, username) // TODO - fix this dangerous !!
+                Timber.i("SUCCESS Database (Firestore): User added to Firestore database")
+            } catch (e: FirebaseFirestoreException) {
+                authenticator.deleteUserAccount()
+                Timber.e("Database (Firestore): Failed to add user to Firestore: An unexpected FIRESTORE error:: deleting user from Firebase Authentication --> $e")
+                // TODO - delete user from firebase database using firebase authentication (try catch it as well) (probably only have one catch with difference if statements for this one
+                emit(Resource.Error<String>("An unexpected error occurred"))
+            } catch (e: Exception) {
+                authenticator.deleteUserAccount()
+                Timber.e("Database (Firestore): Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
+                emit(Resource.Error<String>("An unexpected error occurred"))
+            }
+
+            /**
+             * Adding the user to database.
+             * @exception FirebaseFirestoreException
+             * @exception Exception
+             */
+            try {
+                authenticator.updateUserUsername(username)
+            } catch (e: Exception) {
+                Timber.e("Firebase Authentication: Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
+                // TODO - delete user from auth (which will trigger a function to delete it from database
+                emit(Resource.Success<String>(message = "Registered Successfully")) // Yes, emit success because this isn't necessary
+            }
 
             emit(Resource.Success<String>(message = "Registered Successfully"))
         }.flowOn(Dispatchers.IO)

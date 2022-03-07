@@ -46,11 +46,11 @@ fun LoginScreen(
                     )
                 }
                 is LoginScreenViewModel.UiEvent.ChangeStacks -> {
-                    navController.navigate(GameScreen.Home.route) {
-                        popUpTo(AuthScreen.Login.route) {
-                            inclusive = true
-                        }
-                    }
+//                    navController.navigate(GameScreen.Home.route) {
+//                        popUpTo(AuthScreen.Login.route) {
+//                            inclusive = true
+//                        }
+//                    }
                 }
             }
         }

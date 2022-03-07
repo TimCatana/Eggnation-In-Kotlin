@@ -23,6 +23,7 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.verify_ema
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.privacy_policy.PrivacyPolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.terms_of_service.TermsOfServiceScreen
+import com.google.rpc.context.AttributeContext
 
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
@@ -33,21 +34,8 @@ fun GameNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = GameScreen.Home.route
     ) {
-        /**
-         *
-         */
-        composable(route = AuthScreen.Login.route) {
-            LoginScreen(navController = navController)
-        }
-        composable(route = AuthScreen.Register.route) {
-            RegisterScreen(navController = navController)
-        }
-        composable(route = AuthScreen.ForgotPassword.route) {
-            ForgotPasswordScreen(navController = navController)
-        }
-
         composable(route = GameScreen.Home.route) {
             HomeScreen(
                 navController = navController,
@@ -85,6 +73,39 @@ fun GameNavGraph(
             EditLanguageScreen(navController = navController)
         }
 
+        /**
+         * @note these screens are in both stacks. The user will not be visiting these often though
+         */
+        composable(route = PolicyScreen.PrivacyPolicy.route) {
+            PrivacyPolicyScreen(navController = navController)
+        }
+        composable(route = PolicyScreen.TermsOfService.route) {
+            TermsOfServiceScreen(navController = navController)
+        }
+    }
+}
+
+@Composable
+fun AuthNavGraph(
+    navController: NavHostController,
+    startDestination: String
+) {
+    NavHost(
+        navController = navController,
+        startDestination = AuthScreen.Login.route
+    ) {
+        /**
+         *
+         */
+        composable(route = AuthScreen.Login.route) {
+            LoginScreen(navController = navController)
+        }
+        composable(route = AuthScreen.Register.route) {
+            RegisterScreen(navController = navController)
+        }
+        composable(route = AuthScreen.ForgotPassword.route) {
+            ForgotPasswordScreen(navController = navController)
+        }
         /**
          * @note these screens are in both stacks. The user will not be visiting these often though
          */

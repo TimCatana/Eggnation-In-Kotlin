@@ -110,7 +110,7 @@ object AppModule {
         functionsRepo: FunctionsRepository
     ): UserUseCases {
         return UserUseCases(
-            signUpUserUC = SignUpUserUC(authenticationRepo, functionsRepo),
+            signUpUserUC = SignUpUserUC(authenticationRepo, databaseRepo),
             signInUserUC = SignInUserUC(authenticationRepo),
             signOutUserUC = SignOutUserUC(authenticationRepo),
             deleteUserUC = DeleteUserUC(authenticationRepo),
@@ -125,7 +125,7 @@ object AppModule {
             getUserProfilePictureUC = GetUserProfilePictureUC(authenticationRepo),
             getUserEmailVerificationStatusUC = GetUserEmailVerificationStatusUC(authenticationRepo),
 
-            updateUserEmailAddressUC = UpdateUserEmailAddressUC(authenticationRepo, databaseRepo),
+            updateUserEmailAddressUC = UpdateUserEmailAddressUC(authenticationRepo, databaseRepo, functionsRepo),
             updateUserPasswordUC = UpdateUserPasswordUC(authenticationRepo),
             updateUserUsernameUC = UpdateUserUsernameUC(authenticationRepo, databaseRepo),
             updateUserProfilePictureUC = UpdateUserProfilePictureUC(authenticationRepo)

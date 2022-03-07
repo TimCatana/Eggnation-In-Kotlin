@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Authentication
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenEvent
@@ -19,7 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
-    private val userUseCases: UserUseCases
+    private val userUseCases: UserUseCases,
+    private val authentication: Authentication
 ) : ViewModel() {
 
     private val _username = mutableStateOf("")
@@ -47,6 +49,7 @@ class SettingsScreenViewModel @Inject constructor(
     val  isPasswordModelShowing: State<Boolean> =  _isPasswordModelShowing
 
     init{
+        authentication.reloadUser()
         _username.value = userUseCases.getUserUsernameUC()
         _email.value = userUseCases.getUserEmailUC()
         _language.value = "EN"

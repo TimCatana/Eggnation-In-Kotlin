@@ -69,11 +69,11 @@ fun SettingsScreen(
                     navController.navigate(event.screen)
                 }
                 is SettingsScreenViewModel.UiEvent.GoToLoginScreen -> {
-                    navController.navigate(AuthScreen.Login.route) {
-                        popUpTo(GameScreen.Home.route) {
-                            inclusive = true
-                        }
-                    }
+//                    navController.navigate(AuthScreen.Login.route) {
+//                        popUpTo(GameScreen.Home.route) {
+//                            inclusive = true
+//                        }
+//                    }
                 }
             }
         }

@@ -14,6 +14,8 @@ class GetUserUsernameUC @Inject constructor(
     operator fun invoke(): String {
         val username = authenticator.getUserUsername()
 
+        Timber.wtf("kfsfodlfoflo ${authenticator.getUserUsername()}")
+
         if (username == null) {
             // TODO - this is a very bad case... need to do something
             Timber.wtf("!!! User is signed out while trying to go to settings screen")

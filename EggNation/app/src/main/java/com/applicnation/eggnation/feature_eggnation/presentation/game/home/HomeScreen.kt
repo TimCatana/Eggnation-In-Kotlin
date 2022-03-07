@@ -200,19 +200,6 @@ fun HomeScreen(
                                 interactionSource = interactionSource,
                                 indication = null,
                             ) {
-                                navController.navigate(GameScreen.Store.route)
-                            }
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.store_icon),
-                        contentDescription = "store icon",
-                        Modifier
-                            .size(60.dp)
-                            .clickable(
-                                enabled = !viewModel.isAnimationPlaying.value,
-                                interactionSource = interactionSource,
-                                indication = null,
-                            ) {
                                 navController.navigate(GameScreen.WonPrizes.route)
                             }
                     )

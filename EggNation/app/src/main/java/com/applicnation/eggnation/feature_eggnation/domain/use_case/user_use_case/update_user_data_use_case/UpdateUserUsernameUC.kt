@@ -46,9 +46,7 @@ class UpdateUserUsernameUC @Inject constructor(
         val currentUsername = authenticator.getUserUsername()
 
         if (userId == null || currentUsername == null) {
-            // TODO - this is a really bad situation to be in.
-            // TODO - just lgout and say that something went horribly wrong
-            Timber.e("!!!! User is logged out but is trying to update username. Something is horribly wrong")
+            Timber.wtf("!!!! user is null? This is literally impossible to happen")
             emit(Resource.Error<String>("Failed to update username"))
             return@flow
         }
@@ -77,6 +75,13 @@ class UpdateUserUsernameUC @Inject constructor(
         } catch (e: Exception) {
             Timber.e("Failed to update user username in firestore: An unexpected error occurred --> $e")
             emit(Resource.Error<String>("Failed to update username"))
+            return@flow
+        }
+
+        try {
+            authenticator.reloadUser()
+        } catch (e: Exception) {
+            emit(Resource.Error<String>("Failed to update email"))
             return@flow
         }
 

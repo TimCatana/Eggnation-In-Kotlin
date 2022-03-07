@@ -8,7 +8,7 @@ class FunctionsRepositoryImpl @Inject constructor(
     private val functions: Functions
 ): FunctionsRepository {
 
-    override suspend fun updateUserUsername(username: String) {
-        functions.updateUserUsername(username)
+    override suspend fun updateUserEmail(email: String) {
+        functions.updateUserEmail(email)
     }
 }

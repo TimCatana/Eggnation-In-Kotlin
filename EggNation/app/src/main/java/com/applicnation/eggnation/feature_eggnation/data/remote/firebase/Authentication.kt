@@ -12,6 +12,12 @@ import kotlin.jvm.Throws
 class Authentication {
     private val auth = FirebaseAuth.getInstance()
 
+//    suspend fun stateListenenr(): FirebaseAuth.AuthStateListener {
+//        return auth.addAuthStateListener {
+//
+//        }
+//    }
+
     /**
      * Creates a new account for the user.
      * Adds the user to firebase auth console
@@ -121,7 +127,12 @@ class Authentication {
      *                Check that getUserLoggedInStatus is not null.
      */
     fun getUserUsername(): String? {
+        Timber.wtf("IN AUTH BACKEND: ${auth.currentUser?.displayName}")
         return auth.currentUser?.displayName
+    }
+
+    fun reloadUser() {
+        auth.currentUser?.reload()
     }
 
     /**

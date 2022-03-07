@@ -33,11 +33,9 @@ class UpdateUserPasswordUC @Inject constructor(
 
         val userId = authenticator.getUserId()
 
-        if (userId == null) {
-            // TODO - this is a really bad situation to be in.
-            // TODO - just lgout and say that something went horribly wrong
-            Timber.e("!!!! User is logged out but is trying to update password. Something is horribly wrong")
-            emit(Resource.Error<String>("Failed to update username"))
+        if(userId == null) {
+            Timber.wtf("!!!! user is null? This is literally impossible to happen")
+            emit(Resource.Error<String>("Failed to update Password"))
             return@flow
         }
 

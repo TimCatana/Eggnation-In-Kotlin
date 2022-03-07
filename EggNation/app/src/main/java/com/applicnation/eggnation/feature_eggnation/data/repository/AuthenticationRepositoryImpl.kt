@@ -10,6 +10,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
     private val authenticator: Authentication
 ) : AuthenticationRepository {
 
+    override fun reloadUser() {
+        authenticator.reloadUser()
+    }
+
     /**
      * User Account Status
      */
