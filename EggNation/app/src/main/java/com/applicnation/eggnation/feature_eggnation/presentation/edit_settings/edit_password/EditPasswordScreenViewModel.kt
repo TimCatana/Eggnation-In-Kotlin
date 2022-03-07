@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email.EditEmailScreenEvent
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +22,11 @@ class EditPasswordScreenViewModel @Inject constructor(
     private val userUseCases: UserUseCases
 ) : ViewModel() {
 
+    private val _isPasswordModelShowing = mutableStateOf(false)
+    val  isPasswordModelShowing: State<Boolean> =  _isPasswordModelShowing
+
+    private val _validationPasswordText = mutableStateOf("")
+    val validationPasswordText: State<String> = _validationPasswordText
     /**
      * States:
      * - email (String)
@@ -54,6 +60,12 @@ class EditPasswordScreenViewModel @Inject constructor(
      */
     fun onEvent(event: EditPasswordScreenEvent) {
         when (event) {
+            is EditPasswordScreenEvent.ShowPasswordModel -> {
+                _isPasswordModelShowing.value = event.showPasswordModel
+            }
+            is EditPasswordScreenEvent.EnteredValidationPassword -> {
+                _validationPasswordText.value = event.value
+            }
             is EditPasswordScreenEvent.EnteredPassword -> {
                 _passwordText.value = event.value
                 validatePassword()
@@ -64,7 +76,7 @@ class EditPasswordScreenViewModel @Inject constructor(
                 validateConfirmPassword()
             }
             is EditPasswordScreenEvent.UpdatePassword -> {
-                userUseCases.updateUserPasswordUC(newPassword = event.newPassword)
+                userUseCases.updateUserPasswordUC(password = _validationPasswordText.value, newPassword = event.newPassword)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {

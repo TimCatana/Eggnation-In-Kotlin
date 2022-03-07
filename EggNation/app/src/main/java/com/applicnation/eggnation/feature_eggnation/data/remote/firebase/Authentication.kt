@@ -131,8 +131,8 @@ class Authentication {
         return auth.currentUser?.displayName
     }
 
-    fun reloadUser() {
-        auth.currentUser?.reload()
+    suspend fun reloadUser() {
+        auth.currentUser?.getIdToken(true)?.await()
     }
 
     /**

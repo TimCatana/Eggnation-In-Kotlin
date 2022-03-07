@@ -10,7 +10,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
     private val authenticator: Authentication
 ) : AuthenticationRepository {
 
-    override fun reloadUser() {
+    override suspend fun reloadUser() {
         authenticator.reloadUser()
     }
 

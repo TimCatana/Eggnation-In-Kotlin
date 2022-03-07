@@ -10,7 +10,7 @@ interface AuthenticationRepository {
     suspend fun deleteUserAccount()
     suspend fun authenticateUser(email: String, password: String)
 
-    fun reloadUser()
+    suspend fun reloadUser()
 
     suspend fun sendPasswordResetEmail(email: String)
     suspend fun sendVerificationEmail()

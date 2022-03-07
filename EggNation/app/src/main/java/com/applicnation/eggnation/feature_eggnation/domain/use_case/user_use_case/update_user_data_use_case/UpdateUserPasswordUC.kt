@@ -28,14 +28,23 @@ class UpdateUserPasswordUC @Inject constructor(
      * @exception Exception All exceptions caught in this block are UNEXPECTED
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
-    operator fun invoke(newPassword: String): Flow<Resource<String>> = flow {
+    operator fun invoke(password: String, newPassword: String): Flow<Resource<String>> = flow {
         emit(Resource.Loading<String>())
 
-        val userId = authenticator.getUserId()
+        val email = authenticator.getUserEmail()
 
-        if(userId == null) {
+        if(email == null) {
             Timber.wtf("!!!! user is null? This is literally impossible to happen")
             emit(Resource.Error<String>("Failed to update Password"))
+            return@flow
+        }
+
+        try {
+            authenticator.authenticateUser(email, password)
+            emit(Resource.Success<String>(message = "password valid"))
+        } catch (e: Exception) {
+            authenticateUserErrorMessages(e)
+            emit(Resource.Error<String>(message = "Invalid password"))
             return@flow
         }
 
@@ -45,18 +54,66 @@ class UpdateUserPasswordUC @Inject constructor(
         } catch (e: FirebaseAuthInvalidUserException) {
             Timber.e("Failed to update user password: Either user's account is disabled or deleted and re-authentication failed OR user's account is disabled, deleted or credentials are no longer valid --> $e")
             emit(Resource.Error<String>("Failed to update Password"))
+            return@flow
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             Timber.e("Failed to update user password: Either re-authentication failed to due Invalid email/password or if user is trying to access someone else's account OR the new password address is not formatted correctly and invalid --> $e")
             emit(Resource.Error<String>("Failed to update Password"))
+            return@flow
         } catch (e: FirebaseAuthWeakPasswordException) {
             Timber.e("Failed to update user password: Weak Password (needs to be greater than 6 characters) --> $e")
             emit(Resource.Error<String>("Failed to update Password"))
+            return@flow
         } catch (e: FirebaseAuthRecentLoginRequiredException) {
             Timber.wtf("!!!! Failed to update user password: The re-authentication failed but the program still tried to update the user's email. An exception should have been thrown from reauthenticate() and prevented all code following it from running --> $e")
             emit(Resource.Error<String>("Failed to update Password"))
+            return@flow
         } catch (e: Exception) {
             Timber.e("Failed to update user password: An unexpected error occurred --> $e")
             emit(Resource.Error<String>("Failed to update Password"))
+            return@flow
         }
+
+        try {
+            authenticator.authenticateUser(email, newPassword)
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Timber.e("Account has been disabled or deleted --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Timber.e("Invalid credentials --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        } catch (e: java.lang.Exception) {
+            Timber.e("Something went wrong --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        }
+
+        try {
+            authenticator.reloadUser()
+        } catch (e: java.lang.Exception) {
+            emit(Resource.Error<String>("update password"))
+            return@flow
+        }
+
+        emit(Resource.Success<String>(message = "password valid"))
     }.flowOn(Dispatchers.IO)
+
+
+
+
+    private fun authenticateUserErrorMessages(e: Exception) {
+        Timber.i("${e.cause}, ${e.message}, ${e.javaClass}")
+
+//        if (e. == FirebaseAuthInvalidUserException) {
+//            Timber.e("Account has been disabled or deleted --> $e")
+//            emit(Resource.Error<String>(message = "Invalid password"))
+//        } catch (e: FirebaseAuthInvalidCredentialsException) {
+//            Timber.e("Invalid credentials --> $e")
+//            emit(Resource.Error<String>(message = "Invalid password"))
+//        } catch (e: java.lang.Exception) {
+//            Timber.e("Something went wrong --> $e")
+//            emit(Resource.Error<String>(message = "Invalid password"))
+//        }
+    }
 }

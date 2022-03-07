@@ -184,12 +184,7 @@ fun UserSettingsSection(
             icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
-                viewModel.onEvent(
-                    SettingsScreenEvent.ShowPasswordModel(
-                        true,
-                        SettingScreen.EditUsername.route
-                    )
-                )
+                navController.navigate(SettingScreen.EditUsername.route)
             }
         )
         SettingsItem(
@@ -198,12 +193,7 @@ fun UserSettingsSection(
             icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
-                viewModel.onEvent(
-                    SettingsScreenEvent.ShowPasswordModel(
-                        true,
-                        SettingScreen.EditEmail.route
-                    )
-                )
+                navController.navigate(SettingScreen.EditEmail.route)
             }
         )
         SettingsItem(
@@ -219,13 +209,7 @@ fun UserSettingsSection(
             icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
-                viewModel.onEvent(
-                    SettingsScreenEvent.ShowPasswordModel(
-                        true,
-                        SettingScreen.EditPassword.route
-                    )
-                )
-//                navController.navigate(SettingScreen.EditPassword.route)
+                navController.navigate(SettingScreen.EditPassword.route)
             }
         )
         SettingsItem(

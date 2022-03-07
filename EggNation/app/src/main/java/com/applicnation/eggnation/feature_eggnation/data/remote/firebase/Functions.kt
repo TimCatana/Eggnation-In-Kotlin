@@ -8,17 +8,19 @@ import kotlinx.coroutines.tasks.await
 class Functions {
     private val functions = Firebase.functions
 
-    suspend fun updateUserEmail(email: String): Task<String> {
+    suspend fun updateUserEmail(email: String) {
         val data = hashMapOf(
             "email" to email
         )
 
-        return functions.getHttpsCallable("updateUserEmail").call(data).continueWith { task ->
-            // This continuation runs on either success or failure, but if the task
-            // has failed then result will throw an Exception which will be
-            // propagated down.
-            val result = task.result?.data as String
-            result
-        }
+        functions.getHttpsCallable("updateUserEmail").call(data).await()
+    }
+
+    suspend fun updateUserPassword(password: String) {
+        val data = hashMapOf(
+            "password" to password
+        )
+
+        functions.getHttpsCallable("updateUserPassword").call(data).await()
     }
 }

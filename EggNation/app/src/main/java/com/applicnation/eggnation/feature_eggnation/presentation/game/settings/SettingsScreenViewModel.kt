@@ -49,7 +49,7 @@ class SettingsScreenViewModel @Inject constructor(
     val  isPasswordModelShowing: State<Boolean> =  _isPasswordModelShowing
 
     init{
-        authentication.reloadUser()
+        // TODO - add reloadUser here in coroutine
         _username.value = userUseCases.getUserUsernameUC()
         _email.value = userUseCases.getUserEmailUC()
         _language.value = "EN"

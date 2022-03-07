@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password.EditPasswordScreenEvent
+import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreenEvent
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,6 +25,9 @@ class EditEmailScreenViewModel @Inject constructor(
      * States:
      * - email (String)
      */
+    private val _passwordText = mutableStateOf("")
+    val passwordText: State<String> = _passwordText
+
     private val _emailText = mutableStateOf("")
     val emailText: State<String> = _emailText
 
@@ -35,17 +40,23 @@ class EditEmailScreenViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
+    private val _isPasswordModelShowing = mutableStateOf(false)
+    val  isPasswordModelShowing: State<Boolean> =  _isPasswordModelShowing
+
     /**
      * events
      */
     fun onEvent(event: EditEmailScreenEvent) {
         when (event) {
+            is EditEmailScreenEvent.EnteredPassword -> {
+                _passwordText.value = event.value
+            }
             is EditEmailScreenEvent.EnteredEmail -> {
                 _emailText.value = event.value
                 validateEmail()
             }
             is EditEmailScreenEvent.UpdateEmail -> {
-                userUseCases.updateUserEmailAddressUC(newEmail = event.newEmail)
+                userUseCases.updateUserEmailAddressUC(password = _passwordText.value, newEmail = _emailText.value)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {
@@ -69,6 +80,9 @@ class EditEmailScreenViewModel @Inject constructor(
                             }
                         }
                     }.launchIn(viewModelScope)
+            }
+            is EditEmailScreenEvent.ShowPasswordModel -> {
+                _isPasswordModelShowing.value = event.showPasswordModel
             }
         }
     }
