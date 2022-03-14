@@ -37,70 +37,67 @@ class UpdateUserEmailAddressUC @Inject constructor(
      * @exception Exception All exceptions caught in this block are UNEXPECTED
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
+    operator fun invoke(password: String, newEmail: String): Flow<Resource<String>> = flow {
+        emit(Resource.Loading<String>())
 
-//    /**
-//     * Updates the user email in firestore
-//     * @param userId The user's user ID (usually always from Firebase auth). user documents are named after the user's uid
-//     * @param newEmail The new email the email field should be updated to
-//     * @exception FirebaseFirestoreException This is the only exception Firestore can throw as of now (according to documentation)
-//     * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
-//     */
+        val currentEmail = authenticator.getUserEmail()
+        if (currentEmail == null) {
+            Timber.wtf("User email is null but user is logged in. Something is wronf")
+            emit(Resource.Error<String>("Failed to update email"))
+            return@flow
+        }
 
-    operator fun invoke(
-        password: String,
-        newEmail: String
-    ): Flow<Resource<String>> =
-        flow {
-            emit(Resource.Loading<String>())
+        // authenticate user to make sure no one else is trying to change the email
+        try {
+            authenticator.authenticateUser(currentEmail, password)
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Timber.e("Account has been disabled or deleted --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Timber.e("Invalid credentials --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        } catch (e: Exception) {
+            Timber.e("Something went wrong --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        }
 
-            val currentEmail = authenticator.getUserEmail()
-            if (currentEmail == null) {
-                Timber.wtf("!!!! user is null? This is literally impossible to happen")
-                emit(Resource.Error<String>("Failed to update email"))
-                return@flow
-            }
+        // uodate email via cloud function so that they don't get a message allowing them to change it back
+        try {
+            functions.updateUserEmail(newEmail)
+        } catch (e: Exception) {
+            Timber.e("Failed to update email in functions --> $e")
+            emit(Resource.Error<String>("Failed to update email"))
+            return@flow
+        }
 
-            try {
-                authenticator.authenticateUser(currentEmail, password)
-                emit(Resource.Success<String>(message = "password valid"))
-            } catch (e: FirebaseAuthInvalidUserException) {
-                Timber.e("Account has been disabled or deleted --> $e")
-                emit(Resource.Error<String>(message = "Invalid password"))
-            } catch (e: FirebaseAuthInvalidCredentialsException) {
-                Timber.e("Invalid credentials --> $e")
-                emit(Resource.Error<String>(message = "Invalid password"))
-            } catch (e: Exception) {
-                Timber.e("Something went wrong --> $e")
-                emit(Resource.Error<String>(message = "Invalid password"))
-            }
+        // reatuhenticate to make sure data is updated locally and avoid breaks
+        try {
+            authenticator.authenticateUser(newEmail, password)
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Timber.e("Account has been disabled or deleted --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Timber.e("Invalid credentials --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        } catch (e: Exception) {
+            Timber.e("Something went wrong --> $e")
+            emit(Resource.Error<String>(message = "Invalid password"))
+            return@flow
+        }
 
-            try {
-                functions.updateUserEmail(newEmail)
-            } catch (e: Exception) {
-                Timber.e("Failed to update email in functions --> $e")
-                emit(Resource.Error<String>("Failed to update email"))
-            }
+        // reload the new data
+        try {
+            authenticator.reloadUser()
+        } catch (e: Exception) {
+            emit(Resource.Error<String>("Failed to update email"))
+            return@flow
+        }
 
-            try {
-                authenticator.authenticateUser(newEmail, password)
-                emit(Resource.Success<String>(message = "password valid"))
-            } catch (e: FirebaseAuthInvalidUserException) {
-                Timber.e("Account has been disabled or deleted --> $e")
-                emit(Resource.Error<String>(message = "Invalid password"))
-            } catch (e: FirebaseAuthInvalidCredentialsException) {
-                Timber.e("Invalid credentials --> $e")
-                emit(Resource.Error<String>(message = "Invalid password"))
-            } catch (e: Exception) {
-                Timber.e("Something went wrong --> $e")
-                emit(Resource.Error<String>(message = "Invalid password"))
-            }
-
-            try {
-                authenticator.reloadUser()
-            } catch (e: Exception) {
-                emit(Resource.Error<String>("Failed to update email"))
-            }
-
-            emit(Resource.Success<String>(message = "Email updated successfully"))
-        }.flowOn(Dispatchers.IO)
+        emit(Resource.Success<String>(message = "Email updated successfully"))
+    }.flowOn(Dispatchers.IO)
 }

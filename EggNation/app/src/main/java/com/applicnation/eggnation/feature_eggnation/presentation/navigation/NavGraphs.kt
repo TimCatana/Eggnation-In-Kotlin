@@ -13,7 +13,6 @@ import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.R
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email.EditEmailScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_language.EditLanguageScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password.EditPasswordScreen
-import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_username.EditUsernameScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.ClaimPrizeScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreen
@@ -60,9 +59,7 @@ fun GameNavGraph(
             VerifyEmailScreen(navController = navController)
         }
 
-        composable(route = SettingScreen.EditUsername.route) {
-            EditUsernameScreen(navController = navController)
-        }
+
         composable(route = SettingScreen.EditEmail.route) {
             EditEmailScreen(navController = navController)
         }

@@ -24,15 +24,24 @@ class EditEmailScreenViewModel @Inject constructor(
     /**
      * States:
      * - email (String)
+     * - isEmailError (Boolean)
+     * - isPasswordModalShowing (Boolean)
+     * - password (String)
+     * - isLoading (Boolean)
+     * - eventFlow (Flow)
+     * -
      */
-    private val _passwordText = mutableStateOf("")
-    val passwordText: State<String> = _passwordText
-
     private val _emailText = mutableStateOf("")
     val emailText: State<String> = _emailText
 
     private val _isEmailError = mutableStateOf(true)
     val isEmailError: State<Boolean> = _isEmailError
+
+    private val _isPasswordModelShowing = mutableStateOf(false)
+    val isPasswordModelShowing: State<Boolean> = _isPasswordModelShowing
+
+    private val _passwordText = mutableStateOf("")
+    val passwordText: State<String> = _passwordText
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
@@ -40,23 +49,31 @@ class EditEmailScreenViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private val _isPasswordModelShowing = mutableStateOf(false)
-    val  isPasswordModelShowing: State<Boolean> =  _isPasswordModelShowing
 
     /**
      * events
+     * - Email (Text Entered)
+     * - Show PasswordModal (Button Click)
+     * - Password (Text Entered)
+     * - Sign In (Button Clicked)
      */
     fun onEvent(event: EditEmailScreenEvent) {
         when (event) {
-            is EditEmailScreenEvent.EnteredPassword -> {
-                _passwordText.value = event.value
-            }
             is EditEmailScreenEvent.EnteredEmail -> {
                 _emailText.value = event.value
                 validateEmail()
             }
+            is EditEmailScreenEvent.ShowPasswordModal -> {
+                _isPasswordModelShowing.value = event.showPasswordModel
+            }
+            is EditEmailScreenEvent.EnteredPassword -> {
+                _passwordText.value = event.value
+            }
             is EditEmailScreenEvent.UpdateEmail -> {
-                userUseCases.updateUserEmailAddressUC(password = _passwordText.value, newEmail = _emailText.value)
+                userUseCases.updateUserEmailAddressUC(
+                    password = _passwordText.value,
+                    newEmail = _emailText.value
+                )
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {
@@ -64,26 +81,20 @@ class EditEmailScreenViewModel @Inject constructor(
                             }
                             is Resource.Success -> {
                                 _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message ?: "Email updated successfully"
-                                    )
-                                )
+                                _eventFlow.emit(UiEvent.ChangeStacks)
                             }
                             is Resource.Error -> {
                                 _isLoading.value = false
                                 _eventFlow.emit(
                                     UiEvent.ShowSnackbar(
-                                        message = result.message ?: "Email failed to update"
+                                        message = result.message ?: "Email failed to update" // TODO - need to get error messages from cloud functions
                                     )
                                 )
                             }
                         }
                     }.launchIn(viewModelScope)
             }
-            is EditEmailScreenEvent.ShowPasswordModel -> {
-                _isPasswordModelShowing.value = event.showPasswordModel
-            }
+
         }
     }
 
@@ -94,5 +105,6 @@ class EditEmailScreenViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
+        object ChangeStacks : UiEvent()
     }
 }

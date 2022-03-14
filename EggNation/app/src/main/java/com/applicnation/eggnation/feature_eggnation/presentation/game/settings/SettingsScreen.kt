@@ -87,12 +87,11 @@ fun SettingsScreen(
 
             if (viewModel.isPasswordModelShowing.value) {
                 PasswordModal(
-                   // TODO - make width and height based on screen dimensions
+                    // TODO - make width and height based on screen dimensions
                     modifier = Modifier
                         .align(Alignment.Center)
                         .width(300.dp)
-                        .height(200.dp)
-                    ,
+                        .height(200.dp),
                     cancelModal = {
                         viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false))
                     },
@@ -100,6 +99,10 @@ fun SettingsScreen(
                     onTextChange = { viewModel.onEvent(SettingsScreenEvent.EnteredPassword(it)) },
                     text = viewModel.passwordText.value,
                 )
+            }
+
+            if (viewModel.isLoading.value) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
@@ -138,7 +141,11 @@ fun UserSettingsSection(
                 Icons.Filled.Send
             },
             isLast = false,
-            onClick = {},
+            onClick = if (viewModel.isEmailVerified.value) {
+                {}
+            } else {
+                { viewModel.onEvent(SettingsScreenEvent.SendVerificationEmail) }
+            },
         )
         SettingsItem(
             settingsTitle = "Password",

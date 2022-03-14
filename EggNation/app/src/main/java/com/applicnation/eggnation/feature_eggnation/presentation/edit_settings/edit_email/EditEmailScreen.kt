@@ -28,6 +28,7 @@ import com.applicnation.eggnation.feature_eggnation.presentation.components.Stan
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password.EditPasswordScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreenViewModel
+import com.applicnation.eggnation.ui.theme.SettingsBG
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -43,7 +44,6 @@ fun EditEmailScreen(
         focusRequester.requestFocus()
     }
 
-
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
@@ -52,12 +52,17 @@ fun EditEmailScreen(
                         message = event.message,
                     )
                 }
+                is EditEmailScreenViewModel.UiEvent.ChangeStacks -> {
+                    navController.popBackStack()
+                }
             }
         }
+
     }
 
     Scaffold(
         scaffoldState = scaffoldState,
+        backgroundColor = SettingsBG
     ) {
         Box(
             modifier = Modifier
@@ -67,7 +72,7 @@ fun EditEmailScreen(
                     end = 24.dp,
                     top = 24.dp,
                     bottom = 50.dp
-                )
+                ).background(color = SettingsBG)
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -96,13 +101,22 @@ fun EditEmailScreen(
                                 localFocusManager.clearFocus()
                             }
                         ),
+                        textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.White,
+                            focusedLabelColor = Color.White,
+                            unfocusedBorderColor = Color.White,
+                            unfocusedLabelColor = Color.White,
+                            trailingIconColor = Color.White,
+                            cursorColor = Color.White,
+                            textColor = Color.White
+                        ),
                     )
                 }
                 Button(
                     enabled = !viewModel.isEmailError.value, // TODO - check that password is filled in as well
                     onClick = {
                         viewModel.onEvent(EditEmailScreenEvent.EnteredPassword(""))
-                        viewModel.onEvent(EditEmailScreenEvent.ShowPasswordModel(true))
+                        viewModel.onEvent(EditEmailScreenEvent.ShowPasswordModal(true))
                     },
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
@@ -118,102 +132,16 @@ fun EditEmailScreen(
                         .width(300.dp)
                         .height(200.dp),
                     cancelModal = {
-                        viewModel.onEvent(EditEmailScreenEvent.ShowPasswordModel(false))
+                        viewModel.onEvent(EditEmailScreenEvent.ShowPasswordModal(false))
                     },
                     onDone = { viewModel.onEvent(EditEmailScreenEvent.UpdateEmail(viewModel.emailText.value)) },
                     onTextChange = { viewModel.onEvent(EditEmailScreenEvent.EnteredPassword(it)) },
                     text = viewModel.passwordText.value,
                 )
             }
-        }
-    }
-}
 
-
-//@Composable
-//private fun PasswordModelsss(
-//    viewModel: EditEmailScreenViewModel,
-//    modifier: Modifier
-//) {
-//    Column(
-//        modifier = modifier,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        Icon(
-//            imageVector = Icons.Filled.Close,
-//            contentDescription = "exit",
-//            modifier = Modifier
-//                .align(Alignment.Start)
-//                .padding(start = 4.dp, top = 4.dp)
-//                .clickable {
-//                    viewModel.onEvent(EditEmailScreenEvent.EnteredPassword(""))
-//                    viewModel.onEvent(EditEmailScreenEvent.ShowPasswordModel(false, ""))
-//                }
-//        )
-//        StandardTextField(
-//            text = viewModel.passwordText.value,
-//            onValueChange = {
-//                viewModel.onEvent(EditEmailScreenEvent.EnteredPassword(it))
-//            },
-//            isError = false,
-//            errorText = "Please enter a password",
-//            keyboardType = KeyboardType.Password,
-//            label = "password", // TODO - use string resources
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//        Button(onClick = {
-//            viewModel.onEvent(
-//                EditEmailScreenEvent.UpdateEmail(
-//                    viewModel.emailText.value,
-//                )
-//            )
-//        }) {
-//            Text(text = "Confirm")
-//        }
-//    }
-//
-//}
-
-@Preview(showBackground = true)
-@Composable
-fun EmailScreenPreview() {
-    val scaffoldState = rememberScaffoldState()
-
-
-    Scaffold(
-        scaffoldState = scaffoldState,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    top = 24.dp,
-                    bottom = 50.dp
-                )
-        ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 40.dp)
-            ) {
-                StandardTextField(
-                    text = "test",
-                    onValueChange = {},
-                    isError = false,
-                    errorText = "Invalid email address",
-                    label = "email",
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Button(
-                    enabled = false,
-                    onClick = {},
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
-                    Text(text = "Change Email")
-                }
+            if (viewModel.isLoading.value) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }

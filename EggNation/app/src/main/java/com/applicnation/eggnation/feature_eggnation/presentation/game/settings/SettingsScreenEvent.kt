@@ -7,4 +7,5 @@ sealed class SettingsScreenEvent {
     data class ShowPasswordModel(val showPasswordModel: Boolean) : SettingsScreenEvent()
     object SignOut : SettingsScreenEvent()
     data class DeleteAccount(val password: String): SettingsScreenEvent()
+    object SendVerificationEmail: SettingsScreenEvent()
 }

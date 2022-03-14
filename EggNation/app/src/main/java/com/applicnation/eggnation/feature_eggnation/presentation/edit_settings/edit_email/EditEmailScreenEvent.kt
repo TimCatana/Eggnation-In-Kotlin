@@ -4,5 +4,5 @@ sealed class EditEmailScreenEvent {
     data class EnteredEmail(val value: String): EditEmailScreenEvent()
     data class EnteredPassword(val value: String): EditEmailScreenEvent()
     data class UpdateEmail(val newEmail: String): EditEmailScreenEvent()
-    data class ShowPasswordModel(val showPasswordModel: Boolean) : EditEmailScreenEvent()
+    data class ShowPasswordModal(val showPasswordModel: Boolean) : EditEmailScreenEvent()
 }

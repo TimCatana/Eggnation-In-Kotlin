@@ -41,9 +41,8 @@ fun ForgotPasswordScreen(
                 is ForgotPasswordScreenViewModel.UiEvent.ShowSnackbar -> {
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message,
+                        duration = SnackbarDuration.Short
                     )
-                }
-                is ForgotPasswordScreenViewModel.UiEvent.ChangeStacks -> {
                     navController.popBackStack()
                 }
             }

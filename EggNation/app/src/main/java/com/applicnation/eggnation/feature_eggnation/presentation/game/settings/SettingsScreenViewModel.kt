@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,10 +54,9 @@ class SettingsScreenViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     private val _isPasswordModelShowing = mutableStateOf(false)
-    val  isPasswordModelShowing: State<Boolean> =  _isPasswordModelShowing
+    val isPasswordModelShowing: State<Boolean> = _isPasswordModelShowing
 
-    init{
-        // TODO - add reloadUser here in coroutine
+    init {
         _email.value = userUseCases.getUserEmailUC()
         _isEmailVerified.value = userUseCases.getUserEmailVerificationStatusUC()
         _language.value = "EN"
@@ -99,6 +99,31 @@ class SettingsScreenViewModel @Inject constructor(
                         }
                         is Resource.Success -> {
                             _isLoading.value = false
+                        }
+                        is Resource.Error -> {
+                            _isLoading.value = false
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = result.message!!
+                                )
+                            )
+                        }
+                    }
+                }.launchIn(viewModelScope)
+            }
+            is SettingsScreenEvent.SendVerificationEmail -> {
+                userUseCases.sendUserVerificationEmailUC().onEach { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _isLoading.value = true
+                        }
+                        is Resource.Success -> {
+                            _isLoading.value = false
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = result.message!!
+                                )
+                            )
                         }
                         is Resource.Error -> {
                             _isLoading.value = false

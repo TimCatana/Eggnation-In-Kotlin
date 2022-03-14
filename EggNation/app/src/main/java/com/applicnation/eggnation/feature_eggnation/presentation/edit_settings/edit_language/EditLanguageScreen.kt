@@ -60,21 +60,10 @@ fun LanguagesSelectionSection(
         SettingsItem(
             settingsTitle = "English",
             icon = Icons.Filled.Check,
-            isLast = false,
-            onClick = {}
-        )
-        SettingsItem(
-            settingsTitle = "Romanian",
-            icon = Icons.Filled.Close,
-            isLast = false,
-            onClick = {}
-        )
-        SettingsItem(
-            settingsTitle = "Spanish",
-            icon = Icons.Filled.Close,
             isLast = true,
             onClick = {}
         )
+        // TODO - add more languages in the future and set the app language based on preference
     }
 }
 
@@ -119,10 +108,10 @@ fun SettingsItem(
                 )
                 Icon(
                     imageVector = icon,
+                    tint = Color.White,
                     contentDescription = "toggle password",
                     modifier = Modifier
                         .padding(10.dp, 0.dp)
-                        .background(Color.Blue)
                 )
             }
         }

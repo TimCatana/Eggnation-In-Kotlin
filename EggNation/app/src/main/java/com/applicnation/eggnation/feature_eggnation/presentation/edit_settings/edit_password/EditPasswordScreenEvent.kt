@@ -4,8 +4,7 @@ import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.e
 
 sealed class EditPasswordScreenEvent {
     data class EnteredValidationPassword(val value: String): EditPasswordScreenEvent()
-    data class ShowPasswordModel(val showPasswordModel: Boolean, val navScreen: String) : EditPasswordScreenEvent()
-
+    data class ShowPasswordModel(val showPasswordModel: Boolean) : EditPasswordScreenEvent()
 
     data class EnteredPassword(val value: String) : EditPasswordScreenEvent()
     data class EnteredConfirmPassword(val value: String) : EditPasswordScreenEvent()

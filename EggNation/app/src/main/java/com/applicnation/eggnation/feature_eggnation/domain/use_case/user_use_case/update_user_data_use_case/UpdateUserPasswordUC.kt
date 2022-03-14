@@ -18,7 +18,6 @@ class UpdateUserPasswordUC @Inject constructor(
 ) {
     /**
      * Updates the user's password.
-     * @param email The user email (used for re-authentication)
      * @param password The user password (used for re-authentication)
      * @param newPassword The new password to set for the user's account
      * @exception FirebaseAuthInvalidUserException
@@ -28,17 +27,19 @@ class UpdateUserPasswordUC @Inject constructor(
      * @exception Exception All exceptions caught in this block are UNEXPECTED
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
+
+    // TDOO - add Firebase network error to the try-catches
     operator fun invoke(password: String, newPassword: String): Flow<Resource<String>> = flow {
         emit(Resource.Loading<String>())
 
         val email = authenticator.getUserEmail()
-
         if (email == null) {
             Timber.wtf("!!!! user is null? This is literally impossible to happen")
             emit(Resource.Error<String>("Failed to update Password"))
             return@flow
         }
 
+        // authentcate user to make sure no one is trying to change their password without their consent
         try {
             authenticator.authenticateUser(email, password)
         } catch (e: Exception) {
@@ -49,7 +50,6 @@ class UpdateUserPasswordUC @Inject constructor(
 
         try {
             authenticator.updateUserPassword(newPassword)
-            emit(Resource.Success<String>(message = "Password updated successfully"))
         } catch (e: FirebaseAuthInvalidUserException) {
             Timber.e("Failed to update user password: Either user's account is disabled or deleted and re-authentication failed OR user's account is disabled, deleted or credentials are no longer valid --> $e")
             emit(Resource.Error<String>("Failed to update Password"))

@@ -64,8 +64,6 @@ class ForgotPasswordScreenViewModel @Inject constructor(
                                             ?: "Email sent successfully. If you can't find it, check your spam folder" // TODO - get rid of this because I want to meka emessages required on succes Resource
                                     )
                                 )
-                                delay(1500L)
-                                _eventFlow.emit(UiEvent.ChangeStacks)
                             }
                             is Resource.Error -> {
                                 _isLoading.value = false
@@ -88,6 +86,5 @@ class ForgotPasswordScreenViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
-        object ChangeStacks : UiEvent()
     }
 }

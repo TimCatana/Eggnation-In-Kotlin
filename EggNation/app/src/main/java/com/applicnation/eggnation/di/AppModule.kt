@@ -25,8 +25,6 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_cas
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserProfilePictureUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserUsernameUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.user_account_use_case.*
 import dagger.Module
 import dagger.Provides
@@ -115,20 +113,17 @@ object AppModule {
             signOutUserUC = SignOutUserUC(authenticationRepo),
             deleteUserUC = DeleteUserUC(authenticationRepo),
             reauthenticateUser = ReauthenticateUser(authenticationRepo),
+            reloadUserUC = ReloadUserUC(authenticationRepo),
 
             sendUserPasswordResetEmailUC = SendUserPasswordResetEmailUC(authenticationRepo),
             sendUserVerificationEmailUC = SendUserVerificationEmailUC(authenticationRepo),
 
             getUserIdUC = GetUserIdUC(authenticationRepo),
             getUserEmailUC = GetUserEmailUC(authenticationRepo),
-            getUserUsernameUC = GetUserUsernameUC(authenticationRepo),
-            getUserProfilePictureUC = GetUserProfilePictureUC(authenticationRepo),
             getUserEmailVerificationStatusUC = GetUserEmailVerificationStatusUC(authenticationRepo),
 
             updateUserEmailAddressUC = UpdateUserEmailAddressUC(authenticationRepo, databaseRepo, functionsRepo),
             updateUserPasswordUC = UpdateUserPasswordUC(authenticationRepo),
-            updateUserUsernameUC = UpdateUserUsernameUC(authenticationRepo, databaseRepo),
-            updateUserProfilePictureUC = UpdateUserProfilePictureUC(authenticationRepo)
         )
     }
 
