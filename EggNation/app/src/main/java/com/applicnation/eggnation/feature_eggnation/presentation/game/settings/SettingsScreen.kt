@@ -1,13 +1,9 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.settings
 
-import android.graphics.Color.rgb
-import android.provider.Settings
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,22 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.components.PasswordModal
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
-import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizeItemInfoCard
-import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes.AvailablePrizesScreenViewModel
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.PolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.SettingScreen
 import com.applicnation.eggnation.ui.theme.SettingsBG
 import com.applicnation.eggnation.ui.theme.SettingsItemBG
-import com.google.common.cache.RemovalListener
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 // TODO - need to decide on a settings screen style
 
@@ -63,18 +50,6 @@ fun SettingsScreen(
                         message = event.message,
                     )
                 }
-                is SettingsScreenViewModel.UiEvent.ChangeStacks -> {
-                    viewModel.onEvent(SettingsScreenEvent.EnteredPassword(""))
-                    viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false, ""))
-                    navController.navigate(event.screen)
-                }
-                is SettingsScreenViewModel.UiEvent.GoToLoginScreen -> {
-//                    navController.navigate(AuthScreen.Login.route) {
-//                        popUpTo(GameScreen.Home.route) {
-//                            inclusive = true
-//                        }
-//                    }
-                }
             }
         }
     }
@@ -90,81 +65,44 @@ fun SettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp, 10.dp)
+                    .padding(10.dp, 40.dp)
                     .background(color = SettingsBG),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.egg),
-                    contentDescription = "Profile Pircture",
-                    modifier = Modifier
-                        .width(100.dp)
-                        .height(100.dp)
-                        .padding(0.dp, 10.dp)
-                        .clip(CircleShape)
-                        .border(color = Color.DarkGray, shape = CircleShape, width = 10.dp)
-                )
+                Text(text = "EGGNATION", color = Color.White)
                 UserSettingsSection(navController = navController, viewModel = viewModel)
                 ContactSettingsSection(navController = navController, viewModel = viewModel)
-                PrivacySettingsSection(navController = navController, viewModel = viewModel)
+                PrivacySettingsSection(navController = navController)
                 Button(onClick = {
                     viewModel.onEvent(SettingsScreenEvent.SignOut)
                 }) {
                     Text(text = "Logout")
                 }
+                Button(onClick = {
+                    viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(true))
+                }) {
+                    Text(text = "Delete")
+                }
             }
 
             if (viewModel.isPasswordModelShowing.value) {
-                PasswordModel(
-                    viewModel = viewModel,
+                PasswordModal(
+                   // TODO - make width and height based on screen dimensions
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .background(Color.White)
-                        .width(400.dp)
-                        .height(400.dp), // TODO - make width and height based on screen dimensions
+                        .width(300.dp)
+                        .height(200.dp)
+                    ,
+                    cancelModal = {
+                        viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false))
+                    },
+                    onDone = { viewModel.onEvent(SettingsScreenEvent.DeleteAccount(viewModel.passwordText.value)) },
+                    onTextChange = { viewModel.onEvent(SettingsScreenEvent.EnteredPassword(it)) },
+                    text = viewModel.passwordText.value,
                 )
             }
         }
-    }// TODO add a delete account option
-}
-
-@Composable
-private fun PasswordModel(
-    viewModel: SettingsScreenViewModel,
-    modifier: Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Close,
-            contentDescription = "exit",
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 4.dp, top = 4.dp)
-                .clickable {
-                    viewModel.onEvent(SettingsScreenEvent.EnteredPassword(""))
-                    viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false, ""))
-                }
-        )
-        StandardTextField(
-            text = viewModel.passwordText.value,
-            onValueChange = {
-                viewModel.onEvent(SettingsScreenEvent.EnteredPassword(it))
-            },
-            isError = false,
-            errorText = "Please enter a password",
-            keyboardType = KeyboardType.Password,
-            label = "password" // TODO - use string resources
-        )
-        Button(onClick = {
-            viewModel.onEvent(SettingsScreenEvent.EditProfile(viewModel.passwordText.value))
-        }) {
-            Text(text = "Confirm")
-        }
     }
-
 }
 
 @Composable
@@ -179,15 +117,6 @@ fun UserSettingsSection(
             .clip(RoundedCornerShape(20.dp)),
     ) {
         SettingsItem(
-            settingsTitle = "Username",
-            settingsInfo = viewModel.username.value,
-            icon = Icons.Filled.Edit,
-            isLast = false,
-            onClick = {
-                navController.navigate(SettingScreen.EditUsername.route)
-            }
-        )
-        SettingsItem(
             settingsTitle = "Email",
             settingsInfo = viewModel.email.value,
             icon = Icons.Filled.Edit,
@@ -198,14 +127,22 @@ fun UserSettingsSection(
         )
         SettingsItem(
             settingsTitle = "Verification Status",
-            settingsInfo = "",
-            icon = Icons.Filled.CheckBox,
+            settingsInfo = if (viewModel.isEmailVerified.value) {
+                "verified"
+            } else {
+                "not verified"
+            },
+            icon = if (viewModel.isEmailVerified.value) {
+                Icons.Filled.Check
+            } else {
+                Icons.Filled.Send
+            },
             isLast = false,
-            onClick = {}
+            onClick = {},
         )
         SettingsItem(
             settingsTitle = "Password",
-            settingsInfo = "...",
+            settingsInfo = "●●●●●●●●",
             icon = Icons.Filled.Edit,
             isLast = false,
             onClick = {
@@ -227,7 +164,6 @@ fun UserSettingsSection(
 @Composable
 fun PrivacySettingsSection(
     navController: NavController,
-    viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     Column(
         modifier = Modifier
@@ -329,7 +265,7 @@ fun SettingsItem(
 
         if (!isLast) {
             Divider(
-                color = Color.Gray, thickness = 0.2.dp, modifier = Modifier
+                color = Color.Gray, thickness = 1.dp, modifier = Modifier
                     .padding(4.dp, 0.dp)
                     .align(
                         Alignment.BottomCenter

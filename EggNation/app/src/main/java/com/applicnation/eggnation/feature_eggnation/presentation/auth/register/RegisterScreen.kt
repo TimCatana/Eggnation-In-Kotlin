@@ -3,15 +3,20 @@ package com.applicnation.eggnation.feature_eggnation.presentation.auth.register
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,8 +39,9 @@ fun RegisterScreen(
     viewModel: RegisterScreenViewModel = hiltViewModel()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-
     val scaffoldState = rememberScaffoldState()
+    val localFocusManager = LocalFocusManager.current
+
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -44,9 +50,6 @@ fun RegisterScreen(
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message,
                     )
-                }
-                is RegisterScreenViewModel.UiEvent.ChangeStacks -> {
-                    navController.navigate(GameScreen.Home.route)
                 }
             }
         }
@@ -78,23 +81,22 @@ fun RegisterScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
-                    text = viewModel.usernameText.value,
-                    onValueChange = {
-                        viewModel.onEvent(RegisterScreenEvent.EnteredUsername(it))
-                    },
-                    isError = viewModel.isUsernameError.value,
-                    errorText = "Username must be at least 5 characters long",
-                    label = "username" // use string resources
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                StandardTextField(
                     text = viewModel.emailText.value,
                     onValueChange = {
                         viewModel.onEvent(RegisterScreenEvent.EnteredEmail(it))
                     },
                     isError = viewModel.isEmailError.value,
                     errorText = "Invalid email address",
-                    label = "email" // use string resources
+                    label = "email", // use string resources
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { localFocusManager.moveFocus(FocusDirection.Down) }
+                    )
+
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
@@ -106,6 +108,15 @@ fun RegisterScreen(
                     errorText = "Password must be at least 8 characters, contain no whitespace and have numbers, lowercase and uppercase letters",
                     label = "password",
                     keyboardType = KeyboardType.Password,
+                    modifier = Modifier.fillMaxWidth(),
+                    isPassword = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { localFocusManager.moveFocus(FocusDirection.Down) }
+                    )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
@@ -116,12 +127,20 @@ fun RegisterScreen(
                     isError = viewModel.isConfirmPasswordError.value,
                     errorText = "Passwords must match!",
                     keyboardType = KeyboardType.Password,
-                    label = "confirm password" // use string resources
+                    label = "confirm password", // use string resources
+                    modifier = Modifier.fillMaxWidth(),
+                    isPassword = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { localFocusManager.clearFocus() }
+                    )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
-                    enabled = !viewModel.isUsernameError.value
-                            && !viewModel.isEmailError.value
+                    enabled = !viewModel.isEmailError.value
                             && !viewModel.isPasswordError.value
                             && !viewModel.isConfirmPasswordError.value,
                     onClick = {
@@ -129,7 +148,6 @@ fun RegisterScreen(
                             RegisterScreenEvent.SignUp(
                                 viewModel.emailText.value,
                                 viewModel.passwordText.value,
-                                viewModel.usernameText.value
                             )
                         )
                     },
@@ -138,14 +156,16 @@ fun RegisterScreen(
                 }
             }
 
-            Column(modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .wrapContentHeight()) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .wrapContentHeight()
+            ) {
                 Row(
                     modifier = Modifier
                         .align(alignment = Alignment.CenterHorizontally)
                 ) {
-                    Text(text = "By registering you agree to our" )
+                    Text(text = "By registering you agree to our")
 
                 }
                 Row(
@@ -177,28 +197,6 @@ fun RegisterScreen(
                         })
                 }
             }
-//            Text(
-//                text = buildAnnotatedString {
-//                    append("Already have an account?")
-//                    append(" ")
-//                    // TODO - for string resources, create a val here and put the val in the with styles cause you can't accesss strng rersources from within withStyle
-//                    withStyle(
-//                        style = SpanStyle(
-//                            color = MaterialTheme.colors.primary
-//                        )
-//                    ) {
-//                        append("Login")
-//                    }
-//                },
-//                style = MaterialTheme.typography.body1,
-//                modifier = Modifier
-//                    .align(Alignment.BottomCenter)
-//                    .clickable {
-//                        navController.navigate(
-//                            AuthScreen.Login.route
-//                        )
-//                    } // TODO - need to pop backstack when going back to login screen
-//            )
 
             if (viewModel.isLoading.value) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -238,14 +236,18 @@ private fun registerPreview() {
                     text = "test",
                     onValueChange = {
                     },
-                    label = "username" // use string resources
+                    label = "username", // use string resources
+                    modifier = Modifier.fillMaxWidth()
+
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
                     text = "test",
                     onValueChange = {
                     },
-                    label = "email" // use string resources
+                    label = "email", // use string resources
+                    modifier = Modifier.fillMaxWidth()
+
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
@@ -253,7 +255,9 @@ private fun registerPreview() {
                     onValueChange = {
                     },
                     keyboardType = KeyboardType.Password,
-                    label = "password" // use string resources
+                    label = "password", // use string resources
+                    modifier = Modifier.fillMaxWidth()
+
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
@@ -261,7 +265,9 @@ private fun registerPreview() {
                     onValueChange = {
                     },
                     keyboardType = KeyboardType.Password,
-                    label = "confirm password" // use string resources
+                    label = "confirm password", // use string resources
+                    modifier = Modifier.fillMaxWidth()
+
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(

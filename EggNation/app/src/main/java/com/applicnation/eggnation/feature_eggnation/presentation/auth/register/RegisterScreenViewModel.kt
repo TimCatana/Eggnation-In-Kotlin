@@ -21,17 +21,15 @@ class RegisterScreenViewModel @Inject constructor(
 
     /**
      * States:
-     * - username (String)
      * - email (String)
+     * - isEmailError (Boolean)
      * - password (String)
+     * - isPasswordError (Boolean)
      * - confirmPassword (String)
+     * - isConfirmPasswordError (Boolean)
+     * - isLoading (Boolean)
+     * - eventFlow (Flow)
      */
-    private val _usernameText = mutableStateOf("")
-    val usernameText: State<String> = _usernameText
-
-    private val _isUsernameError = mutableStateOf(true)
-    val isUsernameError: State<Boolean> = _isUsernameError
-
     private val _emailText = mutableStateOf("")
     val emailText: State<String> = _emailText
 
@@ -56,18 +54,15 @@ class RegisterScreenViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-
-    // TODO - add isLoading state
-
     /**
      * events
+     * - Email (Text Entered)
+     * - Password (Text Entered)
+     * - Confirm Password (Text Entered)
+     * - Sign Up (Button Clicked)
      */
     fun onEvent(event: RegisterScreenEvent) {
         when (event) {
-            is RegisterScreenEvent.EnteredUsername -> {
-                _usernameText.value = event.value
-                validateUsername()
-            }
             is RegisterScreenEvent.EnteredEmail -> {
                 _emailText.value = event.value
                 validateEmail()
@@ -82,8 +77,7 @@ class RegisterScreenViewModel @Inject constructor(
                 validateConfirmPassword()
             }
             is RegisterScreenEvent.SignUp -> {
-                // TODO - check if username is unique in firebase database here
-                userUseCases.signUpUserUC(event.email, event.password, event.username)
+                userUseCases.signUpUserUC(event.email, event.password)
                     .onEach { result ->
                             when (result) {
                                 is Resource.Loading -> {
@@ -91,15 +85,12 @@ class RegisterScreenViewModel @Inject constructor(
                                 }
                                 is Resource.Success -> {
                                     _isLoading.value = false
-                                    _eventFlow.emit(
-                                        UiEvent.ChangeStacks
-                                    )
                                 }
                                 is Resource.Error -> {
                                     _isLoading.value = false
                                     _eventFlow.emit(
                                         UiEvent.ShowSnackbar(
-                                            message = result.message!!
+                                            message = result.message!! // TODO - make sure Resource error and success have required messages and pass emtpy strings when not necesary
                                         )
                                     )
                                 }
@@ -109,45 +100,41 @@ class RegisterScreenViewModel @Inject constructor(
         }
     }
 
-    private fun validateUsername() {
-        _isUsernameError.value = _usernameText.value.length < 5
-    }
-
     private fun validateEmail() {
         _isEmailError.value =
             !android.util.Patterns.EMAIL_ADDRESS.matcher(_emailText.value).matches()
     }
 
     private fun validatePassword() {
-        val mWhiteSpaceChars = "\\s".toRegex()
-        val mLowerCaseChars = "[a-z]".toRegex()
-        val mUpperCaseChars = "[A-Z]".toRegex()
-        val mNumberChars = "\\d".toRegex()
+        val whiteSpaceChars = "\\s".toRegex()
+        val lowerCaseChars = "[a-z]".toRegex()
+        val upperCaseChars = "[A-Z]".toRegex()
+        val numberChars = "\\d".toRegex()
 
         var isError = false
 
         if (_passwordText.value.length < 8) {
-            Timber.d("password error = TRUE --> password length less than 8")
+//            Timber.d("password error = TRUE --> password length less than 8")
             isError = true
         }
 
-        if (_passwordText.value.contains(mWhiteSpaceChars)) {
-            Timber.d("password error = TRUE --> password contains whitespace")
+        if (_passwordText.value.contains(whiteSpaceChars)) {
+//            Timber.d("password error = TRUE --> password contains whitespace")
             isError = true
         }
 
-        if (!_passwordText.value.contains(mLowerCaseChars)) {
-            Timber.d("password error = TRUE --> password does not contain lowercase letters")
+        if (!_passwordText.value.contains(lowerCaseChars)) {
+//            Timber.d("password error = TRUE --> password does not contain lowercase letters")
             isError = true
         }
 
-        if (!_passwordText.value.contains(mUpperCaseChars)) {
-            Timber.d("password error = TRUE --> password does not contain uppercase letters")
+        if (!_passwordText.value.contains(upperCaseChars)) {
+//            Timber.d("password error = TRUE --> password does not contain uppercase letters")
             isError = true
         }
 
-        if (!_passwordText.value.contains(mNumberChars)) {
-            Timber.d("password error = TRUE --> password does not contain numbers")
+        if (!_passwordText.value.contains(numberChars)) {
+//            Timber.d("password error = TRUE --> password does not contain numbers")
             isError = true
         }
 
@@ -160,6 +147,5 @@ class RegisterScreenViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
-        object ChangeStacks : UiEvent()
     }
 }

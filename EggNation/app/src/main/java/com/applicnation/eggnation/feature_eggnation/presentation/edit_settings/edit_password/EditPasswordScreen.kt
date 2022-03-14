@@ -58,6 +58,7 @@ fun EditPasswordScreen(
                         isError = viewModel.isPasswordError.value,
                         errorText = "Lowercase, uppsercase numbers 8 chars",
                         label = "new password",
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     StandardTextField( // TODO - keep this disabled until the password is equal to the current password
@@ -68,6 +69,7 @@ fun EditPasswordScreen(
                         isError = viewModel.isConfirmPasswordError.value,
                         errorText = "passwords must match",
                         label = "confirm password",
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 Button(
@@ -124,7 +126,8 @@ private fun PasswordModelsss(
             isError = false,
             errorText = "Please enter a password",
             keyboardType = KeyboardType.Password,
-            label = "password" // TODO - use string resources
+            label = "password", // TODO - use string resources
+            modifier = Modifier.fillMaxWidth()
         )
         Button(onClick = {
             viewModel.onEvent(
@@ -172,6 +175,7 @@ fun PasswordScreenPreview() {
                         isError = false,
                         errorText = "Invalid email address",
                         label = "password",
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     StandardTextField(
@@ -180,6 +184,7 @@ fun PasswordScreenPreview() {
                         isError = false,
                         errorText = "Invalid email address",
                         label = "new password",
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 Button(

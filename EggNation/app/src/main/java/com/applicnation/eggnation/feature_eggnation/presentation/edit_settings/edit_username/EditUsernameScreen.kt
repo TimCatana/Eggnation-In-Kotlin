@@ -63,6 +63,7 @@ fun EditUsernameScreen(
                         isError = viewModel.isUsernameError.value,
                         errorText = "Username must be greater than 5 characters",
                         label = "username",
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 Button(
@@ -113,6 +114,7 @@ fun UsernameScreenPreview() {
                     isError = false,
                     errorText = "Invalid email address",
                     label = "email",
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Button(
                     enabled = false,

@@ -16,6 +16,14 @@ class Functions {
         functions.getHttpsCallable("updateUserEmail").call(data).await()
     }
 
+    suspend fun updateUserUsername(username: String) {
+        val data = hashMapOf(
+            "username" to username
+        )
+
+        functions.getHttpsCallable("updateUserUsername").call(data).await()
+    }
+
     suspend fun updateUserPassword(password: String) {
         val data = hashMapOf(
             "password" to password

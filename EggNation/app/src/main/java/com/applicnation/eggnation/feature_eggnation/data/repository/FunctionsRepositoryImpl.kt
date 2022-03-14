@@ -11,4 +11,8 @@ class FunctionsRepositoryImpl @Inject constructor(
     override suspend fun updateUserEmail(email: String) {
         functions.updateUserEmail(email)
     }
+
+    override suspend fun updateUserUsername(username: String) {
+        functions.updateUserUsername(username)
+    }
 }

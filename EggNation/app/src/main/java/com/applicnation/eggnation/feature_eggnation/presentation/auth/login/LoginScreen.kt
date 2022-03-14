@@ -1,17 +1,23 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.auth.login
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,8 +40,8 @@ fun LoginScreen(
     viewModel: LoginScreenViewModel = hiltViewModel()
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-
     val scaffoldState = rememberScaffoldState()
+    val localFocusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -44,13 +50,6 @@ fun LoginScreen(
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message,
                     )
-                }
-                is LoginScreenViewModel.UiEvent.ChangeStacks -> {
-//                    navController.navigate(GameScreen.Home.route) {
-//                        popUpTo(AuthScreen.Login.route) {
-//                            inclusive = true
-//                        }
-//                    }
                 }
             }
         }
@@ -83,13 +82,21 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
                     text = viewModel.emailText.value,
-                    maxLength = 75,
+                    maxLength = 100,
                     onValueChange = {
                         viewModel.onEvent(LoginScreenEvent.EnteredEmail(it))
                     },
                     isError = viewModel.isEmailError.value,
-                    errorText = "Invalid email address",
-                    label = "email" // TODO - use string resources
+                    errorText = "invalid email address",
+                    label = "email", // TODO - use string resources
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { localFocusManager.moveFocus(FocusDirection.Down) }
+                    )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 StandardTextField(
@@ -98,12 +105,21 @@ fun LoginScreen(
                         viewModel.onEvent(LoginScreenEvent.EnteredPassword(it))
                     },
                     isError = viewModel.isPasswordError.value,
-                    errorText = "Please enter a password",
+                    errorText = "password required",
                     keyboardType = KeyboardType.Password,
-                    label = "password" // TODO - use string resources
+                    isPassword = true,
+                    label = "password", // TODO - use string resources
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { localFocusManager.clearFocus() }
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
+                Text( // TODO - color this text to show that it is clickable
                     text = "forgot password?",
                     modifier = Modifier
                         .align(Alignment.End)
@@ -184,7 +200,9 @@ private fun loginPreview() {
                     text = "test",
                     onValueChange = {
                     },
-                    label = "email" // use string resources
+                    label = "email", // use string resources
+                    modifier = Modifier.fillMaxWidth()
+
                 )
                 Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
                 StandardTextField(
@@ -192,7 +210,8 @@ private fun loginPreview() {
                     onValueChange = {
                     },
                     keyboardType = KeyboardType.Password,
-                    label = "password" // use string resources
+                    label = "password", // use string resources
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
                 Button(

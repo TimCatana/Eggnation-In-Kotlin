@@ -33,7 +33,7 @@ class UpdateUserPasswordUC @Inject constructor(
 
         val email = authenticator.getUserEmail()
 
-        if(email == null) {
+        if (email == null) {
             Timber.wtf("!!!! user is null? This is literally impossible to happen")
             emit(Resource.Error<String>("Failed to update Password"))
             return@flow
@@ -41,9 +41,8 @@ class UpdateUserPasswordUC @Inject constructor(
 
         try {
             authenticator.authenticateUser(email, password)
-            emit(Resource.Success<String>(message = "password valid"))
         } catch (e: Exception) {
-            authenticateUserErrorMessages(e)
+            authenticateUserLogs(e)
             emit(Resource.Error<String>(message = "Invalid password"))
             return@flow
         }
@@ -100,20 +99,20 @@ class UpdateUserPasswordUC @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
 
-
-
-    private fun authenticateUserErrorMessages(e: Exception) {
-        Timber.i("${e.cause}, ${e.message}, ${e.javaClass}")
-
-//        if (e. == FirebaseAuthInvalidUserException) {
-//            Timber.e("Account has been disabled or deleted --> $e")
-//            emit(Resource.Error<String>(message = "Invalid password"))
-//        } catch (e: FirebaseAuthInvalidCredentialsException) {
-//            Timber.e("Invalid credentials --> $e")
-//            emit(Resource.Error<String>(message = "Invalid password"))
-//        } catch (e: java.lang.Exception) {
-//            Timber.e("Something went wrong --> $e")
-//            emit(Resource.Error<String>(message = "Invalid password"))
-//        }
+    /**
+     * For debugging purposes
+     */
+    private fun authenticateUserLogs(e: Exception) {
+        when (e) {
+            is FirebaseAuthInvalidUserException -> {
+                Timber.e("Account has been disabled or deleted --> $e")
+            }
+            is FirebaseAuthInvalidCredentialsException -> {
+                Timber.e("Invalid credentials --> $e")
+            }
+            else -> {
+                Timber.e("Unexpected error --> $e")
+            }
+        }
     }
 }

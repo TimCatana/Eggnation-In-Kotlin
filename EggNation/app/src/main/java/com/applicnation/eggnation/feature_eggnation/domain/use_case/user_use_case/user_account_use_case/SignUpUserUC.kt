@@ -19,7 +19,8 @@ import javax.inject.Inject
 
 class SignUpUserUC @Inject constructor(
     private val authenticator: AuthenticationRepository,
-    private val repository: DatabaseRepository
+    private val repository: DatabaseRepository,
+    private val functions: FunctionsRepository
 ) {
     /**
      * Creates a new account for the user.
@@ -36,7 +37,7 @@ class SignUpUserUC @Inject constructor(
      * @exception Exception All exceptions caught in this block are UNEXPECTED and should not ever occur
      * @note Read the log messages below to see what each exception means (it is too messy to put all the info in this comment)
      */
-    operator fun invoke(email: String, password: String, username: String): Flow<Resource<String>> =
+    operator fun invoke(email: String, password: String): Flow<Resource<String>> =
         flow {
             emit(Resource.Loading<String>())
 
@@ -73,63 +74,7 @@ class SignUpUserUC @Inject constructor(
                 return@flow
             }
 
-            /**
-             * Fetching the newly created user's Id from Firebase Authentication.
-             * @note if the userId is null, something went horribly wrong. Therefore sign the user
-             *       in and try again. If that fails, then rip... THIS SHOULD NEVER HAPPEN!!!
-             * @exception Exception
-             */
-            var userId = authenticator.getUserId()
-
-            if (userId == null) {
-                try {
-                    authenticator.signInUser(email, password)
-                } catch (e: Exception) {
-                    Timber.wtf("!!!! userId error: User was added to Authentication but not to Database --> userId was fetched as null after user registered in Authentication")
-                    emit(Resource.Error<String>("An unexpected error occurred"))
-                    return@flow
-                }
-
-                userId = authenticator.getUserId()
-                if (userId == null) {
-                    Timber.wtf("!!!! User was added to Authentication but not to Database --> userId was fetched as null after user registered in Authentication")
-                    emit(Resource.Error<String>("An unexpected error occurred"))
-                    return@flow
-                }
-            }
-
-            /**
-             * Adding the user to database.
-             * @exception FirebaseFirestoreException
-             * @exception Exception
-             */
-            try {
-                repository.registerUser(userId, email, username) // TODO - fix this dangerous !!
-                Timber.i("SUCCESS Database (Firestore): User added to Firestore database")
-            } catch (e: FirebaseFirestoreException) {
-                authenticator.deleteUserAccount()
-                Timber.e("Database (Firestore): Failed to add user to Firestore: An unexpected FIRESTORE error:: deleting user from Firebase Authentication --> $e")
-                // TODO - delete user from firebase database using firebase authentication (try catch it as well) (probably only have one catch with difference if statements for this one
-                emit(Resource.Error<String>("An unexpected error occurred"))
-            } catch (e: Exception) {
-                authenticator.deleteUserAccount()
-                Timber.e("Database (Firestore): Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
-                emit(Resource.Error<String>("An unexpected error occurred"))
-            }
-
-            /**
-             * Adding the user to database.
-             * @exception FirebaseFirestoreException
-             * @exception Exception
-             */
-            try {
-                authenticator.updateUserUsername(username)
-            } catch (e: Exception) {
-                Timber.e("Firebase Authentication: Failed to add user to Firestore: An unexpected error occurred:: deleting user from Firebase Authentication  --> $e")
-                // TODO - delete user from auth (which will trigger a function to delete it from database
-                emit(Resource.Success<String>(message = "Registered Successfully")) // Yes, emit success because this isn't necessary
-            }
-
+            // @NOTE User is added to database Via a cloud function
             emit(Resource.Success<String>(message = "Registered Successfully"))
         }.flowOn(Dispatchers.IO)
 }

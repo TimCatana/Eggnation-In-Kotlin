@@ -3,6 +3,7 @@ package com.applicnation.eggnation.feature_eggnation.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -28,11 +30,17 @@ fun StandardTextField(
     maxLength: Int = 30,
     isError: Boolean = false,
     errorText: String = "",
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    keyboardOptions: KeyboardOptions =   KeyboardOptions(keyboardType = KeyboardType.Text,),
     keyboardType: KeyboardType = KeyboardType.Text,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    modifier: Modifier,
+    isPassword: Boolean = false,
+    imeAction: ImeAction = ImeAction.Default,
+    textFieldColors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
 ) {
     val isPasswordToggleDisplayed by remember {
-        mutableStateOf(keyboardType == KeyboardType.Password)
+        mutableStateOf(isPassword)
     }
     var isPasswordVisible by remember {
         mutableStateOf(false)
@@ -48,17 +56,9 @@ fun StandardTextField(
         label = { Text(text = label ) },
         isError = isError && text.isNotEmpty(),
         singleLine = true,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-//            focusedBorderColor = Purple200,
-//            focusedLabelColor = Purple200,
-//            unfocusedBorderColor = Gray,
-//            unfocusedLabelColor = Gray,
-//            trailingIconColor = Gray
-        ),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = keyboardType
-            // TODO - edit IME action
-        ),
+        colors = textFieldColors,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         visualTransformation = if (isPasswordToggleDisplayed && !isPasswordVisible) {
             PasswordVisualTransformation()
         } else {
@@ -78,11 +78,7 @@ fun StandardTextField(
                 }
             }
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics {
-                testTag = "standardTextField"
-            }
+        modifier = modifier
     )
 
     if (isError && text.isNotEmpty()) {

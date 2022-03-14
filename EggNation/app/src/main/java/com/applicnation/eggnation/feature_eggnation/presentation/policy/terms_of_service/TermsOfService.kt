@@ -18,6 +18,6 @@ fun TermsOfServiceScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(color = SettingsBG)
     ) {
-        Text(text = "Privacy Policy Screen", color = Color.White)
+        Text(text = "Terms or service Screen", color = Color.White)
     }
 }

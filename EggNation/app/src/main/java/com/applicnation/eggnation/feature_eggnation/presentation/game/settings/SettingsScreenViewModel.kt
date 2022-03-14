@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,20 +25,26 @@ class SettingsScreenViewModel @Inject constructor(
     private val authentication: Authentication
 ) : ViewModel() {
 
-    private val _username = mutableStateOf("")
-    val username: State<String> = _username
-
+    /**
+     * States:
+     * - email (String)
+     * - languate (String)
+     * - password (String)
+     * - isPasswordError (Boolean)
+     * - isLoading (Boolean)
+     * - eventFlow (Flow)
+     */
     private val _email = mutableStateOf("")
     val email: State<String> = _email
+
+    private val _isEmailVerified = mutableStateOf(false)
+    val isEmailVerified: State<Boolean> = _isEmailVerified
 
     private val _language = mutableStateOf("")
     val language: State<String> = _language
 
     private val _passwordText = mutableStateOf("")
     val passwordText: State<String> = _passwordText
-
-    private val _screenToNavTo = mutableStateOf("")
-    val screenToNavTo: State<String> = _screenToNavTo
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
@@ -50,13 +57,19 @@ class SettingsScreenViewModel @Inject constructor(
 
     init{
         // TODO - add reloadUser here in coroutine
-        _username.value = userUseCases.getUserUsernameUC()
         _email.value = userUseCases.getUserEmailUC()
+        _isEmailVerified.value = userUseCases.getUserEmailVerificationStatusUC()
         _language.value = "EN"
     }
 
     fun onEvent(event: SettingsScreenEvent) {
         when (event) {
+            is SettingsScreenEvent.ShowPasswordModel -> {
+                _isPasswordModelShowing.value = event.showPasswordModel
+            }
+            is SettingsScreenEvent.EnteredPassword -> {
+                _passwordText.value = event.value
+            }
             is SettingsScreenEvent.SignOut -> {
                 userUseCases.signOutUserUC()
                     .onEach { result ->
@@ -66,9 +79,6 @@ class SettingsScreenViewModel @Inject constructor(
                             }
                             is Resource.Success -> {
                                 _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.GoToLoginScreen
-                                )
                             }
                             is Resource.Error -> {
                                 _isLoading.value = false
@@ -81,43 +91,30 @@ class SettingsScreenViewModel @Inject constructor(
                         }
                     }.launchIn(viewModelScope)
             }
-            is SettingsScreenEvent.EditProfile -> {
-                userUseCases.reauthenticateUser(event.password)
-                    .onEach { result ->
-                        when (result) {
-                            is Resource.Loading -> {
-                                _isLoading.value = true
-                            }
-                            is Resource.Success -> {
-                                _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.ChangeStacks(_screenToNavTo.value)
-                                )
-                            }
-                            is Resource.Error -> {
-                                _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message!!
-                                    )
-                                )
-                            }
+            is SettingsScreenEvent.DeleteAccount -> {
+                userUseCases.deleteUserUC(event.password).onEach { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _isLoading.value = true
                         }
-                    }.launchIn(viewModelScope)
-            }
-            is SettingsScreenEvent.ShowPasswordModel -> {
-                _isPasswordModelShowing.value = event.showPasswordModel
-                _screenToNavTo.value = event.navScreen
-            }
-            is SettingsScreenEvent.EnteredPassword -> {
-                _passwordText.value = event.value
+                        is Resource.Success -> {
+                            _isLoading.value = false
+                        }
+                        is Resource.Error -> {
+                            _isLoading.value = false
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = result.message!!
+                                )
+                            )
+                        }
+                    }
+                }.launchIn(viewModelScope)
             }
         }
     }
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
-        data class ChangeStacks(val screen: String) : UiEvent()
-        object GoToLoginScreen: UiEvent()
     }
 }

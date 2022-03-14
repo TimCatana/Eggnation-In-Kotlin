@@ -23,7 +23,11 @@ class LoginScreenViewModel @Inject constructor(
     /**
      * States:
      * - email (String)
+     * - isEmailError(Boolean)
      * - password (String)
+     * - isPasswordError (Boolean)
+     * - isLoading (Boolean)
+     * - eventFlow (Flow)
      */
     private val _emailText = mutableStateOf("")
     val emailText: State<String> = _emailText
@@ -45,6 +49,9 @@ class LoginScreenViewModel @Inject constructor(
 
     /**
      * events
+     * - Email (Text Entered)
+     * - Password (Text Entered)
+     * - Sign In (Button Clicked)
      */
     fun onEvent(event: LoginScreenEvent) {
         when (event) {
@@ -65,9 +72,6 @@ class LoginScreenViewModel @Inject constructor(
                             }
                             is Resource.Success -> {
                                 _isLoading.value = false
-                                _eventFlow.emit(
-                                    UiEvent.ChangeStacks
-                                )
                             }
                             is Resource.Error -> {
                                 _isLoading.value = false
@@ -94,6 +98,5 @@ class LoginScreenViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
-        object ChangeStacks : UiEvent()
     }
 }
