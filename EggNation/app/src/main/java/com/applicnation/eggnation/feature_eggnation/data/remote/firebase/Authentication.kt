@@ -12,12 +12,6 @@ import kotlin.jvm.Throws
 class Authentication {
     private val auth = FirebaseAuth.getInstance()
 
-//    suspend fun stateListenenr(): FirebaseAuth.AuthStateListener {
-//        return auth.addAuthStateListener {
-//
-//        }
-//    }
-
     /**
      * Creates a new account for the user.
      * Adds the user to firebase auth console
@@ -132,6 +126,7 @@ class Authentication {
     }
 
     suspend fun reloadUser() {
+        auth.currentUser?.reload()?.await()
         auth.currentUser?.getIdToken(true)?.await()
     }
 

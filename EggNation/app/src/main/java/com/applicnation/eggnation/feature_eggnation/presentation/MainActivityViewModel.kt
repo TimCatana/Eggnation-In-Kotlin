@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
+    // TODO - maybe add the user use cases and add a "getCurrentUserUC"
 ) : ViewModel() {
     private val _isLoggedIn = mutableStateOf(false)
     val isLoggedIn: State<Boolean> = _isLoggedIn
@@ -31,5 +32,7 @@ class MainActivityViewModel @Inject constructor(
             _isLoggedIn.value = false
             Timber.i("auth nav graph should show")
         }
+
+        Timber.d("${firebaseUser?.isEmailVerified}")
     }
 }

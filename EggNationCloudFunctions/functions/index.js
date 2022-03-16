@@ -81,9 +81,10 @@ exports.updateUserEmail = functions.https.onCall(async (data, context) => {
   console.log(data.email);
 
   await admin
-    .auth().update
-    .updateE(context.auth.uid, {
+    .auth()
+    .updateUser(context.auth.uid, {
       email: data.email,
+      emailVerified: false
     })
     .catch((e) => {
       console.log(`auth error updateemail ${e}`);

@@ -34,6 +34,9 @@ class ClaimPrizeScreenViewModel @Inject constructor(
     private val _isShowingBottomSheet = mutableStateOf(false)
     val isShowingBottomSheet: State<Boolean> = _isShowingBottomSheet
 
+    private val _isShowCountries = mutableStateOf(true)
+    val isShowCountries: State<Boolean> = _isShowCountries
+
     private val _selectedCountry = mutableStateOf(Country())
     val selectedCountry: State<Country> = _selectedCountry
 
@@ -90,7 +93,7 @@ class ClaimPrizeScreenViewModel @Inject constructor(
     fun onEvent(event: ClaimPrizeScreenEvent) {
         when (event) {
             is ClaimPrizeScreenEvent.ShowBottomSheet -> {
-                _isShowingBottomSheet.value = event.showSheet
+                _isShowingBottomSheet.value = true
                 _isCountryList.value = event.isCountryList
             }
             is ClaimPrizeScreenEvent.SelectCountry -> {
@@ -102,6 +105,9 @@ class ClaimPrizeScreenViewModel @Inject constructor(
             is ClaimPrizeScreenEvent.GetRegions -> {
                 _currentRegions.value = regionList(event.context, event.selectedCountry)
                 _selectedRegion.value = _currentRegions.value[0]
+            }
+            is ClaimPrizeScreenEvent.DismissBottomSheet -> {
+                _isShowingBottomSheet.value = false
             }
         }
     }

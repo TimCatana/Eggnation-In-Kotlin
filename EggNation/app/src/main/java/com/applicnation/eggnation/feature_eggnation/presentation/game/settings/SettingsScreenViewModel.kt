@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
@@ -50,6 +51,9 @@ class SettingsScreenViewModel @Inject constructor(
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
+    private val _isInit = mutableStateOf(false)
+    val isInit: State<Boolean> = _isInit
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
@@ -57,9 +61,18 @@ class SettingsScreenViewModel @Inject constructor(
     val isPasswordModelShowing: State<Boolean> = _isPasswordModelShowing
 
     init {
-        _email.value = userUseCases.getUserEmailUC()
-        _isEmailVerified.value = userUseCases.getUserEmailVerificationStatusUC()
-        _language.value = "EN"
+        viewModelScope.launch {
+            _isInit.value = true
+            userUseCases.reloadUserUC()
+            _email.value = userUseCases.getUserEmailUC()
+            _isEmailVerified.value = userUseCases.getUserEmailVerificationStatusUC()
+            _language.value = "EN"
+            _isInit.value = false
+        }
+//        _email.value = userUseCases.getUserEmailUC()
+//        _isEmailVerified.value = userUseCases.getUserEmailVerificationStatusUC()
+//        _language.value = "EN"
+//        _isInit.value = true
     }
 
     fun onEvent(event: SettingsScreenEvent) {

@@ -69,20 +69,26 @@ fun SettingsScreen(
                     .background(color = SettingsBG),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "EGGNATION", color = Color.White)
-                UserSettingsSection(navController = navController, viewModel = viewModel)
-                ContactSettingsSection(navController = navController, viewModel = viewModel)
-                PrivacySettingsSection(navController = navController)
-                Button(onClick = {
-                    viewModel.onEvent(SettingsScreenEvent.SignOut)
-                }) {
-                    Text(text = "Logout")
+                if(!viewModel.isInit.value) {
+                    Text(text = "EGGNATION", color = Color.White)
+                    UserSettingsSection(navController = navController, viewModel = viewModel)
+                    ContactSettingsSection(navController = navController, viewModel = viewModel)
+                    PrivacySettingsSection(navController = navController)
+                    Button(onClick = {
+                        viewModel.onEvent(SettingsScreenEvent.SignOut)
+                    }) {
+                        Text(text = "Logout")
+                    }
+                    Button(onClick = {
+                        viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(true))
+                    }) {
+                        Text(text = "Delete")
+                    }
                 }
-                Button(onClick = {
-                    viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(true))
-                }) {
-                    Text(text = "Delete")
-                }
+            }
+
+            if(viewModel.isInit.value) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
             if (viewModel.isPasswordModelShowing.value) {
@@ -113,6 +119,8 @@ fun UserSettingsSection(
     navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()

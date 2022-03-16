@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +24,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Countries
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Country
+import com.applicnation.eggnation.feature_eggnation.domain.modal.Region
 import countryList
 import kotlinx.coroutines.coroutineScope
 import localeToEmoji
@@ -33,11 +38,18 @@ import localeToEmoji
 @ExperimentalMaterialApi
 @Composable
 fun CountryPickerBottomSheet(
-    title: @Composable () -> Unit,
+    titleText: String,
     show: Boolean,
-    onItemSelected: (country: Country) -> Unit,
+    isCountryList: Boolean,
     onDismissRequest: () -> Unit,
+    modifier: Modifier,
+    /** country stuff */
     countries: Countries,
+    onCountrySelected: (country: Country) -> Unit,
+    /** region stuff */
+    regions: ArrayList<Region>,
+    getRegions: () -> Unit,
+    onRegionSelected: (region: Region) -> Unit,
     content: @Composable () -> Unit,
 ) {
     val modalBottomSheetState =
@@ -55,38 +67,73 @@ fun CountryPickerBottomSheet(
 
     ModalBottomSheetLayout(
         sheetContent = {
-            title()
+            Text(
+                text = titleText,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
+
             LazyColumn(
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(countries.countries.size) { index ->
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                onItemSelected(countries.countries[index])
-                            }
-                            .padding(10.dp)
-                    ) {
-                        Text(
-                            text = localeToEmoji(countryCode = countries.countries[index].countryShortCode)
-                        )
 
-                        Text(
-                            text = countries.countries[index].countryName,
+                if (isCountryList) {
+                    items(countries.countries.size) { index ->
+                        Row(
                             modifier = Modifier
-                                .padding(start = 6.dp)
-                                .weight(2f)
-                        )
-                    }
+                                .clickable {
+                                    onCountrySelected(countries.countries[index])
+                                    getRegions()
+                                }
+                                .padding(10.dp)
+                        ) {
+                            Text(
+                                text = localeToEmoji(countryCode = countries.countries[index].countryShortCode)
+                            )
+                            Text(
+                                text = countries.countries[index].countryName,
+                                modifier = Modifier
+                                    .padding(start = 6.dp)
+                                    .weight(2f)
+                            )
+                        }
 
-                    Divider(color = Color.LightGray, thickness = 0.5.dp)
+                        Divider(color = Color.LightGray, thickness = 0.5.dp)
+                    }
+                }
+
+                if (!isCountryList) {
+                    // TODO - show regions
+                    items(regions.size) { index ->
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    onRegionSelected(regions[index])
+                                }
+                                .padding(10.dp)
+                        ) {
+                            Text(
+                                text = regions[index].name,
+                                modifier = Modifier
+                                    .padding(start = 6.dp)
+                                    .weight(2f)
+                            )
+                        }
+
+                        Divider(color = Color.LightGray, thickness = 0.5.dp)
+                    }
                 }
             }
         },
         sheetState = modalBottomSheetState,
         sheetShape = RoundedCornerShape(
             topStart = 20.dp, topEnd = 20.dp
-        )
+        ),
+        modifier = modifier
     ) {
         content()
     }
