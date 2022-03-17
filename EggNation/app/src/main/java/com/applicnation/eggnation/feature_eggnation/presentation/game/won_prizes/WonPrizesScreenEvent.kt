@@ -8,9 +8,12 @@ sealed class WonPrizesScreenEvent {
         WonPrizesScreenEvent()
 
     data class ShowPrizeInfo(
-        val showInfo: Boolean, val prizeImage: Int = R.drawable.egg,
+        val showInfo: Boolean,
+        val prizeImage: Int = R.drawable.egg,
         val prizeTitle: String = "Failed to fetch Title",
-        val prizeDesc: String = "Failed to fetch description"
+        val prizeDesc: String = "Failed to fetch description",
+        val prizeId: String = "",
+        val prizeClaimed: Boolean = true
     ) : WonPrizesScreenEvent()
 
     object FetchAvailablePrizes : WonPrizesScreenEvent()

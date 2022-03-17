@@ -6,6 +6,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRe
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdLoadUseCase
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdPlayUseCase
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.ClaimPrizeUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.DoClaimPrizeUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
 import com.applicnation.eggnation.util.Resource
 import kotlinx.coroutines.Dispatchers
@@ -16,5 +17,6 @@ import kotlinx.coroutines.flow.flowOn
 data class MainGameLogicUseCases(
     val claimPrizeUC: ClaimPrizeUC,
     val incrementGlobalCounterUC: IncrementGlobalCounterUC,
-    val doGameLogicUC: DoGameLogicUC
+    val doGameLogicUC: DoGameLogicUC,
+    val doClaimPrizeUC: DoClaimPrizeUC
 )

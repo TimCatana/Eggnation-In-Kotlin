@@ -22,6 +22,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_cas
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeDeleteUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.ClaimPrizeUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.DoClaimPrizeUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
@@ -151,12 +152,14 @@ object AppModule {
     fun provideMainGameLogicUseCases(
         databaseRepo: DatabaseRepository,
         authenticationRepo: AuthenticationRepository,
-        availablePrizeUseCases: PrizeUseCases
+        availablePrizeUseCases: PrizeUseCases,
+        functionsRepo: FunctionsRepository
     ): MainGameLogicUseCases {
         return MainGameLogicUseCases(
             claimPrizeUC = ClaimPrizeUC(authenticationRepo),
             incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo),
-            doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases, databaseRepo)
+            doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases, databaseRepo),
+            doClaimPrizeUC = DoClaimPrizeUC(functionsRepo, authenticationRepo, databaseRepo)
         )
     }
 

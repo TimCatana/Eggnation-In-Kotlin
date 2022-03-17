@@ -11,6 +11,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.repository.Authentica
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreenEvent
 import com.applicnation.eggnation.util.Resource
 import countryList
@@ -26,7 +27,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ClaimPrizeScreenViewModel @Inject constructor(
 //    private val preferencesUseCases: PreferencesUseCases
+    private val mainGameLogicUseCases: MainGameLogicUseCases,
 ) : ViewModel() {
+
+    private val _addressText = mutableStateOf("")
+    val addressText: State<String> = _addressText
 
     private val _isCountryList = mutableStateOf(true)
     val isCountryList: State<Boolean> = _isCountryList
@@ -84,6 +89,9 @@ class ClaimPrizeScreenViewModel @Inject constructor(
     ))
     val currentRegions: State<ArrayList<Region>> = _currentRegions
 
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
@@ -109,11 +117,42 @@ class ClaimPrizeScreenViewModel @Inject constructor(
             is ClaimPrizeScreenEvent.DismissBottomSheet -> {
                 _isShowingBottomSheet.value = false
             }
+            is ClaimPrizeScreenEvent.EnteredAddress -> {
+                _addressText.value = event.value
+            }
+            is ClaimPrizeScreenEvent.ClaimPrize -> {
+                // UC
+                mainGameLogicUseCases.doClaimPrizeUC(event.prizeId, event.country, event.region, event.address)
+                    .onEach { result ->
+                        when (result) {
+                            is Resource.Loading -> {
+                                _isLoading.value = true
+                            }
+                            is Resource.Success -> {
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.ShowSuccessSnackbar(
+                                        message = result.message!!
+                                    )
+                                )
+                            }
+                            is Resource.Error -> {
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.ShowErrorSnackbar(
+                                        message = result.message!!
+                                    )
+                                )
+                            }
+                        }
+                    }.launchIn(viewModelScope)
+            }
         }
     }
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
+        data class ShowErrorSnackbar(val message: String) : UiEvent()
+        data class ShowSuccessSnackbar(val message: String) : UiEvent()
     }
 
 }

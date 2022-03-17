@@ -53,7 +53,7 @@ fun WonPrizesScreen(
                     )
                 }
                 is WonPrizesScreenViewModel.UiEvent.NavToClaimPrizeScreen -> {
-                    navController.navigate(GameScreen.ClaimPrize.route)
+                    navController.navigate(GameScreen.ClaimPrize.passPrizeId(viewModel.prizeIdInfo.value))
                 }
             }
         }
@@ -134,7 +134,9 @@ private fun WonPrizeItem(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.height(220.dp).background(color = StoreBG)
+            modifier = Modifier
+                .height(220.dp)
+                .background(color = StoreBG)
         ) {
             Image(
                 painter = painterResource(id = image),
@@ -149,9 +151,12 @@ private fun WonPrizeItem(
                         if (!viewModel.showPrizeInfo.value) {
                             viewModel.onEvent(
                                 WonPrizesScreenEvent.ShowPrizeInfo(
-                                    showInfo = true, prizeImage = image,
+                                    showInfo = true,
+                                    prizeImage = image,
                                     prizeTitle = itemData.prizeTitle,
-                                    prizeDesc = itemData.prizeDesc
+                                    prizeDesc = itemData.prizeDesc,
+                                    prizeId = itemData.prizeId,
+                                    prizeClaimed = itemData.prizeClaimed
                                 )
                             )
                         }
@@ -195,7 +200,9 @@ fun WonPrizeItemInfoCard(
             text = viewModel.prizeTitleInfo.value
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = {
+        Button(
+            enabled = !viewModel.prizeClaimedInfo.value,
+            onClick = {
             viewModel.onEvent(WonPrizesScreenEvent.ClaimPrize) // TODO - c
         }) {
             Text(text = "Claim")

@@ -22,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.applicnation.eggnation.feature_eggnation.presentation.components.PasswordModal
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.ui.theme.SettingsBG
 import kotlinx.coroutines.flow.collectLatest
 
@@ -50,7 +51,9 @@ fun EditPasswordScreen(
                     )
                 }
                 is EditPasswordScreenViewModel.UiEvent.ChangeStacks -> {
-                    navController.popBackStack()
+                    navController.navigate(GameScreen.Settings.route) {
+                        popUpTo(GameScreen.Home.route)
+                    }
                 }
             }
         }

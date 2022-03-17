@@ -48,7 +48,6 @@ fun CountryPickerBottomSheet(
     onCountrySelected: (country: Country) -> Unit,
     /** region stuff */
     regions: ArrayList<Region>,
-    getRegions: () -> Unit,
     onRegionSelected: (region: Region) -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -85,10 +84,7 @@ fun CountryPickerBottomSheet(
                     items(countries.countries.size) { index ->
                         Row(
                             modifier = Modifier
-                                .clickable {
-                                    onCountrySelected(countries.countries[index])
-                                    getRegions()
-                                }
+                                .clickable { onCountrySelected(countries.countries[index]) }
                                 .padding(10.dp)
                         ) {
                             Text(

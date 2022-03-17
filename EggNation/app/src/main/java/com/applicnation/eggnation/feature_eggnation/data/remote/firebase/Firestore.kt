@@ -186,6 +186,8 @@ class Firestore {
      * @note Errors are caught and dealt with in use-case
      */
     suspend fun updateWonPrizeClaimed(userId: String, prizeId: String, prizeClaimed: Boolean) {
+        Timber.d("im backenc updatewonprizeclaimed: userId: $userId, prized:  $prizeId")
+
         firestore
             .collection(Constants.USERS_COLLECTION)
             .document(userId)

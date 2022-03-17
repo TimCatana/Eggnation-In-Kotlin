@@ -4,8 +4,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.AdMob
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.forgot_password.ForgotPasswordScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreen
@@ -23,6 +25,7 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.privacy_policy.PrivacyPolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.policy.terms_of_service.TermsOfServiceScreen
 import com.google.rpc.context.AttributeContext
+import timber.log.Timber
 
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
@@ -49,8 +52,20 @@ fun GameNavGraph(
         composable(route = GameScreen.AvailablePrizes.route) {
             AvailablePrizesScreen(navController = navController)
         }
-        composable(route = GameScreen.ClaimPrize.route) {
-            ClaimPrizeScreen(navController = navController)
+        composable(
+            route = GameScreen.ClaimPrize.route,
+            arguments = listOf(navArgument(PRIZE_ID_ARG_KEY) {
+                type = NavType.StringType
+            })
+        ) {
+            var prizeId = it.arguments?.getString(PRIZE_ID_ARG_KEY)
+
+            if(prizeId == null) {
+                prizeId = ""
+            }
+
+            Timber.i("prizeId is $prizeId")
+            ClaimPrizeScreen(navController = navController, prizeId = prizeId)
         }
         composable(route = GameScreen.Settings.route) {
             SettingsScreen(navController = navController)

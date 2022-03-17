@@ -45,6 +45,12 @@ class WonPrizesScreenViewModel @Inject constructor(
     private val _prizeImageInfo = mutableStateOf(0)
     val prizeImageInfo: State<Int> = _prizeImageInfo
 
+    private val _prizeIdInfo = mutableStateOf("")
+    val prizeIdInfo: State<String> = _prizeIdInfo
+
+    private val _prizeClaimedInfo = mutableStateOf(true)
+    val prizeClaimedInfo: State<Boolean> = _prizeClaimedInfo
+
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
@@ -83,6 +89,8 @@ class WonPrizesScreenViewModel @Inject constructor(
                 _prizeTitleInfo.value = event.prizeTitle
                 _prizeDescInfo.value = event.prizeDesc
                 _prizeImageInfo.value = event.prizeImage
+                _prizeIdInfo.value = event.prizeId
+                _prizeClaimedInfo.value = event.prizeClaimed
 
                 _showPrizeInfo.value = event.showInfo
 

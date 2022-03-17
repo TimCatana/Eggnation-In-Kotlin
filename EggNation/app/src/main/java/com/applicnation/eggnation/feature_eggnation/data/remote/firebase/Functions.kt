@@ -24,11 +24,21 @@ class Functions {
         functions.getHttpsCallable("updateUserUsername").call(data).await()
     }
 
-    suspend fun updateUserPassword(password: String) {
+    suspend fun sendMeClaimPrizeEmail(
+        prizeId: String,
+        email: String,
+        country: String,
+        region: String,
+        address: String
+    ) {
         val data = hashMapOf(
-            "password" to password
+            "prizeId" to prizeId,
+            "email" to email,
+            "country" to country,
+            "region" to region,
+            "address" to address
         )
 
-        functions.getHttpsCallable("updateUserPassword").call(data).await()
+        functions.getHttpsCallable("sendMeEmail").call(data).await()
     }
 }

@@ -28,6 +28,7 @@ import com.applicnation.eggnation.feature_eggnation.presentation.components.Stan
 import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password.EditPasswordScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.game.settings.SettingsScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.ui.theme.SettingsBG
 import kotlinx.coroutines.flow.collectLatest
 
@@ -53,7 +54,9 @@ fun EditEmailScreen(
                     )
                 }
                 is EditEmailScreenViewModel.UiEvent.ChangeStacks -> {
-                    navController.popBackStack()
+                    navController.navigate(GameScreen.Settings.route) {
+                        popUpTo(GameScreen.Home.route)
+                    }
                 }
             }
         }

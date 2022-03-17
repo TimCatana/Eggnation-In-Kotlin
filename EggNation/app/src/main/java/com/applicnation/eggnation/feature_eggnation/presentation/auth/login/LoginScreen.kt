@@ -198,11 +198,9 @@ private fun loginPreview() {
                 Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
                 StandardTextField(
                     text = "test",
-                    onValueChange = {
-                    },
+                    onValueChange = {},
                     label = "email", // use string resources
                     modifier = Modifier.fillMaxWidth()
-
                 )
                 Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
                 StandardTextField(
