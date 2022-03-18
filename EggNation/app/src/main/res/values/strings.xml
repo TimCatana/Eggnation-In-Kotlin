@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">EggNation</string>
+
+    <string name="login">Login</string>
+
+    <!-- Button Labels -->
+    <string name="registerBtnLabel">Register</string>
+    <string name="sendForgotPasswordEmailBtnLabel">Send Email</string>
+
+    <!-- TextField Labels -->
+    <string name="emailTFLabel">email</string>
+    <string name="passwordTFLabel">password</string>
+    <string name="confirmPasswordTFLabel">confirm password</string>
+
+    <!-- TextField Error Messages -->
+    <string name="emailTFError">invalid email address</string>
+    <string name="passwordTFError">must be greater than 8 characters and contain numbers lowercase and uppercase letters</string>
+    <string name="confirmPasswordTFError">passwords must match</string>
+
+
+    <!-- Login Screen -->
+    <string name="loginBtnLabel">Login</string>
+    <string name="forgotPasswordText">Forgot Password?</string>
+    <string name="noAccountText">Don\'t have an account? </string>
+    <string name="signUpText">Sign Up</string>
+
+
+<!-- Content Descriptions  -->
+
+
 </resources>

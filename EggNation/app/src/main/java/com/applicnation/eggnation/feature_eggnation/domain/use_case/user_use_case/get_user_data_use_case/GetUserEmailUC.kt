@@ -13,10 +13,11 @@ class GetUserEmailUC @Inject constructor(
      */
     operator fun invoke(): String {
         val email = authenticator.getUserEmail()
+        Timber.d("email: $email")
+
 
         if (email == null) {
-            // TODO - this is a very bad case... need to do something
-            Timber.wtf("!!! User is signed out while trying to go to settings screen")
+            Timber.wtf("!!!! FIREBASE AUTH: User email is null. This should never happen")
             return ""
         } else {
             return email

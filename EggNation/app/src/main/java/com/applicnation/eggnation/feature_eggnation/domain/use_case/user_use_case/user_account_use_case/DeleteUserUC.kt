@@ -31,9 +31,8 @@ class DeleteUserUC @Inject constructor(
 
         val email = authenticator.getUserEmail()
 
-        // should never happen
         if (email == null) {
-            Timber.wtf("email is null and yet the user is signed in?!?!")
+            Timber.wtf("!!!! FIREBASE AUTH: email is null. This should never happen")
             emit(Resource.Error<String>(message = "Failed to verify account"))
             return@flow
         }
@@ -41,23 +40,23 @@ class DeleteUserUC @Inject constructor(
         try {
             authenticator.authenticateUser(email, password)
         } catch (e: FirebaseAuthInvalidUserException) {
-            Timber.e("Failed to re-authenticate user: The account has either been deleted or disabled --> $e")
+            Timber.e("FIREBASE AUTH: Failed to re-authenticate user: The account has either been deleted or disabled --> $e")
             emit(Resource.Error<String>(message = "Failed to verify account"))
             return@flow
         } catch (e: FirebaseAuthInvalidCredentialsException) {
-            Timber.e("Failed to re-authenticate: Invalid credentials (password is incorrect) --> $e")
+            Timber.e("FIREBASE AUTH: Failed to re-authenticate: Invalid credentials (password is incorrect) --> $e")
             emit(Resource.Error<String>(message = "Invalid password"))
             return@flow
         } catch (e: FirebaseTooManyRequestsException) {
-            Timber.e("Failed to re-authenticate: Too many attemps --> $e")
+            Timber.e("FIREBASE AUTH: Failed to re-authenticate: Too many attempts --> $e")
             emit(Resource.Error<String>(message = "Too many attempts. Try again later"))
             return@flow
         }   catch (e: FirebaseNetworkException) {
-            Timber.e("Failed to re-authenticate: Invalid credentials (password is incorrect) --> $e")
+            Timber.e("FIREBASE AUTH: Failed to re-authenticate: Not connected to the internet --> $e")
             emit(Resource.Error<String>(message = "Failed to verify account. Not connected to the internet"))
             return@flow
         } catch (e: Exception) {
-            Timber.wtf("Failed to delete user account: An unexpected error occurred --> $e")
+            Timber.wtf("FIREBASE AUTH: Failed to delete user account: An unexpected error occurred --> $e")
             emit(Resource.Error<String>(message = "Failed to verify account"))
             return@flow
         }
@@ -65,19 +64,19 @@ class DeleteUserUC @Inject constructor(
         try {
             authenticator.deleteUserAccount()
         } catch (e: FirebaseAuthInvalidUserException) {
-            Timber.e("Failed to delete user: The account has either been deleted or disabled --> $e")
+            Timber.e("FIREBASE AUTH: Failed to delete user: The account has either been deleted or disabled --> $e")
             emit(Resource.Error<String>(message = "Failed to delete account"))
             return@flow
         } catch (e: FirebaseAuthRecentLoginRequiredException) {
-            Timber.wtf("Failed to delete user: Re-authentication required. Something went horribly wrong since this error should have been caught before reaching this section --> $e")
+            Timber.wtf("FIREBASE AUTH: Failed to delete user: Re-authentication required. The user needs a recent login --> $e")
             emit(Resource.Error<String>(message = "Failed to delete account"))
             return@flow
         } catch (e: FirebaseNetworkException) {
-            Timber.e("Failed to re-authenticate: Invalid credentials (password is incorrect) --> $e")
+            Timber.e("FIREBASE AUTH: Failed to re-authenticate: Not connected to the internet --> $e")
             emit(Resource.Error<String>(message = "Failed to delete account. Not connected to the internet"))
             return@flow
         } catch (e: Exception) {
-            Timber.wtf("Failed to delete user account: An unexpected error occurred --> $e")
+            Timber.wtf("FIREBASE AUTH: Failed to delete user account: An unexpected error occurred --> $e")
             emit(Resource.Error<String>(message = "Failed to delete account"))
             return@flow
         }

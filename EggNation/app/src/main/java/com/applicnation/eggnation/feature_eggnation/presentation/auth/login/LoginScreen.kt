@@ -1,47 +1,33 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.auth.login
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.PolicyScreen
-import com.applicnation.eggnation.ui.theme.EggNationTheme
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.components.LoginScreenBottomText
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.components.LoginScreenForm
+import com.applicnation.eggnation.util.WindowInfo
+import com.applicnation.eggnation.util.rememberWindowInfo
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
-
-//TODO - use string resources
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     viewModel: LoginScreenViewModel = hiltViewModel()
 ) {
+    val windowInfo = rememberWindowInfo()
     val interactionSource = remember { MutableInteractionSource() }
-    val scaffoldState = rememberScaffoldState()
     val localFocusManager = LocalFocusManager.current
+    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -66,101 +52,34 @@ fun LoginScreen(
                     end = 24.dp,
                     top = 24.dp,
                     bottom = 50.dp
-                )
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Login Screen",
-                    style = MaterialTheme.typography.h5
+            Text(text = windowInfo.screenWidthInfo.toString())
+
+            if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) {
+                LoginScreenContent(
+                    viewModel = viewModel,
+                    navController = navController,
+                    localFocusManager = localFocusManager,
+                    interactionSource = interactionSource,
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                StandardTextField(
-                    text = viewModel.emailText.value,
-                    maxLength = 100,
-                    onValueChange = {
-                        viewModel.onEvent(LoginScreenEvent.EnteredEmail(it))
-                    },
-                    isError = viewModel.isEmailError.value,
-                    errorText = "invalid email address",
-                    label = "email", // TODO - use string resources
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onNext = { localFocusManager.moveFocus(FocusDirection.Down) }
-                    )
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                StandardTextField(
-                    text = viewModel.passwordText.value,
-                    onValueChange = {
-                        viewModel.onEvent(LoginScreenEvent.EnteredPassword(it))
-                    },
-                    isError = viewModel.isPasswordError.value,
-                    errorText = "password required",
-                    keyboardType = KeyboardType.Password,
-                    isPassword = true,
-                    label = "password", // TODO - use string resources
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { localFocusManager.clearFocus() }
-                    )
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text( // TODO - color this text to show that it is clickable
-                    text = "forgot password?",
+            } else {
+                Box(
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = null
-                        ) {
-                            navController.navigate(AuthScreen.ForgotPassword.route)
-                        }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    enabled = !viewModel.isEmailError.value && !viewModel.isPasswordError.value,
-                    onClick = {
-                        viewModel.onEvent(
-                            LoginScreenEvent.SignIn(
-                                viewModel.emailText.value,
-                                viewModel.passwordText.value
-                            )
-                        )
-                    },
+                        .align(Alignment.Center)
+                        .width(400.dp)
+                        .fillMaxHeight()
                 ) {
-                    Text(text = "Login")
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-            ) {
-                Text(text = "Don't have an account? ")
-                Text(
-                    text = "Sign up",
-                    color = Color.Blue,
-                    modifier = Modifier.clickable(
+                    LoginScreenContent(
+                        viewModel = viewModel,
+                        navController = navController,
+                        localFocusManager = localFocusManager,
                         interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        navController.navigate(
-                            AuthScreen.Register.route
-                        )
-                    })
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
             }
 
             if (viewModel.isLoading.value) {
@@ -170,70 +89,23 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun loginPreview() {
-    EggNationTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    top = 24.dp,
-                    bottom = 50.dp
-                )
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Login Screen",
-                    style = MaterialTheme.typography.h5
-                )
-                Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
-                StandardTextField(
-                    text = "test",
-                    onValueChange = {},
-                    label = "email", // use string resources
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
-                StandardTextField(
-                    text = "test",
-                    onValueChange = {
-                    },
-                    keyboardType = KeyboardType.Password,
-                    label = "password", // use string resources
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
-                Button(
-                    onClick = { /*TODO*/ },
-                ) {
-                    Text(text = "Login")
-                }
-            }
-            Text(
-                text = buildAnnotatedString {
-                    append("Don't have an account yet?")
-                    append(" ")
-                    // TODO - for string resources, create a val here and put the val in the with styles cause you can't accesss strng rersources from within withStyle
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colors.primary
-                        )
-                    ) {
-                        append("Sign up")
-                    }
-                },
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
-        }
-    }
+fun LoginScreenContent(
+    viewModel: LoginScreenViewModel,
+    navController: NavController,
+    localFocusManager: FocusManager,
+    interactionSource: MutableInteractionSource,
+    modifier: Modifier, // For bottom text
+) {
+    LoginScreenForm(
+        navController = navController,
+        viewModel = viewModel,
+        localFocusManager = localFocusManager,
+        interactionSource = interactionSource
+    )
+    LoginScreenBottomText(
+        modifier = modifier,
+        interactionSource = interactionSource,
+        navController = navController
+    )
 }

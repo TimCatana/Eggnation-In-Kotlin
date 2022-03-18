@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-// private cal savedStateHandle: SavedStateHandle - contains navigation parameters
-
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
     private val userUseCases: UserUseCases
@@ -48,7 +46,7 @@ class LoginScreenViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     /**
-     * events
+     * Events:
      * - Email (Text Entered)
      * - Password (Text Entered)
      * - Sign In (Button Clicked)
@@ -64,7 +62,7 @@ class LoginScreenViewModel @Inject constructor(
                 validatePassword()
             }
             is LoginScreenEvent.SignIn -> {
-                userUseCases.signInUserUC(event.email, event.password)
+                userUseCases.signInUserUC(_emailText.value, _passwordText.value)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {

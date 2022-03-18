@@ -13,10 +13,10 @@ class GetUserEmailVerificationStatusUC @Inject constructor(
      */
     operator fun invoke(): Boolean {
         val emailVerificationStatus = authenticator.getUserEmailVerificationStatus()
+        Timber.d("emailVerificationStatus: $emailVerificationStatus")
 
         if (emailVerificationStatus == null) {
-            // TODO - this is a very bad case... need to do something
-            Timber.wtf("!!! User is signed out while trying to go to settings screen")
+            Timber.wtf("!!!! FIREBASE AUTH: User emailVerificationStatus is null. This should never happen")
             return false
         } else {
             return emailVerificationStatus

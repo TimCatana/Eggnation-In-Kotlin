@@ -77,7 +77,7 @@ class RegisterScreenViewModel @Inject constructor(
                 validateConfirmPassword()
             }
             is RegisterScreenEvent.SignUp -> {
-                userUseCases.signUpUserUC(event.email, event.password)
+                userUseCases.signUpUserUC(_emailText.value, _passwordText.value)
                     .onEach { result ->
                             when (result) {
                                 is Resource.Loading -> {

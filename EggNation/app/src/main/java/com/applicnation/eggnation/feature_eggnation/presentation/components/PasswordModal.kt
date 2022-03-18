@@ -58,7 +58,6 @@ fun PasswordModal(
                     onValueChange = { onTextChange(it) },
                     isError = false,
                     errorText = "Please enter a password",
-                    keyboardType = KeyboardType.Password,
                     label = "password", // TODO - use string resources
                     isPassword = true,
                     modifier = Modifier

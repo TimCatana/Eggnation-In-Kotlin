@@ -69,10 +69,6 @@ class SettingsScreenViewModel @Inject constructor(
             _language.value = "EN"
             _isInit.value = false
         }
-//        _email.value = userUseCases.getUserEmailUC()
-//        _isEmailVerified.value = userUseCases.getUserEmailVerificationStatusUC()
-//        _language.value = "EN"
-//        _isInit.value = true
     }
 
     fun onEvent(event: SettingsScreenEvent) {

@@ -13,10 +13,10 @@ class GetUserIdUC @Inject constructor(
      */
     operator fun invoke(): String {
         val userId = authenticator.getUserId()
+        Timber.d("userId: $userId")
 
         if (userId == null) {
-            // TODO - this is a very bad case... need to do something
-            Timber.wtf("!!! User is signed out while trying to go to settings screen")
+            Timber.wtf("!!!! FIREBASE AUTH: UserId is null. This should never happen")
             return ""
         } else {
             return userId

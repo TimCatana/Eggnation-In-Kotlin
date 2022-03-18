@@ -4,5 +4,5 @@ sealed class RegisterScreenEvent {
     data class EnteredEmail(val value: String) : RegisterScreenEvent()
     data class EnteredPassword(val value: String) : RegisterScreenEvent()
     data class EnteredConfirmPassword(val value: String) : RegisterScreenEvent()
-    data class SignUp(val email: String, val password: String) : RegisterScreenEvent()
+    object SignUp: RegisterScreenEvent()
 }
