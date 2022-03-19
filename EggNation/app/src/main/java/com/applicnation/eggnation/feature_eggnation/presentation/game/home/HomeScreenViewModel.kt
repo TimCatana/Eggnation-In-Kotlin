@@ -28,17 +28,22 @@ class HomeScreenViewModel @Inject constructor(
     private val adUseCases: AdUseCases // TODO - get hilt working to for this... kinda difficult with the scoping
 ) : ViewModel() {
 
+    private val _tapCounter = mutableStateOf(1000)
+    val tapCounter: State<Int> = _tapCounter
+    private var getTapCountJob: Job? = null
+
+
+
+
+
+
+
     private val _userWon = mutableStateOf(false)
     val userWon: State<Boolean> = _userWon
 
-    private val _tapCounter = mutableStateOf(1000)
-    val tapCounter: State<Int> = _tapCounter
 
-    private val _eggSkin = mutableStateOf(R.drawable.egg)
-    val eggSkin: State<Int> = _eggSkin
 
-    private var getTapCountJob: Job? = null
-    private var getSkinJob: Job? = null
+
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
@@ -72,34 +77,27 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         resetCountIfNeeded()
-        getUserSkin()
         getCount()
     }
-
-
-//    if (viewModel.tapCounter.value % 5 == 0) {
-//        viewModel.onEvent(HomeScreenEvent.PlayAd(ctx.getActivity()))
-//        // TODO - play lost animation, user get's no chance to win when ad is played. sry bro
-//    } else {
-//        viewModel.onEvent(HomeScreenEvent.LoadAd(ctx.getActivity()))
-//        viewModel.onEvent(HomeScreenEvent.MainGameLogic)
-//    }
-
 
     // TODO - launch database stuff in IO dispatcher
     fun onEvent(event: HomeScreenEvent) {
         when (event) {
-            HomeScreenEvent.IncrementGlobalCounter -> {
+            is HomeScreenEvent.IncrementGlobalCounter -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     mainGameLogicUseCases.incrementGlobalCounterUC()
                 }
             }
-            is HomeScreenEvent.DecrementCounter -> {
+            is HomeScreenEvent.DecrementCounter -> { // TODO - fix this cause I want to rely on the stored value not on this value
                 viewModelScope.launch(Dispatchers.IO) {
                     preferencesUseCases.decrementTapCountPrefUC(_tapCounter.value)
                     getCount()
                 }
             }
+
+
+
+
             is HomeScreenEvent.MainGameLogic -> {
                 // TODO - load add if not loaded (once I get hilt working for this)
 
@@ -139,12 +137,21 @@ class HomeScreenViewModel @Inject constructor(
                     // TODO - re-enable egg image button while this is running
                 }.launchIn(viewModelScope)
             }
+
+
             is HomeScreenEvent.SetAnimationPlaying -> {
                 _isAnimationPlaying.value = event.isPlaying
             }
+
+
             is HomeScreenEvent.ShowWonPrize -> {
-                _showWonPrize.value = event.isShowing
+                _showWonPrize.value = true
             }
+            is HomeScreenEvent.HideWonPrize -> {
+                _showWonPrize.value = false
+            }
+
+
             is HomeScreenEvent.LoadAd -> {
                 if (event.context != null) {
                     adUseCases.adLoadUseCase(event.context)
@@ -168,26 +175,21 @@ class HomeScreenViewModel @Inject constructor(
                     }
                 }
             }
-            HomeScreenEvent.DismissWonPrizeCard -> {
-                _showWonPrize.value = false
-            }
+
+
             is HomeScreenEvent.ShowWonAnimation -> {
-                _showLoseAnimation.value = !event.isShowing
-                _showWinAnimation.value = event.isShowing
+                _showLoseAnimation.value = false
+                _showWinAnimation.value = true
+            }
+            is HomeScreenEvent.ShowLoseAnimaton -> {
+                _showLoseAnimation.value = true
+                _showWinAnimation.value = false
             }
         }
     }
 
     private fun loadAd() {
 
-    }
-
-    private fun getUserSkin() {
-        preferencesUseCases.getSelectedSkinPrefUC()
-            .map {
-                _eggSkin.value = it
-            }
-            .launchIn(viewModelScope)
     }
 
     private fun getCount() {
