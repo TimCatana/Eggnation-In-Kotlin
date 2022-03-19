@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">EggNation</string>
 
-    <string name="login">Login</string>
 
     <!-- Button Labels -->
     <string name="registerBtnLabel">Register</string>
@@ -17,15 +16,28 @@
     <string name="passwordTFError">must be greater than 8 characters and contain numbers lowercase and uppercase letters</string>
     <string name="confirmPasswordTFError">passwords must match</string>
 
-
     <!-- Login Screen -->
-    <string name="loginBtnLabel">Login</string>
-    <string name="forgotPasswordText">Forgot Password?</string>
-    <string name="noAccountText">Don\'t have an account? </string>
-    <string name="signUpText">Sign Up</string>
+    <string name="LS_loginScreenTitle">Login</string>
+    <string name="LS_loginBtnLabel">Login</string>
+    <string name="LS_forgotPasswordText">Forgot Password?</string>
+    <string name="LS_noAccountText">" Don\'t have an account? "</string>
+    <string name="LS_signUpText">Sign Up</string>
+
+    <!-- Register Screen -->
+    <string name="RS_registerScreenTitle">Register</string>
+    <string name="RS_registerBtnLabel">Register</string>
+    <string name="RS_agreementText">By registering you agree to our</string>
+    <string name="RS_privacyPolicyText">Privacy Policy</string>
+    <string name="RS_andText">" and "</string>
+    <string name="RS_termsAndConditionsText">Terms and Conditions</string>
+
+    <!-- Forgot Password Screen -->
+    <string name="FPS_forgotPasswordScreenTitle">Forgot Password</string>
+    <string name="FPS_sendEmailBtnLabel">Send Email</string>
 
 
-<!-- Content Descriptions  -->
+    <!-- Content Descriptions  -->
+    <string name="CD_backArrowIcon">Go back arrow icon</string>
 
 
 </resources>

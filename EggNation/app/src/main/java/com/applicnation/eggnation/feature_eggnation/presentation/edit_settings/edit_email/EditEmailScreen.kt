@@ -113,6 +113,7 @@ fun EditEmailScreen(
                             cursorColor = Color.White,
                             textColor = Color.White
                         ),
+                        isIconClickable = true
                     )
                 }
                 Button(

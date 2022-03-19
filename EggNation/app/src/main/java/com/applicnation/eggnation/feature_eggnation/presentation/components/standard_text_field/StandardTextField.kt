@@ -29,7 +29,8 @@ fun StandardTextField(
     keyboardActions: KeyboardActions = KeyboardActions(),
     keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
     textFieldColors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
-    modifier: Modifier
+    modifier: Modifier,
+    isIconClickable: Boolean,
 ) {
     val isPasswordToggleDisplayed by remember { mutableStateOf(isPassword) }
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -49,7 +50,7 @@ fun StandardTextField(
             visualTransformation = if (isPasswordToggleDisplayed && !isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = {
                 if (isPasswordToggleDisplayed) {
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                    IconButton(enabled = isIconClickable, onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
                             imageVector = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                             contentDescription = if (isPasswordVisible) "hide password" else "show password"

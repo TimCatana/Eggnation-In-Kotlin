@@ -31,7 +31,7 @@ class WonPrizeGetAllUC @Inject constructor(
      * @return ArrayList<WonPrize> The list of won prizes
      */
     operator fun invoke(): Flow<Resource<ArrayList<WonPrize>>> = flow {
-        emit(Resource.Loading<ArrayList<WonPrize>>())
+        emit(Resource.Loading<ArrayList<WonPrize>>(message = ""))
 
         val userId = authenticationRepository.getUserId()
 

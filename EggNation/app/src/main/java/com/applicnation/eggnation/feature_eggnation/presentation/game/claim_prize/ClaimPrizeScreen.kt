@@ -147,7 +147,8 @@ fun ClaimPrizeScreen(
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = { localFocusManager.clearFocus() }
-                        )
+                        ),
+                        isIconClickable = true
                     )
 
                     Button(onClick = {

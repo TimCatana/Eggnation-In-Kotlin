@@ -109,7 +109,7 @@ object AppModule {
         functionsRepo: FunctionsRepository
     ): UserUseCases {
         return UserUseCases(
-            signUpUserUC = SignUpUserUC(authenticationRepo, databaseRepo, functionsRepo),
+            signUpUserUC = SignUpUserUC(authenticationRepo),
             signInUserUC = SignInUserUC(authenticationRepo),
             signOutUserUC = SignOutUserUC(authenticationRepo),
             deleteUserUC = DeleteUserUC(authenticationRepo),

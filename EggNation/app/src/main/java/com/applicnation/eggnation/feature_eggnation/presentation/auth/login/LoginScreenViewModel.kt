@@ -74,9 +74,7 @@ class LoginScreenViewModel @Inject constructor(
                             is Resource.Error -> {
                                 _isLoading.value = false
                                 _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message!!
-                                    )
+                                    UiEvent.ShowSnackBar(message = result.message)
                                 )
                             }
                         }
@@ -95,6 +93,6 @@ class LoginScreenViewModel @Inject constructor(
     }
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
+        data class ShowSnackBar(val message: String) : UiEvent()
     }
 }

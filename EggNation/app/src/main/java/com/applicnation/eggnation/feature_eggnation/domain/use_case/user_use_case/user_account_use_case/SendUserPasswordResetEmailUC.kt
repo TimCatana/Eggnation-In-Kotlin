@@ -1,7 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.user_account_use_case
 
 import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
-import com.applicnation.eggnation.feature_eggnation.domain.util.FailedToSendPasswordResetEmailException
 import com.applicnation.eggnation.util.Resource
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthEmailException
@@ -17,7 +16,6 @@ import javax.inject.Inject
 class SendUserPasswordResetEmailUC @Inject constructor(
     private val authenticator: AuthenticationRepository
 ) {
-
     /**
      * Sends a password reset email to the email address provided
      * @param email The email to send password reset link to
@@ -31,20 +29,25 @@ class SendUserPasswordResetEmailUC @Inject constructor(
 
         try {
             authenticator.sendPasswordResetEmail(email)
-            Timber.i("FIREBASE AUTH SUCCESS: User password reset")
-            emit(Resource.Success<String>(message = "Email sent successfully! If you can't find it, check your spam folder"))
+            Timber.i("FIREBASE AUTH: SUCCESS - User password reset email sent")
         } catch (e: FirebaseAuthInvalidUserException) {
             Timber.e("FIREBASE AUTH: FAILED to send password reset email: No user corresponding to email address --> $e")
-            emit(Resource.Error<String>("Email does not exist, did you register an account yet?"))
+            emit(Resource.Error<String>(message = "Email not found. Did you register an account yet?"))
+            return@flow
         } catch (e: FirebaseAuthEmailException) {
-            Timber.e("FIREBASE AUTH: FAILED to send verification email: --> $e")
-            emit(Resource.Error<String>("Failed to send email!"))
+            Timber.e("FIREBASE AUTH: FAILED to send password reset email: --> $e")
+            emit(Resource.Error<String>(message = "Something went wrong on our side"))
+            return@flow
         } catch (e: FirebaseNetworkException) {
-            Timber.e("FIREBASE AUTH: FAILED to sign user up (register): Not connected to internet --> $e")
-            emit(Resource.Error<String>("Make sure you are connected to the internet"))
+            Timber.e("FIREBASE AUTH: FAILED to send  password reset email: Not connected to internet --> $e")
+            emit(Resource.Error<String>(message = "Make sure you are connected to the internet"))
+            return@flow
         } catch (e: Exception) {
             Timber.e("FIREBASE AUTH: FAILED to send password reset email: An unexpected error occurred --> $e")
-            emit(Resource.Error<String>("An unexpected error occurred, Failed to send email"))
+            emit(Resource.Error<String>(message = "An unexpected error occurred"))
+            return@flow
         }
+
+        emit(Resource.Success<String>(message = "Email sent successfully! If you can't find it, check your spam folder"))
     }.flowOn(Dispatchers.IO)
 }

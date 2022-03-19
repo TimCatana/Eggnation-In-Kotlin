@@ -17,7 +17,8 @@ fun ConfirmPasswordTextField(
     isError: Boolean,
     imeAction: ImeAction,
     keyboardActions: KeyboardActions,
-    modifier: Modifier
+    modifier: Modifier,
+    isIconClickable: Boolean
 ) {
     StandardTextField(
         isPassword = true,
@@ -31,6 +32,7 @@ fun ConfirmPasswordTextField(
             imeAction = imeAction
         ),
         keyboardActions = keyboardActions,
+        isIconClickable = isIconClickable,
         modifier = modifier
     )
 }

@@ -31,24 +31,23 @@ class SignInUserUC @Inject constructor(
             authenticator.signInUser(email, password)
             Timber.i("FIREBASE AUTH: SUCCESS - User signed in")
         } catch (e: FirebaseAuthInvalidCredentialsException) {
-            Timber.e("FIREBASE AUTH: Failed to sign user in: Invalid credentials --> $e")
-            emit(Resource.Error<String>("Invalid Credentials!"))
+            Timber.e("FIREBASE AUTH: FAILED to sign user in: Invalid credentials --> $e")
+            emit(Resource.Error<String>(message = "Invalid Credentials!"))
             return@flow
         } catch (e: FirebaseAuthInvalidUserException) {
-            Timber.e("FIREBASE AUTH: Failed to sign user in: User does not exist --> $e")
-            emit(Resource.Error<String>("Invalid Credentials!"))
+            Timber.e("FIREBASE AUTH: FAILED to sign user in: User does not exist --> $e")
+            emit(Resource.Error<String>(message = "Invalid Credentials!"))
             return@flow
         } catch (e: FirebaseNetworkException) {
-            Timber.e("FIREBASE AUTH: Failed to sign user up (register): Not connected to internet --> $e")
-            emit(Resource.Error<String>("Make sure you're connected to the internet"))
+            Timber.e("FIREBASE AUTH: FAILED to sign user up (register): Not connected to internet --> $e")
+            emit(Resource.Error<String>(message = "Make sure you're connected to the internet"))
             return@flow
         } catch (e: Exception) {
-            Timber.wtf("FIREBASE AUTH: Failed to sign user in: An unexpected error occurred --> $e")
-            emit(Resource.Error<String>("An unexpected error occurred"))
+            Timber.wtf("FIREBASE AUTH: FAILED to sign user in: An unexpected error occurred --> $e")
+            emit(Resource.Error<String>(message = "An unexpected error occurred"))
             return@flow
         }
 
         emit(Resource.Success<String>(message = "Signed in successfully!"))
-
     }.flowOn(Dispatchers.IO)
 }

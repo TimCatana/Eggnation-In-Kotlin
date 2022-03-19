@@ -50,7 +50,7 @@ class ForgotPasswordScreenViewModel @Inject constructor(
                 validateEmail()
             }
             is ForgotPasswordScreenEvent.SendResetPasswordEmail -> {
-                userUseCases.sendUserPasswordResetEmailUC(event.email)
+                userUseCases.sendUserPasswordResetEmailUC(_emailText.value)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {
@@ -59,18 +59,13 @@ class ForgotPasswordScreenViewModel @Inject constructor(
                             is Resource.Success -> {
                                 _isLoading.value = false
                                 _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message
-                                            ?: "Email sent successfully. If you can't find it, check your spam folder" // TODO - get rid of this because I want to meka emessages required on succes Resource
-                                    )
+                                    UiEvent.ShowSuccessSnackBar(message = result.message)
                                 )
                             }
                             is Resource.Error -> {
                                 _isLoading.value = false
                                 _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message ?: "An unexpected error occurred" // TODO - get rid of this because I want to meka emessages required on succes Resource
-                                    )
+                                    UiEvent.ShowErrorSnackBar(message = result.message)
                                 )
                             }
                         }
@@ -85,6 +80,7 @@ class ForgotPasswordScreenViewModel @Inject constructor(
     }
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
+        data class ShowErrorSnackBar(val message: String) : UiEvent()
+        data class ShowSuccessSnackBar(val message: String) : UiEvent()
     }
 }

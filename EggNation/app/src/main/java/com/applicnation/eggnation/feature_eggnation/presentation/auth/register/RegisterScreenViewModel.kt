@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -79,22 +78,20 @@ class RegisterScreenViewModel @Inject constructor(
             is RegisterScreenEvent.SignUp -> {
                 userUseCases.signUpUserUC(_emailText.value, _passwordText.value)
                     .onEach { result ->
-                            when (result) {
-                                is Resource.Loading -> {
-                                    _isLoading.value = true
-                                }
-                                is Resource.Success -> {
-                                    _isLoading.value = false
-                                }
-                                is Resource.Error -> {
-                                    _isLoading.value = false
-                                    _eventFlow.emit(
-                                        UiEvent.ShowSnackbar(
-                                            message = result.message!! // TODO - make sure Resource error and success have required messages and pass emtpy strings when not necesary
-                                        )
-                                    )
-                                }
+                        when (result) {
+                            is Resource.Loading -> {
+                                _isLoading.value = true
                             }
+                            is Resource.Success -> {
+                                _isLoading.value = false
+                            }
+                            is Resource.Error -> {
+                                _isLoading.value = false
+                                _eventFlow.emit(
+                                    UiEvent.ShowSnackBar(message = result.message)
+                                )
+                            }
+                        }
                     }.launchIn(viewModelScope)
             }
         }
@@ -114,27 +111,22 @@ class RegisterScreenViewModel @Inject constructor(
         var isError = false
 
         if (_passwordText.value.length < 8) {
-//            Timber.d("password error = TRUE --> password length less than 8")
             isError = true
         }
 
         if (_passwordText.value.contains(whiteSpaceChars)) {
-//            Timber.d("password error = TRUE --> password contains whitespace")
             isError = true
         }
 
         if (!_passwordText.value.contains(lowerCaseChars)) {
-//            Timber.d("password error = TRUE --> password does not contain lowercase letters")
             isError = true
         }
 
         if (!_passwordText.value.contains(upperCaseChars)) {
-//            Timber.d("password error = TRUE --> password does not contain uppercase letters")
             isError = true
         }
 
         if (!_passwordText.value.contains(numberChars)) {
-//            Timber.d("password error = TRUE --> password does not contain numbers")
             isError = true
         }
 
@@ -146,6 +138,6 @@ class RegisterScreenViewModel @Inject constructor(
     }
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
+        data class ShowSnackBar(val message: String) : UiEvent()
     }
 }

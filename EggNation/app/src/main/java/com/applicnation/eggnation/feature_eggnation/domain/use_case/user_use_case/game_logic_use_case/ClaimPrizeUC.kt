@@ -18,7 +18,7 @@ class ClaimPrizeUC @Inject constructor(
      *
      */
     operator fun invoke(): Flow<Resource<Boolean>> = flow {
-        emit(Resource.Loading<Boolean>())
+        emit(Resource.Loading<Boolean>(message = ""))
 
         val isEmailVerified = authenticationRepository.getUserEmailVerificationStatus()
 

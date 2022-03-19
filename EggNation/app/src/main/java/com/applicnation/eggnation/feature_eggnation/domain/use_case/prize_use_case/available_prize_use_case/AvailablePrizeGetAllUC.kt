@@ -20,7 +20,7 @@ class AvailablePrizeGetAllUC @Inject constructor(
      * @exception Exception All exceptions thrown from this catch block are UNEXPECTED
      */
     operator fun invoke(): Flow<Resource<ArrayList<AvailablePrize>>> = flow {
-        emit(Resource.Loading<ArrayList<AvailablePrize>>())
+        emit(Resource.Loading<ArrayList<AvailablePrize>>(message = ""))
 
         try{
             val prizes = repository.getAllAvailablePrizes()

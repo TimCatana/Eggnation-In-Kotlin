@@ -17,7 +17,7 @@ fun EmailTextField(
     isError: Boolean,
     imeAction: ImeAction,
     keyboardActions: KeyboardActions,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     StandardTextField(
         label = stringResource(id = R.string.emailTFLabel),
@@ -31,6 +31,7 @@ fun EmailTextField(
             imeAction = imeAction
         ),
         keyboardActions = keyboardActions,
+        isIconClickable = false, // There is no icon to click
         modifier = modifier,
     )
 }

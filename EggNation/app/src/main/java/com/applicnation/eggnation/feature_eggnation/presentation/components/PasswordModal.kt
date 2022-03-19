@@ -83,6 +83,7 @@ fun PasswordModal(
                         cursorColor = Color.White,
                         textColor = Color.White
                     ),
+                    isIconClickable = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = cancelModal) {

@@ -111,6 +111,7 @@ fun EditPasswordScreen(
                             cursorColor = Color.Blue,
                             textColor = Color.White
                         ),
+                        isIconClickable = true
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     StandardTextField(
@@ -142,6 +143,7 @@ fun EditPasswordScreen(
                             cursorColor = Color.Blue,
                             textColor = Color.White
                         ),
+                        isIconClickable = true
                     )
                 }
                 Button(
@@ -167,7 +169,13 @@ fun EditPasswordScreen(
                         viewModel.onEvent(EditPasswordScreenEvent.ShowPasswordModel(false))
                     },
                     onDone = { viewModel.onEvent(EditPasswordScreenEvent.UpdatePassword(viewModel.confirmPasswordText.value)) },
-                    onTextChange = { viewModel.onEvent(EditPasswordScreenEvent.EnteredValidationPassword(it)) },
+                    onTextChange = {
+                        viewModel.onEvent(
+                            EditPasswordScreenEvent.EnteredValidationPassword(
+                                it
+                            )
+                        )
+                    },
                     text = viewModel.validationPasswordText.value,
                 )
             }
@@ -211,7 +219,8 @@ fun PasswordScreenPreview() {
                         isError = false,
                         errorText = "Invalid email address",
                         label = "password",
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        isIconClickable = true
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     StandardTextField(
@@ -220,7 +229,8 @@ fun PasswordScreenPreview() {
                         isError = false,
                         errorText = "Invalid email address",
                         label = "new password",
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        isIconClickable = true
                     )
                 }
                 Button(

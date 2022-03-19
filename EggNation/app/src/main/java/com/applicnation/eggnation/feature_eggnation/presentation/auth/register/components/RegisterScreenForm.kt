@@ -1,7 +1,5 @@
-package com.applicnation.eggnation.feature_eggnation.presentation.auth.login.components
+package com.applicnation.eggnation.feature_eggnation.presentation.auth.register.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Button
@@ -14,23 +12,18 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenEvent
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.presentation.components.ConfirmPasswordTextField
 import com.applicnation.eggnation.feature_eggnation.presentation.components.EmailTextField
 import com.applicnation.eggnation.feature_eggnation.presentation.components.PasswordTextField
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.ui.theme.SpaceMedium
-import com.applicnation.eggnation.ui.theme.SpaceSmall
 
 @Composable
-fun LoginScreenForm(
-    navController: NavController,
-    viewModel: LoginScreenViewModel,
+fun RegisterScreenForm(
+    viewModel: RegisterScreenViewModel,
     localFocusManager: FocusManager,
-    interactionSource: MutableInteractionSource
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -40,13 +33,13 @@ fun LoginScreenForm(
             .padding(SpaceMedium)
     ) {
         Text(
-            text = stringResource(id = R.string.LS_loginScreenTitle),
+            text = stringResource(id = R.string.RS_registerScreenTitle),
             style = MaterialTheme.typography.h5
         )
         Spacer(modifier = Modifier.height(SpaceMedium))
         EmailTextField(
             text = viewModel.emailText.value,
-            onValueChange = { viewModel.onEvent(LoginScreenEvent.EnteredEmail(it)) },
+            onValueChange = { viewModel.onEvent(RegisterScreenEvent.EnteredEmail(it)) },
             isError = viewModel.isEmailError.value,
             imeAction = ImeAction.Next,
             keyboardActions = KeyboardActions(
@@ -57,39 +50,38 @@ fun LoginScreenForm(
         Spacer(modifier = Modifier.height(SpaceMedium))
         PasswordTextField(
             text = viewModel.passwordText.value,
-            onValueChange = { viewModel.onEvent(LoginScreenEvent.EnteredPassword(it)) },
-            isError = false,
+            onValueChange = { viewModel.onEvent(RegisterScreenEvent.EnteredPassword(it)) },
+            isError = viewModel.isPasswordError.value,
+            imeAction = ImeAction.Next,
+            keyboardActions = KeyboardActions(
+                onNext = { localFocusManager.moveFocus(FocusDirection.Down) }
+            ),
+            isIconClickable = !viewModel.isLoading.value,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(SpaceMedium))
+        ConfirmPasswordTextField(
+            text = viewModel.confirmPasswordText.value,
+            onValueChange = { viewModel.onEvent(RegisterScreenEvent.EnteredConfirmPassword(it)) },
+            isError = viewModel.isConfirmPasswordError.value,
             imeAction = ImeAction.Done,
             keyboardActions = KeyboardActions(
                 onDone = { localFocusManager.clearFocus() }
             ),
             isIconClickable = !viewModel.isLoading.value,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(SpaceSmall))
-        Text( // TODO - color this text to show that it is clickable
-            text = stringResource(id = R.string.LS_forgotPasswordText),
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable(
-                    enabled = !viewModel.isLoading.value,
-                    interactionSource = interactionSource,
-                    indication = null
-                ) {
-                    navController.navigate(AuthScreen.ForgotPassword.route)
-                }
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(SpaceMedium))
         Button(
-            enabled = !viewModel.isLoading.value
-                    && !viewModel.isEmailError.value
-                    && !viewModel.isPasswordError.value,
+            enabled = !viewModel.isEmailError.value
+                    && !viewModel.isPasswordError.value
+                    && !viewModel.isConfirmPasswordError.value,
             onClick = {
                 localFocusManager.clearFocus()
-                viewModel.onEvent(LoginScreenEvent.SignIn)
+                viewModel.onEvent(RegisterScreenEvent.SignUp)
             },
         ) {
-            Text(text = stringResource(id = R.string.LS_loginBtnLabel))
+            Text(text = stringResource(id = R.string.RS_registerBtnLabel))
         }
     }
 }

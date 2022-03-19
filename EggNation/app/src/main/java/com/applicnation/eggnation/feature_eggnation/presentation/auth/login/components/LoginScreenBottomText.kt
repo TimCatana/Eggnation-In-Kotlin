@@ -10,10 +10,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 
 @Composable
 fun LoginScreenBottomText(
+    viewModel: LoginScreenViewModel,
     navController: NavController,
     interactionSource: MutableInteractionSource,
     modifier: Modifier
@@ -21,11 +23,12 @@ fun LoginScreenBottomText(
     Row(
         modifier = modifier
     ) {
-        Text(text = stringResource(id = R.string.noAccountText))
+        Text(text = stringResource(id = R.string.LS_noAccountText))
         Text(
-            text = stringResource(id = R.string.signUpText),
+            text = stringResource(id = R.string.LS_signUpText),
             color = Color.Blue,
             modifier = Modifier.clickable(
+                enabled = !viewModel.isLoading.value,
                 interactionSource = interactionSource,
                 indication = null
             ) {
