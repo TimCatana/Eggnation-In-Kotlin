@@ -2,11 +2,8 @@ package com.applicnation.eggnation.feature_eggnation.presentation.game.home.comp
 
 import android.content.Context
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimatable
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreenViewModel
@@ -16,13 +13,11 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.home.compo
 @Composable
 fun HomeScreenAnimationController(
     viewModel: HomeScreenViewModel,
-
     interactionSource: MutableInteractionSource,
     loseComposition: LottieComposition?,
     loseAnimatable: LottieAnimatable,
     isAnimationPlaying: Boolean,
     context: Context,
-
     winComposition: LottieComposition?,
     winAnimatable: LottieAnimatable,
     modifier: Modifier // TODO - decide on modifier
@@ -34,9 +29,9 @@ fun HomeScreenAnimationController(
             loseAnimatable = loseAnimatable,
             isAnimationPlaying = isAnimationPlaying,
             viewModel = viewModel,
-            context = context
+            context = context,
         )
-    } else if (viewModel.showWinAnimation.value) {
+    } else {
         HomeScreenWinComposition(
             winComposition = winComposition,
             winAnimatable = winAnimatable,

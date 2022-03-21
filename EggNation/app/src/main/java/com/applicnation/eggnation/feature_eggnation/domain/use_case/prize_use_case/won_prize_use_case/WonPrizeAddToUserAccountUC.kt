@@ -11,7 +11,7 @@ class WonPrizeAddToUserAccountUC @Inject constructor(
 ) {
     /**
      * Adds a prize to the user's account
-     * @param userId The uid of the user used to add the prize to the correct account in firestore
+     * @param userId The uid of the user used to add the prize to the correct account in fireStore
      * @param prizeId The unique id of the prize won
      * @param prizeTitle The title of the prize
      * @param prizeDesc The description of the prize
@@ -30,7 +30,6 @@ class WonPrizeAddToUserAccountUC @Inject constructor(
         prizeType: String,
         prizeTier: String
     ): Boolean {
-
         try {
             repository.addWonPrizeToUserAccount(
                 userId = userId,
@@ -42,12 +41,11 @@ class WonPrizeAddToUserAccountUC @Inject constructor(
             )
             return true
         } catch (e: FirebaseFirestoreException) {
-            Timber.e("Failed to add won prize to firestore: An unexpected FIRESTORE error occurred --> $e")
+            Timber.e("FIRESTORE: Failed to add won prize to fireStore: An unexpected FIRESTORE error occurred --> $e")
             return false
         } catch (e: Exception) {
-            Timber.e("Failed to add won prize to firestore: An unexpected error occurred --> $e")
+            Timber.e("FIRESTORE: Failed to add won prize to fireStore: An unexpected error occurred --> $e")
             return false
         }
-
     }
 }

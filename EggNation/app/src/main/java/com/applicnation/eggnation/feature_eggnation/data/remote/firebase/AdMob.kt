@@ -31,16 +31,27 @@ import timber.log.Timber
  * There might be a better way to do this using contextWrapper. But I am unfamiliar with how that
  * works and more importantly, how to incorporate it into this clean architecture model.
  */
-class AdMob constructor(
-//    private val activityContext: Activity
-) {
+class AdMob {
     private var interstitialAd: InterstitialAd? = null
     private val adRequest: AdRequest = AdRequest.Builder().build()
 
     /**
+     * Plays an interstitial ad if the add is loaded
+     * @helperFunction setInterstitialCallbacks()
+     */
+    fun playInterstitialAd(activityContext: Activity) {
+        setInterstitialCallbacks()
+
+        if (interstitialAd != null) {
+            interstitialAd?.show(activityContext)
+        } else {
+            Timber.i("Ad was not ready to be played")
+        }
+    }
+
+    /**
      * Loads an interstitial ad if the ad is null.
      * @note I am manually setting the ad to null and thus not laoding the ad every single time the.
-     * TODO - maybe run this function in the playInterstitial Ad function? Most likely do that. but then I'll need to get rid of the null if statement
      */
     fun loadInterstitialAd(activityContext: Activity) {
         if (interstitialAd == null) {
@@ -63,20 +74,6 @@ class AdMob constructor(
     }
 
     /**
-     * Plays an interstitial ad if the add is loaded
-     * @helperFunction setInterstitialCallbacks()
-     */
-    fun playInterstitialAd(activityContext: Activity) {
-        setInterstitialCallbacks()
-
-        if (interstitialAd != null) {
-            interstitialAd?.show(activityContext)
-        } else {
-            Timber.w("The interstitial ad was not loaded yet. Ad not played")
-        }
-    }
-
-    /**
      * Set's the callback functions for then an interstitial ad is played.
      * Helper function for playInterstitialAd()
      */
@@ -88,7 +85,7 @@ class AdMob constructor(
 
             override fun onAdShowedFullScreenContent() {
                 Timber.i("Interstitial Ad showed in full screen")
-                 // TODO - probably keep track of clicks for marketing purposes
+                // TODO - probably keep track of clicks for marketing purposes
             }
 
             override fun onAdDismissedFullScreenContent() {
@@ -97,7 +94,7 @@ class AdMob constructor(
             }
 
             override fun onAdClicked() {
-                 // TODO - probably keep track of clicks for marketing purposes
+                // TODO - probably keep track of clicks for marketing purposes
                 interstitialAd = null
                 Timber.i("Interstitial Ad was clicked")
             }

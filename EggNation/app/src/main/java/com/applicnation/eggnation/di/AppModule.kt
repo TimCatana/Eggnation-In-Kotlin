@@ -2,16 +2,11 @@ package com.applicnation.eggnation.di
 
 import DoGameLogicUC
 import android.content.Context
+import com.applicnation.eggnation.feature_eggnation.data.local.Internet
 import com.applicnation.eggnation.feature_eggnation.data.local.PreferencesManager
 import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.*
-import com.applicnation.eggnation.feature_eggnation.data.repository.AuthenticationRepositoryImpl
-import com.applicnation.eggnation.feature_eggnation.data.repository.DatabaseRepositoryImpl
-import com.applicnation.eggnation.feature_eggnation.data.repository.FunctionsRepositoryImpl
-import com.applicnation.eggnation.feature_eggnation.data.repository.PreferencesRepositoryImpl
-import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
-import com.applicnation.eggnation.feature_eggnation.domain.repository.DatabaseRepository
-import com.applicnation.eggnation.feature_eggnation.domain.repository.FunctionsRepository
-import com.applicnation.eggnation.feature_eggnation.domain.repository.PreferencesRepository
+import com.applicnation.eggnation.feature_eggnation.data.repository.*
+import com.applicnation.eggnation.feature_eggnation.domain.repository.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdLoadUseCase
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdPlayUseCase
@@ -23,6 +18,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_ca
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.ClaimPrizeUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.DoClaimPrizeUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.InternetConnectivityUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
@@ -41,6 +37,12 @@ object AppModule {
     /**
      * Backend Code Providers
      */
+
+    @Provides
+    @Singleton
+    fun provideInternet(): Internet {
+        return Internet()
+    }
 
     @Provides
     @Singleton
@@ -76,6 +78,12 @@ object AppModule {
     /**
      * Repository Providers
      */
+    @Provides
+    @Singleton
+    fun provideInternetRepository(internet: Internet): InternetRepository {
+        return InternetRepositoryImpl(internet)
+    }
+
     @Provides
     @Singleton
     fun provideFunctionsRepository(functions: Functions): FunctionsRepository {
@@ -153,13 +161,15 @@ object AppModule {
         databaseRepo: DatabaseRepository,
         authenticationRepo: AuthenticationRepository,
         availablePrizeUseCases: PrizeUseCases,
-        functionsRepo: FunctionsRepository
+        functionsRepo: FunctionsRepository,
+        internetRepo: InternetRepository
     ): MainGameLogicUseCases {
         return MainGameLogicUseCases(
             claimPrizeUC = ClaimPrizeUC(authenticationRepo),
             incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo),
             doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases, databaseRepo),
-            doClaimPrizeUC = DoClaimPrizeUC(functionsRepo, authenticationRepo, databaseRepo)
+            doClaimPrizeUC = DoClaimPrizeUC(functionsRepo, authenticationRepo, databaseRepo),
+            internetConnectivityUC = InternetConnectivityUC(internetRepo)
         )
     }
 
@@ -193,14 +203,10 @@ object AppModule {
     @Singleton
     fun providePreferencesUseCases(preferencesRepo: PreferencesRepository): AllPreferencesUseCases {
         return AllPreferencesUseCases(
-            getSelectedSkinPrefUC = GetSelectedSkinPrefUC(preferencesRepo),
             getTapCountPrefUC = GetTapCountPrefUC(preferencesRepo),
-            getReceivesNotificationsPrefUC = GetReceivesNotificationsPrefUC(preferencesRepo),
             getLastResetTimePrefUC = GetLastResetTimePrefUC(preferencesRepo),
 
-            updateSelectedSkinPrefUC = UpdateSelectedSkinPrefUC(preferencesRepo),
             updateTapCountPrefUC = UpdateTapCountPrefUC(preferencesRepo),
-            updateReceivesNotificationsPrefUC = UpdateReceivesNotificationsPrefUC(preferencesRepo),
             updateLastResetTimePrefUC = UpdateLastResetTimePrefUC(preferencesRepo),
 
             decrementTapCountPrefUC = DecrementTapCountPrefUC(preferencesRepo)

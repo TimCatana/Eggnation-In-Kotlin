@@ -10,21 +10,12 @@ class PreferencesRepositoryImpl(
 
     /**
      * DataStore Getters:
-     * - SelectedSkin
      * - TapCount
-     * - ReceivesNotifications
      * - LastResetTime
      */
-    override fun getSelectedSkin(): Flow<Int> {
-        return preferencesManager.getSelectedSkin()
-    }
 
     override fun getTapCount(): Flow<Int> {
         return preferencesManager.getTapCount()
-    }
-
-    override fun getReceivesNotifications(): Flow<Boolean> {
-        return preferencesManager.getReceivesNotifications()
     }
 
     override fun getLastResetTime(): Flow<Long> {
@@ -38,23 +29,16 @@ class PreferencesRepositoryImpl(
      * - ReceivesNotifications
      * - LastResetTime
      */
-    override suspend fun updateSelectedSkin(skin: Int) {
-        preferencesManager.updateSelectedSkin(skin)
-    }
 
     override suspend fun updateTapCount(tapCount: Int) {
         preferencesManager.updateTapCount(tapCount)
-    }
-
-    override suspend fun updateReceiveNotifications(receivesNotifications: Boolean) {
-        preferencesManager.updateReceiveNotifications(receivesNotifications)
     }
 
     override suspend fun updateLastResetTime(resetTime: Long) {
         return preferencesManager.updateLastResetTime(resetTime)
     }
 
-    override suspend fun decrementTapCounter() {
+    override suspend fun decrementTapCounter(){
         return preferencesManager.decrementTapCounter()
     }
 }

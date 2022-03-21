@@ -1,11 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.home
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,18 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.*
 import com.applicnation.eggnation.R
 import com.applicnation.eggnation.feature_eggnation.presentation.components.PrizeInfoCard
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.components.HomeScreenBottomIcons
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.components.HomeScreenCounterText
-import com.applicnation.eggnation.feature_eggnation.presentation.game.home.components.HomeScreenLoseAnimation
-import com.applicnation.eggnation.feature_eggnation.presentation.game.home.components.HomeScreenWinComposition
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.components.animations.HomeScreenAnimationController
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import kotlinx.coroutines.flow.collectLatest
@@ -60,28 +52,13 @@ fun HomeScreen(
                         message = event.message,
                     )
                 }
-                is HomeScreenViewModel.UiEvent.PlayLoseAnimation -> {
-                    viewModel.onEvent(HomeScreenEvent.SetAnimationPlaying(true))
-                    loseAnimatable.animate(
-                        loseComposition,
-                        continueFromPreviousAnimate = false,
+                is HomeScreenViewModel.UiEvent.PlayAnimation -> {
+                    playLottieAnimation(
+                        animatable = if (event.isLoseAnimation) loseAnimatable else winAnimatable,
+                        composition = if (event.isLoseAnimation) loseComposition else winComposition,
+                        isLoseAnimation = event.isLoseAnimation,
+                        viewModel = viewModel
                     )
-                    if (loseAnimatable.isAtEnd) {
-                        loseAnimatable.snapTo(progress = 0f)
-                        viewModel.onEvent(HomeScreenEvent.SetAnimationPlaying(false))
-                    }
-                }
-                is HomeScreenViewModel.UiEvent.PlayWinAnimation -> {
-                    viewModel.onEvent(HomeScreenEvent.ShowWonAnimation)
-                    viewModel.onEvent(HomeScreenEvent.SetAnimationPlaying(true))
-                    winAnimatable.animate(
-                        winComposition,
-                        continueFromPreviousAnimate = false,
-                    )
-                    if (winAnimatable.isAtEnd) {
-                        viewModel.onEvent(HomeScreenEvent.ShowLoseAnimaton)
-                        viewModel.onEvent(HomeScreenEvent.SetAnimationPlaying(false))
-                    }
                 }
             }
         }
@@ -139,11 +116,11 @@ fun HomeScreen(
                     viewModel.onEvent(HomeScreenEvent.HideWonPrize)
                 }
                 PrizeInfoCard(
-                    prizeTitle = viewModel.prizeTitleInfo.value,
-                    prizeDesc = viewModel.prizeDescInfo.value,
-                    prizeType = viewModel.prizeTypeInfo.value,
+                    prizeTitle = viewModel.prize.value.prizeTitle,
+                    prizeDesc = viewModel.prize.value.prizeDesc,
+                    prizeType = viewModel.prize.value.prizeType,
                     prizeClaimed = false,
-                    onDismissCard = { /*TODO*/ },
+                    onDismissCard = { viewModel.onEvent(HomeScreenEvent.HideWonPrize) },
                     showClaimButton = false,
                     modifier = Modifier
                         .align(Alignment.Center)
@@ -156,11 +133,27 @@ fun HomeScreen(
     }
 }
 
-/**
- * Get the activity
- */
-fun Context.getActivity(): Activity? = when (this) {
-    is ComponentActivity -> this
-    is ContextWrapper -> baseContext.getActivity() as Activity
-    else -> null
+private suspend fun playLottieAnimation(
+    animatable: LottieAnimatable,
+    composition: LottieComposition?,
+    isLoseAnimation: Boolean,
+    viewModel: HomeScreenViewModel,
+) {
+    if(!isLoseAnimation) {
+        viewModel.onEvent(HomeScreenEvent.ShowWonAnimation)
+    }
+    viewModel.onEvent(HomeScreenEvent.StartAnimation)
+
+    animatable.animate(
+        composition,
+        continueFromPreviousAnimate = false,
+    )
+    if (animatable.isAtEnd) {
+        animatable.snapTo(progress = 0f)
+        viewModel.onEvent(HomeScreenEvent.StopAnimation)
+        if(!isLoseAnimation) {
+            viewModel.onEvent(HomeScreenEvent.ShowLoseAnimaton)
+            viewModel.onEvent(HomeScreenEvent.ShowWonPrize)
+        }
+    }
 }

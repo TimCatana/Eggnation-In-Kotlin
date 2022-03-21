@@ -13,7 +13,6 @@ import com.airbnb.lottie.compose.LottieAnimatable
 import com.airbnb.lottie.compose.LottieAnimation
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreenViewModel
-import com.applicnation.eggnation.feature_eggnation.presentation.game.home.getActivity
 
 @Composable
 fun HomeScreenLoseAnimation(
@@ -22,7 +21,7 @@ fun HomeScreenLoseAnimation(
     loseAnimatable: LottieAnimatable,
     isAnimationPlaying: Boolean,
     viewModel: HomeScreenViewModel,
-    context: Context
+    context: Context,
 ) {
     LottieAnimation(
         loseComposition,
@@ -35,15 +34,8 @@ fun HomeScreenLoseAnimation(
                 indication = null,
                 enabled = !isAnimationPlaying
             ) {
-                viewModel.onEvent(HomeScreenEvent.DecrementCounter)
                 viewModel.onEvent(HomeScreenEvent.IncrementGlobalCounter)
-
-                if (viewModel.tapCounter.value % 5 == 0) {
-                    viewModel.onEvent(HomeScreenEvent.PlayAd(context.getActivity()))
-                } else {
-                    viewModel.onEvent(HomeScreenEvent.LoadAd(context.getActivity()))
-                    viewModel.onEvent(HomeScreenEvent.MainGameLogic)
-                }
+                viewModel.onEvent(HomeScreenEvent.MainGameLogic(context))
             }
     )
 }

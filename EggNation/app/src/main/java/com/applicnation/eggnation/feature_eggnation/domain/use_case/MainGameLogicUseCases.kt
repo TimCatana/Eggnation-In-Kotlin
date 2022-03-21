@@ -8,6 +8,7 @@ import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.ClaimPrizeUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.DoClaimPrizeUC
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.InternetConnectivityUC
 import com.applicnation.eggnation.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -18,5 +19,6 @@ data class MainGameLogicUseCases(
     val claimPrizeUC: ClaimPrizeUC,
     val incrementGlobalCounterUC: IncrementGlobalCounterUC,
     val doGameLogicUC: DoGameLogicUC,
-    val doClaimPrizeUC: DoClaimPrizeUC
+    val doClaimPrizeUC: DoClaimPrizeUC,
+    val internetConnectivityUC: InternetConnectivityUC
 )

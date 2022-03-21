@@ -1,19 +1,19 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.home
 
+import android.app.Activity
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.AdUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.AllPreferencesUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
 import com.applicnation.eggnation.util.Resource
+import com.applicnation.eggnation.util.getActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -25,25 +25,11 @@ class HomeScreenViewModel @Inject constructor(
     private val preferencesUseCases: AllPreferencesUseCases,
     private val mainGameLogicUseCases: MainGameLogicUseCases,
     private val prizeUseCases: PrizeUseCases,
-    private val adUseCases: AdUseCases // TODO - get hilt working to for this... kinda difficult with the scoping
+    private val adUseCases: AdUseCases,
 ) : ViewModel() {
 
     private val _tapCounter = mutableStateOf(1000)
     val tapCounter: State<Int> = _tapCounter
-    private var getTapCountJob: Job? = null
-
-
-
-
-
-
-
-    private val _userWon = mutableStateOf(false)
-    val userWon: State<Boolean> = _userWon
-
-
-
-
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
@@ -52,28 +38,18 @@ class HomeScreenViewModel @Inject constructor(
     val showWonPrize: State<Boolean> = _showWonPrize
 
     // TODO - probably make the below three it's own component with viewModel in the future
-    private val _prizeTitleInfo = mutableStateOf("")
-    val prizeTitleInfo: State<String> = _prizeTitleInfo
-
-    private val _prizeDescInfo = mutableStateOf("")
-    val prizeDescInfo: State<String> = _prizeDescInfo
-
-    private val _prizeTypeInfo = mutableStateOf("")
-    val prizeTypeInfo: State<String> = _prizeTypeInfo
+    private val _prize = mutableStateOf(AvailablePrize())
+    val prize: State<AvailablePrize> = _prize
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     // Lottie
-    private val _showWinAnimation = mutableStateOf<Boolean>(false)
-    val showWinAnimation: State<Boolean> = _showWinAnimation
-
     private val _showLoseAnimation = mutableStateOf<Boolean>(true)
     val showLoseAnimation: State<Boolean> = _showLoseAnimation
 
     private val _isAnimationPlaying = mutableStateOf<Boolean>(false)
     val isAnimationPlaying: State<Boolean> = _isAnimationPlaying
-
 
     init {
         resetCountIfNeeded()
@@ -88,119 +64,118 @@ class HomeScreenViewModel @Inject constructor(
                     mainGameLogicUseCases.incrementGlobalCounterUC()
                 }
             }
-            is HomeScreenEvent.DecrementCounter -> { // TODO - fix this cause I want to rely on the stored value not on this value
-                viewModelScope.launch(Dispatchers.IO) {
-                    preferencesUseCases.decrementTapCountPrefUC(_tapCounter.value)
-                    getCount()
+            is HomeScreenEvent.MainGameLogic -> {
+                if (!mainGameLogicUseCases.internetConnectivityUC(event.context)) {
+                    viewModelScope.launch { _eventFlow.emit(UiEvent.ShowSnackbar("Must be connected to the internet")) }
+                } else {
+                    decrementCounter()
+
+                    if (_tapCounter.value % 20 == 0) {
+                        playAd(event.context.getActivity())
+                    } else {
+                        loadAd(event.context.getActivity())
+                        mainGameLogic()
+                    }
                 }
             }
-
-
-
-
-            is HomeScreenEvent.MainGameLogic -> {
-                // TODO - load add if not loaded (once I get hilt working for this)
-
-                // TODO - disable egg image button while this is running
-                mainGameLogicUseCases.doGameLogicUC().onEach { result ->
-                    when (result) {
-                        is Resource.Loading -> {
-                            _isLoading.value = true
-                        }
-                        is Resource.Success -> {
-                            _isLoading.value = false
-
-                            if (result.data == null) {
-                                Timber.i("playing lose aniatin")
-                                _eventFlow.emit(
-                                    UiEvent.PlayLoseAnimation
-                                )
-                            } else {
-                                Timber.i("PRIZE WON! Should show image card now ${result.data}")
-                                _prizeTitleInfo.value = result.data.prizeTitle
-                                _prizeDescInfo.value = result.data.prizeDesc
-                                _prizeTypeInfo.value = result.data.prizeType
-
-                                _eventFlow.emit(
-                                    UiEvent.PlayWinAnimation
-                                )
-                            }
-                        }
-                        is Resource.Error -> {
-                            _isLoading.value = false
-                            _eventFlow.emit(
-                                UiEvent.PlayLoseAnimation
-                            )
-                        }
-                    }
-
-                    // TODO - re-enable egg image button while this is running
-                }.launchIn(viewModelScope)
+            is HomeScreenEvent.StartAnimation -> {
+                _isAnimationPlaying.value = true
             }
-
-
-            is HomeScreenEvent.SetAnimationPlaying -> {
-                _isAnimationPlaying.value = event.isPlaying
+            is HomeScreenEvent.StopAnimation -> {
+                _isAnimationPlaying.value = false
             }
-
-
+            is HomeScreenEvent.ShowLoseAnimaton -> {
+                _showLoseAnimation.value = true
+            }
+            is HomeScreenEvent.ShowWonAnimation -> {
+                _showLoseAnimation.value = false
+            }
             is HomeScreenEvent.ShowWonPrize -> {
                 _showWonPrize.value = true
             }
             is HomeScreenEvent.HideWonPrize -> {
                 _showWonPrize.value = false
             }
+        }
+    }
 
-
-            is HomeScreenEvent.LoadAd -> {
-                if (event.context != null) {
-                    adUseCases.adLoadUseCase(event.context)
-                }
-            }
-            is HomeScreenEvent.PlayAd -> {
-                if (event.context != null) {
-                    var adPlayed = adUseCases.adPlayUseCase(event.context)
-                    if (!adPlayed) {
-                        viewModelScope.launch {
-                            _eventFlow.emit(
-                                UiEvent.PlayLoseAnimation
-                            )
-                        }
-                    }
-                } else {
-                    viewModelScope.launch {
-                        _eventFlow.emit(
-                            UiEvent.PlayLoseAnimation
-                        )
-                    }
-                }
-            }
-
-
-            is HomeScreenEvent.ShowWonAnimation -> {
-                _showLoseAnimation.value = false
-                _showWinAnimation.value = true
-            }
-            is HomeScreenEvent.ShowLoseAnimaton -> {
-                _showLoseAnimation.value = true
-                _showWinAnimation.value = false
+    /**
+     * Decrements the local counter
+     * // TODO - need to fix this up, the way it's set up now can cause out of sync
+     */
+    private fun decrementCounter() {
+        viewModelScope.launch {
+            preferencesUseCases.decrementTapCountPrefUC().collectLatest {
+                _tapCounter.value = it
             }
         }
     }
 
-    private fun loadAd() {
+    /**
+     * Does the main game logic.
+     */
+    private fun mainGameLogic() {
+        mainGameLogicUseCases.doGameLogicUC().onEach { result ->
+            when (result) {
+                is Resource.Loading -> {
+                    _isLoading.value = true
+                }
+                is Resource.Success -> {
+                    _isLoading.value = false
+                    if (result.data == null) {
+                        Timber.i("playing lose animation")
+                        _eventFlow.emit(UiEvent.PlayAnimation(true))
+                    } else {
+                        Timber.i("playing won animation... the prize won is ${result.data}")
+                        _prize.value = result.data
+                        _eventFlow.emit(UiEvent.PlayAnimation(false))
+                    }
+                }
+                is Resource.Error -> {
+                    _isLoading.value = false
+                    _eventFlow.emit(UiEvent.PlayAnimation(true))
+                }
+            }
 
+            // TODO - re-enable egg image button while this is running
+        }.launchIn(viewModelScope)
+    }
+
+
+    /**
+     * If ad fails to show, then show the lose animation.
+     * If ad shows, then no need to play any animation
+     * @note activityContext should never be null
+     */
+    private fun playAd(activityContext: Activity?) {
+        if (activityContext != null) {
+            val adSuccessful = adUseCases.adPlayUseCase(activityContext)
+            if (!adSuccessful) {
+                viewModelScope.launch { _eventFlow.emit(UiEvent.PlayAnimation(true)) }
+            }
+        } else {
+            viewModelScope.launch { _eventFlow.emit(UiEvent.PlayAnimation(false)) }
+        }
+    }
+
+    /**
+     * @note activityContext should never be null
+     */
+    private fun loadAd(activityContext: Activity?) {
+        if (activityContext != null) {
+            adUseCases.adLoadUseCase(activityContext)
+        }
     }
 
     private fun getCount() {
-        getTapCountJob?.cancel()
-        getTapCountJob = preferencesUseCases.getTapCountPrefUC()
-            .map {
-                _tapCounter.value = it
-            }
+        preferencesUseCases.getTapCountPrefUC()
+            .map { _tapCounter.value = it }
             .launchIn(viewModelScope)
     }
 
+    /**
+     * Resets the counter every 12 hours
+     */
     private fun resetCountIfNeeded() {
         val currentTime = Date().time
         val dayInMillis: Long = 86_400_000
@@ -221,7 +196,6 @@ class HomeScreenViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
-        object PlayLoseAnimation : UiEvent()
-        object PlayWinAnimation : UiEvent()
+        data class PlayAnimation(val isLoseAnimation: Boolean) : UiEvent()
     }
 }

@@ -12,7 +12,7 @@ class AdLoadUseCase @Inject constructor(
         try {
             adMob.loadInterstitialAd(activityContext)
         } catch( e: Exception) {
-            Timber.e("Failed to play add")
+            Timber.e("Failed to load ad")
         }
     }
 }

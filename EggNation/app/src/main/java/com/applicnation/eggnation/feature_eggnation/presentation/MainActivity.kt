@@ -49,12 +49,10 @@ class MainActivity() : ComponentActivity() {
                 if(viewModel.isLoggedIn.value) {
                     GameNavGraph(
                         navController = navController,
-                        startDestination = "lol"
                     )
                 } else {
                     AuthNavGraph(
                         navController = navController,
-                        startDestination = "lol"
                     )
                 }
             }
