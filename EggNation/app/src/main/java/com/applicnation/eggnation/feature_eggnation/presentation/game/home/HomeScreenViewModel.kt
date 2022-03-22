@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.AdUseCases
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.AllPreferencesUseCases
@@ -14,6 +15,7 @@ import com.applicnation.eggnation.util.Resource
 import com.applicnation.eggnation.util.getActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -24,57 +26,80 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val preferencesUseCases: AllPreferencesUseCases,
     private val mainGameLogicUseCases: MainGameLogicUseCases,
-    private val prizeUseCases: PrizeUseCases,
     private val adUseCases: AdUseCases,
 ) : ViewModel() {
 
+    /**
+     * States:
+     * - tapCounter (Int)
+     * - showLoseAnimation (Boolean)
+     * - isAnimationPlaying (Boolean)
+     * - showWonPrize (Boolean)
+     * - prize (AvailablePrize)
+     * - isLoading (Boolean)
+     * - eventFlow (Flow)
+     */
     private val _tapCounter = mutableStateOf(1000)
     val tapCounter: State<Int> = _tapCounter
+
+    private val _showLoseAnimation = mutableStateOf(true)
+    val showLoseAnimation: State<Boolean> = _showLoseAnimation
+
+    private val _isAnimationPlaying = mutableStateOf(false)
+    val isAnimationPlaying: State<Boolean> = _isAnimationPlaying
+
+    private val _showWonPrize = mutableStateOf(false)
+    val showWonPrize: State<Boolean> = _showWonPrize
+
+    private val _prize = mutableStateOf(AvailablePrize())
+    val prize: State<AvailablePrize> = _prize
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
 
-    private val _showWonPrize = mutableStateOf<Boolean>(false)
-    val showWonPrize: State<Boolean> = _showWonPrize
-
-    // TODO - probably make the below three it's own component with viewModel in the future
-    private val _prize = mutableStateOf(AvailablePrize())
-    val prize: State<AvailablePrize> = _prize
-
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    // Lottie
-    private val _showLoseAnimation = mutableStateOf<Boolean>(true)
-    val showLoseAnimation: State<Boolean> = _showLoseAnimation
-
-    private val _isAnimationPlaying = mutableStateOf<Boolean>(false)
-    val isAnimationPlaying: State<Boolean> = _isAnimationPlaying
-
+    /**
+     * Init jobs:
+     * - resetCounter (conditional)
+     * - getTheLatestCount (This is a flow that is always open and collects updated values)
+     */
     init {
         resetCountIfNeeded()
-        getCount()
+        preferencesUseCases.getTapCountPrefUC().map { _tapCounter.value = it }.launchIn(viewModelScope) // This flow always collects the updated value
     }
 
-    // TODO - launch database stuff in IO dispatcher
+    /**
+     * Events:
+     * - IncrementGlobalCounter (Button CLicked)
+     * - MainGameLogic (Button CLicked)
+     * - StartAnimation (Button Clicked)
+     * - StopAnimation (Result of animation being finished)
+     * - ShowLoseAnimaton (Button Clicked and User Lost)
+     * - ShowWonAnimation (Button Clicked and User Won)
+     * - ShowWonPrize (Button Clicked and User Won)
+     * - HideWonPrize (Button Clicked)
+     */
     fun onEvent(event: HomeScreenEvent) {
         when (event) {
             is HomeScreenEvent.IncrementGlobalCounter -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    mainGameLogicUseCases.incrementGlobalCounterUC()
-                }
+                viewModelScope.launch(Dispatchers.IO) { mainGameLogicUseCases.incrementGlobalCounterUC() }
             }
             is HomeScreenEvent.MainGameLogic -> {
                 if (!mainGameLogicUseCases.internetConnectivityUC(event.context)) {
                     viewModelScope.launch { _eventFlow.emit(UiEvent.ShowSnackbar("Must be connected to the internet")) }
                 } else {
-                    decrementCounter()
-
-                    if (_tapCounter.value % 20 == 0) {
-                        playAd(event.context.getActivity())
-                    } else {
-                        loadAd(event.context.getActivity())
-                        mainGameLogic()
+                    viewModelScope.launch {
+                        val isDecrementSuccessful = preferencesUseCases.decrementTapCountPrefUC(_tapCounter.value)
+                        if (isDecrementSuccessful) {
+                            if (_tapCounter.value % 20 == 0) {
+                                playAd(event.context.getActivity())
+                            } else {
+                                loadAd(event.context.getActivity())
+                                mainGameLogic()
+                            }
+                        }
                     }
                 }
             }
@@ -100,16 +125,61 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     /**
-     * Decrements the local counter
-     * // TODO - need to fix this up, the way it's set up now can cause out of sync
+     * Helper Functions:
+     * - resetCountIfNeeded (Reset's the counter if a certain amount of time passed since last time user opened app)
+     * - playAd (Plays an ad)
+     * - loadAd (Loads an ad and prepares for it to be played)
+     * - mainGameLogic (Does the main game logic every time the user taps on the screen
      */
-    private fun decrementCounter() {
-        viewModelScope.launch {
-            preferencesUseCases.decrementTapCountPrefUC().collectLatest {
-                _tapCounter.value = it
+
+    /**
+     * Resets the counter every 12 hours
+     */
+    private fun resetCountIfNeeded() {
+        val currentTime = Date().time
+        val dayInMillis: Long = 86_400_000
+        val emptyPreferenceValue: Long = 0
+
+        preferencesUseCases.getLastResetTimePrefUC()
+            .map {
+                if (it == emptyPreferenceValue) {
+                    preferencesUseCases.updateLastResetTimePrefUC(currentTime)
+                }
+                if ((currentTime - it) >= dayInMillis) {
+                    preferencesUseCases.updateTapCountPrefUC(1000)
+                    preferencesUseCases.updateLastResetTimePrefUC(currentTime)
+                }
             }
+            .launchIn(viewModelScope)
+    }
+
+    /**
+     * Plays an ad if it is ready to show
+     * If ad fails to show, then show the lose animation.
+     * If ad shows, then no need to play any animation
+     * @note activityContext should never be null
+     */
+    private suspend fun playAd(activityContext: Activity?) {
+        if (activityContext != null) {
+            val adSuccessful = adUseCases.adPlayUseCase(activityContext)
+            if (!adSuccessful) {
+                _eventFlow.emit(UiEvent.PlayAnimation(true))
+            }
+        } else {
+            _eventFlow.emit(UiEvent.PlayAnimation(false))
         }
     }
+
+    /**
+     * Loads an ad if one is not loaded yet
+     * @note activityContext should never be null
+     */
+    private fun loadAd(activityContext: Activity?) {
+        if (activityContext != null) {
+            adUseCases.adLoadUseCase(activityContext)
+        }
+    }
+
 
     /**
      * Does the main game logic.
@@ -136,62 +206,7 @@ class HomeScreenViewModel @Inject constructor(
                     _eventFlow.emit(UiEvent.PlayAnimation(true))
                 }
             }
-
-            // TODO - re-enable egg image button while this is running
         }.launchIn(viewModelScope)
-    }
-
-
-    /**
-     * If ad fails to show, then show the lose animation.
-     * If ad shows, then no need to play any animation
-     * @note activityContext should never be null
-     */
-    private fun playAd(activityContext: Activity?) {
-        if (activityContext != null) {
-            val adSuccessful = adUseCases.adPlayUseCase(activityContext)
-            if (!adSuccessful) {
-                viewModelScope.launch { _eventFlow.emit(UiEvent.PlayAnimation(true)) }
-            }
-        } else {
-            viewModelScope.launch { _eventFlow.emit(UiEvent.PlayAnimation(false)) }
-        }
-    }
-
-    /**
-     * @note activityContext should never be null
-     */
-    private fun loadAd(activityContext: Activity?) {
-        if (activityContext != null) {
-            adUseCases.adLoadUseCase(activityContext)
-        }
-    }
-
-    private fun getCount() {
-        preferencesUseCases.getTapCountPrefUC()
-            .map { _tapCounter.value = it }
-            .launchIn(viewModelScope)
-    }
-
-    /**
-     * Resets the counter every 12 hours
-     */
-    private fun resetCountIfNeeded() {
-        val currentTime = Date().time
-        val dayInMillis: Long = 86_400_000
-        val emptyPreferenceValue: Long = 0
-
-        preferencesUseCases.getLastResetTimePrefUC()
-            .map {
-                if (it == emptyPreferenceValue) {
-                    preferencesUseCases.updateLastResetTimePrefUC(currentTime)
-                }
-                if ((currentTime - it) >= dayInMillis) {
-                    preferencesUseCases.updateTapCountPrefUC(1000)
-                    preferencesUseCases.updateLastResetTimePrefUC(currentTime)
-                }
-            }
-            .launchIn(viewModelScope)
     }
 
     sealed class UiEvent {

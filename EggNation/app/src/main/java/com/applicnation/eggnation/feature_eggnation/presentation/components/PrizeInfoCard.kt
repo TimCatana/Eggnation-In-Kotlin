@@ -16,9 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.game.home.HomeScreenViewModel
-import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreenEvent
 
 @Composable
 fun PrizeInfoCard(

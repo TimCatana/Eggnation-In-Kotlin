@@ -5,10 +5,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.applicnation.eggnation.util.Constants
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.io.IOException
 import java.lang.Exception
@@ -29,11 +26,7 @@ class PreferencesManager @Inject constructor(
     /**
      * Preferences:
      * - tapCount (Int) --> Should always be between 0-1000
-     * - skin (Int) --> The selected skin
-     * - receivesNotifications (Boolean)
      * - lastResetTime (Long) --> Should always represent the last time the counter was reset in milliseconds
-     * TODO - add preference to tell whether user is logged in or not
-     *
      */
 
     /**
@@ -80,7 +73,6 @@ class PreferencesManager @Inject constructor(
      * - LastResetTime
      * // TODO - What happens when IOException occurs?
      */
-
     fun getTapCount(): Flow<Int> {
         return tapCountFlow
     }
@@ -128,17 +120,6 @@ class PreferencesManager @Inject constructor(
             Timber.e("Failed to update ${PreferencesKeys.LAST_RESET_TIME} key in preference datastore: IOException --> $e")
         } catch (e: Exception) {
             Timber.wtf("Failed to update ${PreferencesKeys.LAST_RESET_TIME} key in preference datastore: Unknown Exception--> $e")
-        }
-    }
-
-    /**
-     * DataStore Helpers
-     */
-    suspend fun decrementTapCounter() {
-        tapCountFlow.map {
-            if (it in 1..999) {
-                updateTapCount(it - 1)
-            }
         }
     }
 }

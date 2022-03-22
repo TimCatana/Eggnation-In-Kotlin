@@ -37,8 +37,4 @@ class PreferencesRepositoryImpl(
     override suspend fun updateLastResetTime(resetTime: Long) {
         return preferencesManager.updateLastResetTime(resetTime)
     }
-
-    override suspend fun decrementTapCounter(){
-        return preferencesManager.decrementTapCounter()
-    }
 }

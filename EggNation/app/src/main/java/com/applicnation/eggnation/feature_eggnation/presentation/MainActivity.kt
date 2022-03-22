@@ -1,31 +1,17 @@
 package com.applicnation.eggnation.feature_eggnation.presentation
 
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.applicnation.eggnation.feature_eggnation.presentation.game.claim_prize.ClaimPrizeScreenViewModel
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthNavGraph
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameNavGraph
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
 import com.applicnation.eggnation.ui.theme.EggNationTheme
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity() : ComponentActivity() {
@@ -37,8 +23,8 @@ class MainActivity() : ComponentActivity() {
         viewModel.mAuth.addAuthStateListener(viewModel.authStateListener)
     }
 
-    @ExperimentalMaterialApi
     @ExperimentalFoundationApi
+    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -8,5 +8,4 @@ interface PreferencesRepository {
 
     suspend fun updateTapCount(tapCount: Int)
     suspend fun updateLastResetTime(resetTime: Long)
-    suspend fun decrementTapCounter()
 }
