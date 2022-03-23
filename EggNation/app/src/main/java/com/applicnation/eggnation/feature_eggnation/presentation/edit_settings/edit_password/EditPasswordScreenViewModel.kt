@@ -5,21 +5,19 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
-import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email.EditEmailScreenEvent
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.edit_settings.EditPasswordScreenUseCases
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
 import javax.inject.Inject
 
 
 @HiltViewModel
 class EditPasswordScreenViewModel @Inject constructor(
-    private val userUseCases: UserUseCases
+    private val editPasswordScreenUseCases: EditPasswordScreenUseCases
 ) : ViewModel() {
 
     /**
@@ -61,8 +59,9 @@ class EditPasswordScreenViewModel @Inject constructor(
      * events
      * - Password (Text Entered)
      * - ConfirmPassword (Text Entered)
-     * - Show PasswordModal (Button Clicked)
      * - ValidationPassword (TextEntered)
+     * - ShowPasswordModal (Button Clicked)
+     * - HidePasswordModal (Button Clicked)
      * - Update Password (Button Clicked)
      */
     fun onEvent(event: EditPasswordScreenEvent) {
@@ -76,16 +75,19 @@ class EditPasswordScreenViewModel @Inject constructor(
                 _confirmPasswordText.value = event.value
                 validateConfirmPassword()
             }
-            is EditPasswordScreenEvent.ShowPasswordModel -> {
-                _isPasswordModelShowing.value = event.showPasswordModel
-            }
             is EditPasswordScreenEvent.EnteredValidationPassword -> {
                 _validationPasswordText.value = event.value
             }
+            is EditPasswordScreenEvent.ShowPasswordModel -> {
+                _isPasswordModelShowing.value = true
+            }
+            is EditPasswordScreenEvent.HidePasswordModel -> {
+                _isPasswordModelShowing.value = false
+            }
             is EditPasswordScreenEvent.UpdatePassword -> {
-                userUseCases.updateUserPasswordUC(
+                editPasswordScreenUseCases.updateUserPasswordUC(
                     password = _validationPasswordText.value,
-                    newPassword = event.newPassword
+                    newPassword = _passwordText.value
                 )
                     .onEach { result ->
                         when (result) {
@@ -99,9 +101,7 @@ class EditPasswordScreenViewModel @Inject constructor(
                             is Resource.Error -> {
                                 _isLoading.value = false
                                 _eventFlow.emit(
-                                    UiEvent.ShowSnackbar(
-                                        message = result.message ?: "Password failed to update"
-                                    )
+                                    UiEvent.ShowSnackBar(message = result.message)
                                 )
                             }
                         }
@@ -119,27 +119,22 @@ class EditPasswordScreenViewModel @Inject constructor(
         var isError = false
 
         if (_passwordText.value.length < 8) {
-//            Timber.d("password error = TRUE --> password length less than 8")
             isError = true
         }
 
         if (_passwordText.value.contains(whiteSpaceChars)) {
-//            Timber.d("password error = TRUE --> password contains whitespace")
             isError = true
         }
 
         if (!_passwordText.value.contains(lowerCaseChars)) {
-//            Timber.d("password error = TRUE --> password does not contain lowercase letters")
             isError = true
         }
 
         if (!_passwordText.value.contains(upperCaseChars)) {
-//            Timber.d("password error = TRUE --> password does not contain uppercase letters")
             isError = true
         }
 
         if (!_passwordText.value.contains(numberChars)) {
-//            Timber.d("password error = TRUE --> password does not contain numbers")
             isError = true
         }
 
@@ -151,7 +146,7 @@ class EditPasswordScreenViewModel @Inject constructor(
     }
 
     sealed class UiEvent {
-        data class ShowSnackbar(val message: String) : UiEvent()
+        data class ShowSnackBar(val message: String) : UiEvent()
         object ChangeStacks : UiEvent()
     }
 }

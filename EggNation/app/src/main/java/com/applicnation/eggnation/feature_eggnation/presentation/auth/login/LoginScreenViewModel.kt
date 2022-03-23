@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.auth.LoginScreenUseCases
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val userUseCases: UserUseCases
+    private val loginScreenUseCases: LoginScreenUseCases
 ) : ViewModel() {
 
     /**
@@ -62,7 +62,7 @@ class LoginScreenViewModel @Inject constructor(
                 validatePassword()
             }
             is LoginScreenEvent.SignIn -> {
-                userUseCases.signInUserUC(_emailText.value, _passwordText.value)
+                loginScreenUseCases.signInUserUC(_emailText.value, _passwordText.value)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {

@@ -4,10 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.auth.ForgotPasswordScreenUseCases
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
@@ -16,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordScreenViewModel @Inject constructor(
-    private val userUseCases: UserUseCases
+    private val forgotPasswordScreenUseCases: ForgotPasswordScreenUseCases
 ) : ViewModel() {
 
     /**
@@ -50,7 +49,7 @@ class ForgotPasswordScreenViewModel @Inject constructor(
                 validateEmail()
             }
             is ForgotPasswordScreenEvent.SendResetPasswordEmail -> {
-                userUseCases.sendUserPasswordResetEmailUC(_emailText.value)
+                forgotPasswordScreenUseCases.sendUserPasswordResetEmailUC(_emailText.value)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {

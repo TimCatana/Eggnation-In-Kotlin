@@ -1,5 +1,6 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,7 @@ import androidx.navigation.NavController
 import com.applicnation.eggnation.R
 import com.applicnation.eggnation.feature_eggnation.presentation.components.PasswordModal
 import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
+import com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_email.EditEmailScreenEvent
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.PolicyScreen
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.SettingScreen
 import com.applicnation.eggnation.ui.theme.SettingsBG
@@ -92,16 +94,18 @@ fun SettingsScreen(
             }
 
             if (viewModel.isPasswordModelShowing.value) {
+                BackHandler(enabled = true) {
+                    viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false))
+                }
                 PasswordModal(
                     // TODO - make width and height based on screen dimensions
                     modifier = Modifier
                         .align(Alignment.Center)
                         .width(300.dp)
                         .height(200.dp),
-                    cancelModal = {
-                        viewModel.onEvent(SettingsScreenEvent.ShowPasswordModel(false))
+                    onConfirm = {
+                        viewModel.onEvent(SettingsScreenEvent.DeleteAccount(viewModel.passwordText.value))
                     },
-                    onDone = { viewModel.onEvent(SettingsScreenEvent.DeleteAccount(viewModel.passwordText.value)) },
                     onTextChange = { viewModel.onEvent(SettingsScreenEvent.EnteredPassword(it)) },
                     text = viewModel.passwordText.value,
                 )

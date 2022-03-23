@@ -5,23 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenViewModel
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.game.AvailablePrizeScreenUseCases
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class AvailablePrizesScreenViewModel @Inject constructor(
-//    private val preferencesUseCases: PreferencesUseCases
-    private val prizeUseCases: PrizeUseCases
+    private val availablePrizeScreenUseCases: AvailablePrizeScreenUseCases
 ) : ViewModel() {
 
     private val _showPrizeInfo = mutableStateOf(false)
@@ -30,15 +25,8 @@ class AvailablePrizesScreenViewModel @Inject constructor(
     private val _prizes = mutableStateOf(ArrayList<AvailablePrize>())
     val prizes: State<ArrayList<AvailablePrize>> = _prizes
 
-    // TODO - probably make the below three it's own component with viewModel in the future
-    private val _prizeTitleInfo = mutableStateOf("")
-    val prizeTitleInfo: State<String> = _prizeTitleInfo
-
-    private val _prizeDescInfo = mutableStateOf("")
-    val prizeDescInfo: State<String> = _prizeDescInfo
-
-    private val _prizeImageInfo = mutableStateOf(0)
-    val prizeImageInfo: State<Int> = _prizeImageInfo
+    private val _prize = mutableStateOf(AvailablePrize())
+    val prize: State<AvailablePrize> = _prize
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> = _isLoading
@@ -47,7 +35,7 @@ class AvailablePrizesScreenViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        prizeUseCases.availablePrizeGetAllUC()
+        availablePrizeScreenUseCases.availablePrizeGetAllUC()
             .onEach { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -73,14 +61,18 @@ class AvailablePrizesScreenViewModel @Inject constructor(
     fun onEvent(event: AvailablePrizesScreenEvent) {
         when (event) {
             is AvailablePrizesScreenEvent.ShowPrizeInfo -> {
-                _prizeTitleInfo.value = event.prizeTitle
-                _prizeDescInfo.value = event.prizeDesc
-                _prizeImageInfo.value = event.prizeImage
-
-                _showPrizeInfo.value = event.showInfo
+                _prize.value = event.prize
+                _showPrizeInfo.value = true
             }
-            // TODO - add prize refresh event
-            AvailablePrizesScreenEvent.FetchAvailablePrizes -> {
+            is AvailablePrizesScreenEvent.HidePrizeInfo -> {
+                _showPrizeInfo.value = false
+                // below is just a default value in case some error occurs
+                _prize.value = AvailablePrize(
+                    prizeTitle = "Failed to fetch prize title",
+                    prizeDesc = "Failed to fetch prize description"
+                )
+            }
+            is AvailablePrizesScreenEvent.FetchAvailablePrizes -> {
                 TODO()
             }
         }

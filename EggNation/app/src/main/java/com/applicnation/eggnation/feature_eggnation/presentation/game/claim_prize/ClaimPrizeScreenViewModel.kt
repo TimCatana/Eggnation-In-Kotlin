@@ -3,31 +3,21 @@ package com.applicnation.eggnation.feature_eggnation.presentation.game.claim_pri
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.domain.modal.Countries
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Country
 import com.applicnation.eggnation.feature_eggnation.domain.modal.Region
-import com.applicnation.eggnation.feature_eggnation.domain.modal.WonPrize
-import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenViewModel
-import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreenEvent
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.game.ClaimPrizeScreenUseCases
 import com.applicnation.eggnation.util.Resource
-import countryList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import regionList
 import javax.inject.Inject
 
 @HiltViewModel
 class ClaimPrizeScreenViewModel @Inject constructor(
-//    private val preferencesUseCases: PreferencesUseCases
-    private val mainGameLogicUseCases: MainGameLogicUseCases,
+    private val claimPrizeScreenUseCases: ClaimPrizeScreenUseCases,
 ) : ViewModel() {
 
     private val _addressText = mutableStateOf("")
@@ -122,7 +112,7 @@ class ClaimPrizeScreenViewModel @Inject constructor(
             }
             is ClaimPrizeScreenEvent.ClaimPrize -> {
                 // UC
-                mainGameLogicUseCases.doClaimPrizeUC(event.prizeId, event.country, event.region, event.address)
+                claimPrizeScreenUseCases.doClaimPrizeUC(event.prizeId, event.country, event.region, event.address)
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {

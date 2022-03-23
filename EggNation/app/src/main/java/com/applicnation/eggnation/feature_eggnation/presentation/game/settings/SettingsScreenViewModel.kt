@@ -4,12 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.Authentication
-import com.applicnation.eggnation.feature_eggnation.domain.repository.AuthenticationRepository
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.UserUseCases
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.login.LoginScreenEvent
-import com.applicnation.eggnation.feature_eggnation.presentation.auth.register.RegisterScreenViewModel
-import com.applicnation.eggnation.feature_eggnation.presentation.navigation.AuthScreen
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.game.SettingsScreenUseCases
 import com.applicnation.eggnation.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,14 +12,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
-    private val userUseCases: UserUseCases,
-    private val authentication: Authentication
+private val settingsScreenUseCases: SettingsScreenUseCases
 ) : ViewModel() {
 
     /**
@@ -63,9 +55,9 @@ class SettingsScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _isInit.value = true
-            userUseCases.reloadUserUC()
-            _email.value = userUseCases.getUserEmailUC()
-            _isEmailVerified.value = userUseCases.getUserEmailVerificationStatusUC()
+            settingsScreenUseCases.reloadUserUC()
+            _email.value = settingsScreenUseCases.getUserEmailUC()
+            _isEmailVerified.value = settingsScreenUseCases.getUserEmailVerificationStatusUC()
             _language.value = "EN"
             _isInit.value = false
         }
@@ -80,7 +72,7 @@ class SettingsScreenViewModel @Inject constructor(
                 _passwordText.value = event.value
             }
             is SettingsScreenEvent.SignOut -> {
-                userUseCases.signOutUserUC()
+                settingsScreenUseCases.signOutUserUC()
                     .onEach { result ->
                         when (result) {
                             is Resource.Loading -> {
@@ -101,7 +93,7 @@ class SettingsScreenViewModel @Inject constructor(
                     }.launchIn(viewModelScope)
             }
             is SettingsScreenEvent.DeleteAccount -> {
-                userUseCases.deleteUserUC(event.password).onEach { result ->
+                settingsScreenUseCases.deleteUserUC(event.password).onEach { result ->
                     when (result) {
                         is Resource.Loading -> {
                             _isLoading.value = true
@@ -121,7 +113,7 @@ class SettingsScreenViewModel @Inject constructor(
                 }.launchIn(viewModelScope)
             }
             is SettingsScreenEvent.SendVerificationEmail -> {
-                userUseCases.sendUserVerificationEmailUC().onEach { result ->
+                settingsScreenUseCases.sendUserVerificationEmailUC().onEach { result ->
                     when (result) {
                         is Resource.Loading -> {
                             _isLoading.value = true

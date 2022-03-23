@@ -27,6 +27,7 @@ import com.applicnation.eggnation.feature_eggnation.presentation.game.home.compo
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.components.HomeScreenCounterText
 import com.applicnation.eggnation.feature_eggnation.presentation.game.home.components.animations.HomeScreenAnimationController
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
+import com.applicnation.eggnation.ui.theme.SpaceXXl
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -78,7 +79,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .padding(start = 4.dp, top = 4.dp)
                     .clickable(
-                        enabled = !viewModel.isAnimationPlaying.value,
+                        enabled = !viewModel.isAnimationPlaying.value && !viewModel.showWonPrize.value,
                         interactionSource = interactionSource,
                         indication = null,
                     ) {
@@ -90,24 +91,32 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier.fillMaxSize()
             ) {
-                HomeScreenCounterText(counter = viewModel.tapCounter.value.toString())
+                HomeScreenCounterText(
+                    counter = viewModel.tapCounter.value.toString(),
+                    modifier = Modifier
+                        .weight(0.2f)
+                        .padding(top = SpaceXXl)
+                )
                 HomeScreenAnimationController(
                     viewModel = viewModel,
                     interactionSource = interactionSource,
                     context = context,
                     isAnimationPlaying = viewModel.isAnimationPlaying.value,
+                    isWonPrizeShowing = viewModel.showWonPrize.value,
                     loseComposition = loseComposition,
                     loseAnimatable = loseAnimatable,
                     winComposition = winComposition,
                     winAnimatable = winAnimatable,
                     modifier = Modifier
-                        .width(200.dp)
-                        .height(200.dp) // TODO - decide on modifier
+                        .weight(0.6f)
+                        .align(Alignment.CenterHorizontally)
+                        .aspectRatio(1f)
                 )
                 HomeScreenBottomIcons(
                     viewModel = viewModel,
                     navController = navController,
-                    interactionSource = interactionSource
+                    interactionSource = interactionSource,
+                    modifier = Modifier.weight(0.1f)
                 )
             }
 
@@ -139,7 +148,7 @@ private suspend fun playLottieAnimation(
     isLoseAnimation: Boolean,
     viewModel: HomeScreenViewModel,
 ) {
-    if(!isLoseAnimation) {
+    if (!isLoseAnimation) {
         viewModel.onEvent(HomeScreenEvent.ShowWonAnimation)
     }
     viewModel.onEvent(HomeScreenEvent.StartAnimation)
@@ -151,8 +160,8 @@ private suspend fun playLottieAnimation(
     if (animatable.isAtEnd) {
         animatable.snapTo(progress = 0f)
         viewModel.onEvent(HomeScreenEvent.StopAnimation)
-        if(!isLoseAnimation) {
-            viewModel.onEvent(HomeScreenEvent.ShowLoseAnimaton)
+        if (!isLoseAnimation) {
+            viewModel.onEvent(HomeScreenEvent.ShowLoseAnimation)
             viewModel.onEvent(HomeScreenEvent.ShowWonPrize)
         }
     }

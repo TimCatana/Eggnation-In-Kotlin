@@ -12,5 +12,4 @@ sealed class GameScreen(val route: String) {
         }
     }
     object Settings: GameScreen(route = "settingsScreen")
-    object EmailVerification: GameScreen(route = "verifyEmailScreen")
 }

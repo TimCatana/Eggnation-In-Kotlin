@@ -17,10 +17,11 @@ fun HomeScreenAnimationController(
     loseComposition: LottieComposition?,
     loseAnimatable: LottieAnimatable,
     isAnimationPlaying: Boolean,
+    isWonPrizeShowing: Boolean,
     context: Context,
     winComposition: LottieComposition?,
     winAnimatable: LottieAnimatable,
-    modifier: Modifier // TODO - decide on modifier
+    modifier: Modifier
 ) {
     if (viewModel.showLoseAnimation.value) {
         HomeScreenLoseAnimation(
@@ -28,8 +29,10 @@ fun HomeScreenAnimationController(
             loseComposition = loseComposition,
             loseAnimatable = loseAnimatable,
             isAnimationPlaying = isAnimationPlaying,
+            isWonPrizeShowing = isWonPrizeShowing,
             viewModel = viewModel,
             context = context,
+            modifier = modifier
         )
     } else {
         HomeScreenWinComposition(

@@ -8,21 +8,27 @@ import com.applicnation.eggnation.feature_eggnation.data.remote.firebase.*
 import com.applicnation.eggnation.feature_eggnation.data.repository.*
 import com.applicnation.eggnation.feature_eggnation.domain.repository.*
 import com.applicnation.eggnation.feature_eggnation.domain.use_case.*
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdLoadUseCase
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.ads_use_case.AdPlayUseCase
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.preference_use_case.*
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetAllUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeGetByRNGUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.available_prize_use_case.AvailablePrizeDeleteUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.prize_use_case.won_prize_use_case.*
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.ClaimPrizeUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.DoClaimPrizeUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.game_logic_use_case.InternetConnectivityUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.get_user_data_use_case.*
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.user_use_case.user_account_use_case.*
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.ads_use_case.AdLoadUseCase
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.ads_use_case.AdPlayUseCase
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.preference_use_case.*
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.prize_use_case.available_prize_use_case.AvailablePrizeGetAllUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.prize_use_case.available_prize_use_case.AvailablePrizeGetByRNGUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.game_logic_use_case.IncrementGlobalCounterUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.prize_use_case.available_prize_use_case.AvailablePrizeDeleteUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.prize_use_case.won_prize_use_case.*
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.game_logic_use_case.ClaimPrizeUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.game_logic_use_case.DoClaimPrizeUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.game_logic_use_case.InternetConnectivityUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.get_user_data_use_case.*
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.update_user_data_use_case.UpdateUserEmailAddressUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.update_user_data_use_case.UpdateUserPasswordUC
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.individual_use_cases.user_use_case.user_account_use_case.*
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.edit_settings.EditEmailScreenUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.edit_settings.EditPasswordScreenUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.auth.ForgotPasswordScreenUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.auth.LoginScreenUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.auth.RegisterScreenUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.game.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,6 +80,12 @@ object AppModule {
         return AdMob()
     }
 
+    @Provides
+    @Singleton
+    fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {
+        return PreferencesManager(context)
+    }
+
 
     /**
      * Repository Providers
@@ -105,36 +117,19 @@ object AppModule {
         return DatabaseRepositoryImpl(firestore, database)
     }
 
-
-    /**
-     * Use Case Providers
-     */
     @Provides
     @Singleton
-    fun provideUserUseCases(
-        authenticationRepo: AuthenticationRepository,
-        databaseRepo: DatabaseRepository,
-        functionsRepo: FunctionsRepository
-    ): UserUseCases {
-        return UserUseCases(
-            signUpUserUC = SignUpUserUC(authenticationRepo),
-            signInUserUC = SignInUserUC(authenticationRepo),
-            signOutUserUC = SignOutUserUC(authenticationRepo),
-            deleteUserUC = DeleteUserUC(authenticationRepo),
-            reauthenticateUser = ReauthenticateUser(authenticationRepo),
-            reloadUserUC = ReloadUserUC(authenticationRepo),
-
-            sendUserPasswordResetEmailUC = SendUserPasswordResetEmailUC(authenticationRepo),
-            sendUserVerificationEmailUC = SendUserVerificationEmailUC(authenticationRepo),
-
-            getUserIdUC = GetUserIdUC(authenticationRepo),
-            getUserEmailUC = GetUserEmailUC(authenticationRepo),
-            getUserEmailVerificationStatusUC = GetUserEmailVerificationStatusUC(authenticationRepo),
-
-            updateUserEmailAddressUC = UpdateUserEmailAddressUC(authenticationRepo, databaseRepo, functionsRepo),
-            updateUserPasswordUC = UpdateUserPasswordUC(authenticationRepo),
-        )
+    fun providePreferencesRepository(preferencesManager: PreferencesManager): PreferencesRepository {
+        return PreferencesRepositoryImpl(preferencesManager)
     }
+
+
+
+
+
+
+
+
 
     @Provides
     @Singleton
@@ -155,62 +150,136 @@ object AppModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideMainGameLogicUseCases(
-        databaseRepo: DatabaseRepository,
-        authenticationRepo: AuthenticationRepository,
-        availablePrizeUseCases: PrizeUseCases,
-        functionsRepo: FunctionsRepository,
-        internetRepo: InternetRepository
-    ): MainGameLogicUseCases {
-        return MainGameLogicUseCases(
-            claimPrizeUC = ClaimPrizeUC(authenticationRepo),
-            incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo),
-            doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases, databaseRepo),
-            doClaimPrizeUC = DoClaimPrizeUC(functionsRepo, authenticationRepo, databaseRepo),
-            internetConnectivityUC = InternetConnectivityUC(internetRepo)
-        )
-    }
 
-    // TODO - create admobe repository and add that
-    @Provides
-    @Singleton
-    fun provideAdUseCases(adMob: AdMob): AdUseCases {
-        return AdUseCases(
-            adLoadUseCase = AdLoadUseCase(adMob),
-            adPlayUseCase = AdPlayUseCase(adMob)
-        )
-    }
+
+
+
+
+
 
     /**
-     * Preferences Injections
+     * Screen Use Cases
      */
-
     @Provides
     @Singleton
-    fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager {
-        return PreferencesManager(context)
-    }
-
-    @Provides
-    @Singleton
-    fun providePreferencesRepository(preferencesManager: PreferencesManager): PreferencesRepository {
-        return PreferencesRepositoryImpl(preferencesManager)
-    }
-
-    @Provides
-    @Singleton
-    fun providePreferencesUseCases(preferencesRepo: PreferencesRepository): AllPreferencesUseCases {
-        return AllPreferencesUseCases(
-            getTapCountPrefUC = GetTapCountPrefUC(preferencesRepo),
-            getLastResetTimePrefUC = GetLastResetTimePrefUC(preferencesRepo),
-
-            updateTapCountPrefUC = UpdateTapCountPrefUC(preferencesRepo),
-            updateLastResetTimePrefUC = UpdateLastResetTimePrefUC(preferencesRepo),
-
-            decrementTapCountPrefUC = DecrementTapCountPrefUC(preferencesRepo)
+    fun provideLoginScreenUseCases(authenticationRepo: AuthenticationRepository): LoginScreenUseCases {
+        return LoginScreenUseCases(
+            signInUserUC = SignInUserUC(authenticationRepo)
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideRegisterScreenUseCases(authenticationRepo: AuthenticationRepository): RegisterScreenUseCases {
+        return RegisterScreenUseCases(
+            signUpUserUC = SignUpUserUC(authenticationRepo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideForgotPasswordScreenUseCases(authenticationRepo: AuthenticationRepository): ForgotPasswordScreenUseCases {
+        return ForgotPasswordScreenUseCases(
+            sendUserPasswordResetEmailUC = SendUserPasswordResetEmailUC(authenticationRepo)
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideAvailablePrizeScreenUseCases(databaseRepo: DatabaseRepository): AvailablePrizeScreenUseCases {
+        return AvailablePrizeScreenUseCases(
+            availablePrizeGetAllUC = AvailablePrizeGetAllUC(databaseRepo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideClaimPrizeScreenUseCases(functionsRepo: FunctionsRepository, authenticationRepo: AuthenticationRepository, databaseRepo: DatabaseRepository): ClaimPrizeScreenUseCases {
+        return ClaimPrizeScreenUseCases(
+            doClaimPrizeUC = DoClaimPrizeUC(functionsRepo, authenticationRepo, databaseRepo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideHomeScreenUseCases(
+        preferencesRepo: PreferencesRepository,
+        databaseRepo: DatabaseRepository,
+        internetRepo: InternetRepository,
+        adMob: AdMob,
+        authenticationRepo: AuthenticationRepository,
+        availablePrizeUseCases: PrizeUseCases,
+    ): HomeScreenUseCases {
+        return HomeScreenUseCases(
+            getTapCountPrefUC = GetTapCountPrefUC(preferencesRepo),
+            incrementGlobalCounterUC = IncrementGlobalCounterUC(databaseRepo),
+            internetConnectivityUC = InternetConnectivityUC(internetRepo),
+            decrementTapCountPrefUC = DecrementTapCountPrefUC(preferencesRepo),
+
+            getLastResetTimePrefUC = GetLastResetTimePrefUC(preferencesRepo),
+            updateLastResetTimePrefUC = UpdateLastResetTimePrefUC(preferencesRepo),
+            updateTapCountPrefUC = UpdateTapCountPrefUC(preferencesRepo),
+
+            adPlayUseCase = AdPlayUseCase(adMob),
+            adLoadUseCase = AdLoadUseCase(adMob),
+
+            doGameLogicUC = DoGameLogicUC(authenticationRepo, availablePrizeUseCases, databaseRepo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingsScreenUseCases(
+        authenticationRepo: AuthenticationRepository,
+    ): SettingsScreenUseCases {
+        return SettingsScreenUseCases(
+            reloadUserUC = ReloadUserUC(authenticationRepo),
+            getUserEmailUC = GetUserEmailUC(authenticationRepo),
+            getUserEmailVerificationStatusUC = GetUserEmailVerificationStatusUC(authenticationRepo),
+            signOutUserUC = SignOutUserUC(authenticationRepo),
+            deleteUserUC = DeleteUserUC(authenticationRepo),
+            sendUserVerificationEmailUC = SendUserVerificationEmailUC(authenticationRepo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideWonPrizeScreenUseCases(
+        databaseRepo: DatabaseRepository,
+        authenticationRepo: AuthenticationRepository,
+    ): WonPrizeScreenUseCases {
+        return WonPrizeScreenUseCases(
+            wonPrizeGetAllUC = WonPrizeGetAllUC(databaseRepo, authenticationRepo),
+            getUserEmailVerificationStatusUC = GetUserEmailVerificationStatusUC(authenticationRepo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEditEmailScreenUseCases(
+        databaseRepo: DatabaseRepository,
+        authenticationRepo: AuthenticationRepository,
+        functionsRepo: FunctionsRepository
+    ): EditEmailScreenUseCases {
+        return EditEmailScreenUseCases(
+            updateUserEmailAddressUC = UpdateUserEmailAddressUC(authenticationRepo, databaseRepo, functionsRepo)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEditPasswordScreenUseCases(
+        authenticationRepo: AuthenticationRepository,
+    ): EditPasswordScreenUseCases {
+        return EditPasswordScreenUseCases(
+            updateUserPasswordUC = UpdateUserPasswordUC(authenticationRepo)
+        )
+    }
+
+
+
+
+
 
 }

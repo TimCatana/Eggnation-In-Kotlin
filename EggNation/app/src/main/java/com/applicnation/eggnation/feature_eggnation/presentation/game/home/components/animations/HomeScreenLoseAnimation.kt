@@ -20,19 +20,19 @@ fun HomeScreenLoseAnimation(
     loseComposition: LottieComposition?,
     loseAnimatable: LottieAnimatable,
     isAnimationPlaying: Boolean,
+    isWonPrizeShowing: Boolean,
     viewModel: HomeScreenViewModel,
     context: Context,
+    modifier: Modifier
 ) {
     LottieAnimation(
         loseComposition,
         loseAnimatable.progress,
-        modifier = Modifier
-            .width(200.dp)
-            .height(200.dp)
+        modifier = modifier
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                enabled = !isAnimationPlaying
+                enabled = !isAnimationPlaying && !isWonPrizeShowing
             ) {
                 viewModel.onEvent(HomeScreenEvent.IncrementGlobalCounter)
                 viewModel.onEvent(HomeScreenEvent.MainGameLogic(context))

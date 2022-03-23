@@ -41,7 +41,7 @@ class PreferencesManager @Inject constructor(
                 emit(emptyPreferences())
             } else {
                 Timber.wtf("Failed to read receivesNotifications from preference datastore: Unexpected Exception  --> $e")
-                throw e
+                emit(emptyPreferences())
             }
         }
         .map { preferences ->
@@ -60,7 +60,7 @@ class PreferencesManager @Inject constructor(
                 emit(emptyPreferences())
             } else {
                 Timber.wtf("Failed to read lastResetTime from preference datastore: Unexpected Exception --> $e")
-                throw e
+                emit(emptyPreferences())
             }
         }
         .map { preferences ->

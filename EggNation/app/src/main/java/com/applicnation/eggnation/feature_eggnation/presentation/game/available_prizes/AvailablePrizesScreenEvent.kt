@@ -1,15 +1,18 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.game.available_prizes
 
 import com.applicnation.eggnation.R
-import com.applicnation.eggnation.feature_eggnation.presentation.game.won_prizes.WonPrizesScreenEvent
+import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
 
 sealed class AvailablePrizesScreenEvent {
     data class ShowPrizeInfo(
-        val showInfo: Boolean,
         val prizeImage: Int = R.drawable.egg,
-        val prizeTitle: String = "Failed to fetch Title",
-        val prizeDesc: String = "Failed to fetch description"
+        val prize: AvailablePrize = AvailablePrize(
+            prizeTitle = "Failed to fetch prize title",
+            prizeDesc = "Failed to fetch prize description"
+        )
     ) : AvailablePrizesScreenEvent()
+
+    object HidePrizeInfo : AvailablePrizesScreenEvent()
 
     object FetchAvailablePrizes : AvailablePrizesScreenEvent()
 }

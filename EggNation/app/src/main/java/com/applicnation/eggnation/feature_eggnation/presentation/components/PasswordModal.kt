@@ -31,8 +31,7 @@ fun PasswordModal(
     modifier: Modifier,
     text: String,
     onTextChange: (String) -> Unit,
-    cancelModal: () -> Unit,
-    onDone: () -> Unit
+    onConfirm: () -> Unit,
 ) {
     val localFocusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -69,10 +68,7 @@ fun PasswordModal(
                         imeAction = ImeAction.Done
                     ),
                     keyboardActions = KeyboardActions(
-                        onDone = {
-                            localFocusManager.clearFocus()
-                            onDone()
-                        }
+                        onDone = { localFocusManager.clearFocus() }
                     ),
                     textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.White,
@@ -86,8 +82,8 @@ fun PasswordModal(
                     isIconClickable = true
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = cancelModal) {
-                    Text(text = "Cancel")
+                Button(onClick = onConfirm) {
+                    Text(text = "Confirm")
                 }
             }
         }

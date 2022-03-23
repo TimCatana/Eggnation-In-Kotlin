@@ -5,17 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.applicnation.eggnation.feature_eggnation.domain.modal.AvailablePrize
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.AdUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.AllPreferencesUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.PrizeUseCases
-import com.applicnation.eggnation.feature_eggnation.domain.use_case.MainGameLogicUseCases
+import com.applicnation.eggnation.feature_eggnation.domain.use_case.screen_use_cases.game.HomeScreenUseCases
 import com.applicnation.eggnation.util.Resource
 import com.applicnation.eggnation.util.getActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -24,9 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val preferencesUseCases: AllPreferencesUseCases,
-    private val mainGameLogicUseCases: MainGameLogicUseCases,
-    private val adUseCases: AdUseCases,
+    private val homeScreenUseCases: HomeScreenUseCases
 ) : ViewModel() {
 
     /**
@@ -67,7 +60,7 @@ class HomeScreenViewModel @Inject constructor(
      */
     init {
         resetCountIfNeeded()
-        preferencesUseCases.getTapCountPrefUC().map { _tapCounter.value = it }.launchIn(viewModelScope) // This flow always collects the updated value
+        val job = homeScreenUseCases.getTapCountPrefUC().map { _tapCounter.value = it }.launchIn(viewModelScope) // This flow always collects the updated value
     }
 
     /**
@@ -84,14 +77,14 @@ class HomeScreenViewModel @Inject constructor(
     fun onEvent(event: HomeScreenEvent) {
         when (event) {
             is HomeScreenEvent.IncrementGlobalCounter -> {
-                viewModelScope.launch(Dispatchers.IO) { mainGameLogicUseCases.incrementGlobalCounterUC() }
+                viewModelScope.launch(Dispatchers.IO) { homeScreenUseCases.incrementGlobalCounterUC() }
             }
             is HomeScreenEvent.MainGameLogic -> {
-                if (!mainGameLogicUseCases.internetConnectivityUC(event.context)) {
+                if (!homeScreenUseCases.internetConnectivityUC(event.context)) {
                     viewModelScope.launch { _eventFlow.emit(UiEvent.ShowSnackbar("Must be connected to the internet")) }
                 } else {
                     viewModelScope.launch {
-                        val isDecrementSuccessful = preferencesUseCases.decrementTapCountPrefUC(_tapCounter.value)
+                        val isDecrementSuccessful = homeScreenUseCases.decrementTapCountPrefUC(_tapCounter.value)
                         if (isDecrementSuccessful) {
                             if (_tapCounter.value % 20 == 0) {
                                 playAd(event.context.getActivity())
@@ -109,7 +102,7 @@ class HomeScreenViewModel @Inject constructor(
             is HomeScreenEvent.StopAnimation -> {
                 _isAnimationPlaying.value = false
             }
-            is HomeScreenEvent.ShowLoseAnimaton -> {
+            is HomeScreenEvent.ShowLoseAnimation -> {
                 _showLoseAnimation.value = true
             }
             is HomeScreenEvent.ShowWonAnimation -> {
@@ -140,14 +133,14 @@ class HomeScreenViewModel @Inject constructor(
         val dayInMillis: Long = 86_400_000
         val emptyPreferenceValue: Long = 0
 
-        preferencesUseCases.getLastResetTimePrefUC()
+        homeScreenUseCases.getLastResetTimePrefUC()
             .map {
                 if (it == emptyPreferenceValue) {
-                    preferencesUseCases.updateLastResetTimePrefUC(currentTime)
+                    homeScreenUseCases.updateLastResetTimePrefUC(currentTime)
                 }
                 if ((currentTime - it) >= dayInMillis) {
-                    preferencesUseCases.updateTapCountPrefUC(1000)
-                    preferencesUseCases.updateLastResetTimePrefUC(currentTime)
+                    homeScreenUseCases.updateTapCountPrefUC(1000)
+                    homeScreenUseCases.updateLastResetTimePrefUC(currentTime)
                 }
             }
             .launchIn(viewModelScope)
@@ -161,7 +154,7 @@ class HomeScreenViewModel @Inject constructor(
      */
     private suspend fun playAd(activityContext: Activity?) {
         if (activityContext != null) {
-            val adSuccessful = adUseCases.adPlayUseCase(activityContext)
+            val adSuccessful = homeScreenUseCases.adPlayUseCase(activityContext)
             if (!adSuccessful) {
                 _eventFlow.emit(UiEvent.PlayAnimation(true))
             }
@@ -176,7 +169,7 @@ class HomeScreenViewModel @Inject constructor(
      */
     private fun loadAd(activityContext: Activity?) {
         if (activityContext != null) {
-            adUseCases.adLoadUseCase(activityContext)
+            homeScreenUseCases.adLoadUseCase(activityContext)
         }
     }
 
@@ -185,7 +178,7 @@ class HomeScreenViewModel @Inject constructor(
      * Does the main game logic.
      */
     private fun mainGameLogic() {
-        mainGameLogicUseCases.doGameLogicUC().onEach { result ->
+        homeScreenUseCases.doGameLogicUC().onEach { result ->
             when (result) {
                 is Resource.Loading -> {
                     _isLoading.value = true

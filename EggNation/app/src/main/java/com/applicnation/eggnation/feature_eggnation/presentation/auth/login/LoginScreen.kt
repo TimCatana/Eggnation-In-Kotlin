@@ -92,7 +92,6 @@ fun LoginScreen(
             }
 
             if (viewModel.isLoading.value) {
-
                 BackHandler(enabled = true) {}
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }

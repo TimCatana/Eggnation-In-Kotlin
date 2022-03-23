@@ -1,32 +1,36 @@
 package com.applicnation.eggnation.feature_eggnation.presentation.edit_settings.edit_password
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.applicnation.eggnation.feature_eggnation.presentation.components.PasswordModal
-import com.applicnation.eggnation.feature_eggnation.presentation.components.StandardTextField
+import com.applicnation.eggnation.R
+import com.applicnation.eggnation.feature_eggnation.presentation.components.*
 import com.applicnation.eggnation.feature_eggnation.presentation.navigation.GameScreen
-import com.applicnation.eggnation.ui.theme.SettingsBG
+import com.applicnation.eggnation.ui.theme.*
+import com.applicnation.eggnation.util.WindowInfo
+import com.applicnation.eggnation.util.rememberWindowInfo
 import kotlinx.coroutines.flow.collectLatest
-
-// TODO - make text box outline blue
 
 @Composable
 fun EditPasswordScreen(
@@ -34,9 +38,11 @@ fun EditPasswordScreen(
     viewModel: EditPasswordScreenViewModel = hiltViewModel()
 
 ) {
+    val windowInfo = rememberWindowInfo()
     val scaffoldState = rememberScaffoldState()
     val localFocusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -45,7 +51,7 @@ fun EditPasswordScreen(
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is EditPasswordScreenViewModel.UiEvent.ShowSnackbar -> {
+                is EditPasswordScreenViewModel.UiEvent.ShowSnackBar -> {
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message,
                     )
@@ -64,183 +70,148 @@ fun EditPasswordScreen(
         backgroundColor = SettingsBG
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    top = 24.dp,
-                    bottom = 50.dp
-                )
+            modifier = Modifier.fillMaxSize()
         ) {
-            Box(
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = stringResource(id = R.string.CD_backArrowIcon),
+                tint = Color.White,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 40.dp)
-            ) {
-                Column(
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    StandardTextField(
-                        text = viewModel.passwordText.value,
-                        onValueChange = {
-                            viewModel.onEvent(EditPasswordScreenEvent.EnteredPassword(it))
-                        },
-                        isError = viewModel.isPasswordError.value,
-                        errorText = "Lowercase, uppsercase numbers 8 chars",
-                        label = "new password",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester),
-                        isPassword = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Next
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = {
-                                localFocusManager.moveFocus(FocusDirection.Down)
-                            }
-                        ),
-                        textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Blue,
-                            focusedLabelColor = Color.Blue,
-                            unfocusedBorderColor = Color.White,
-                            unfocusedLabelColor = Color.White,
-                            trailingIconColor = Color.White,
-                            cursorColor = Color.Blue,
-                            textColor = Color.White
-                        ),
-                        isIconClickable = true
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    StandardTextField(
-                        // TODO - keep this disabled until the password is equal to the current password
-                        text = viewModel.confirmPasswordText.value,
-                        onValueChange = {
-                            viewModel.onEvent(EditPasswordScreenEvent.EnteredConfirmPassword(it))
-                        },
-                        isError = viewModel.isConfirmPasswordError.value,
-                        errorText = "passwords must match",
-                        label = "confirm password",
-                        modifier = Modifier.fillMaxWidth(),
-                        isPassword = true,
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                localFocusManager.clearFocus()
-                            }
-                        ),
-                        textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = Color.Blue,
-                            focusedLabelColor = Color.Blue,
-                            unfocusedBorderColor = Color.White,
-                            unfocusedLabelColor = Color.White,
-                            trailingIconColor = Color.White,
-                            cursorColor = Color.Blue,
-                            textColor = Color.White
-                        ),
-                        isIconClickable = true
-                    )
-                }
-                Button(
-                    enabled = !viewModel.isPasswordError.value && !viewModel.isConfirmPasswordError.value,
-                    onClick = {
-                        viewModel.onEvent(EditPasswordScreenEvent.EnteredValidationPassword(""))
-                        viewModel.onEvent(EditPasswordScreenEvent.ShowPasswordModel(true))
-                    },
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
-                    Text(text = "Change Password")
-                }
-            }
+                    .align(Alignment.TopStart)
+                    .padding(start = SpaceSmall, top = SpaceSmall)
+                    .clickable(
+                        enabled = !viewModel.isLoading.value && !viewModel.isPasswordModelShowing.value,
+                        interactionSource = interactionSource,
+                        indication = null,
+                    ) {
+                        navController.popBackStack()
+                    }
+            )
 
-            if (viewModel.isPasswordModelShowing.value) {
-                PasswordModal(
-                    // TODO - make width and height based on screen dimensions
+            if (windowInfo.screenWidthInfo is WindowInfo.WindowType.Compact) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = SpaceLarge,
+                            end = SpaceLarge,
+                            top = SpaceLarge,
+                            bottom = SpaceXXl
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EditPasswordScreenContent(
+                        viewModel = viewModel,
+                        focusRequester = focusRequester,
+                        localFocusManager = localFocusManager,
+                    )
+                }
+            } else {
+                Box(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .width(300.dp)
-                        .height(200.dp),
-                    cancelModal = {
-                        viewModel.onEvent(EditPasswordScreenEvent.ShowPasswordModel(false))
-                    },
-                    onDone = { viewModel.onEvent(EditPasswordScreenEvent.UpdatePassword(viewModel.confirmPasswordText.value)) },
-                    onTextChange = {
-                        viewModel.onEvent(
-                            EditPasswordScreenEvent.EnteredValidationPassword(
-                                it
-                            )
-                        )
-                    },
-                    text = viewModel.validationPasswordText.value,
-                )
+                        .fillMaxWidth(0.6f)
+                        .padding(bottom = SpaceXXl)
+                        .fillMaxHeight()
+                ) {
+                    EditPasswordScreenContent(
+                        viewModel = viewModel,
+                        focusRequester = focusRequester,
+                        localFocusManager = localFocusManager,
+                    )
+                }
             }
 
             if (viewModel.isLoading.value) {
+                BackHandler(enabled = true) {}
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PasswordScreenPreview() {
-    val scaffoldState = rememberScaffoldState()
-
-    Scaffold(
-        scaffoldState = scaffoldState,
+private fun EditPasswordScreenContent(
+    viewModel: EditPasswordScreenViewModel,
+    localFocusManager: FocusManager,
+    focusRequester: FocusRequester
+) {
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    start = 24.dp,
-                    end = 24.dp,
-                    top = 24.dp,
-                    bottom = 50.dp
-                )
+        Column(
+            modifier = Modifier.align(Alignment.Center)
         ) {
-            Box(
+            PasswordTextField(
+                text = viewModel.passwordText.value,
+                onValueChange = { viewModel.onEvent(EditPasswordScreenEvent.EnteredPassword(it)) },
+                isError = viewModel.isPasswordError.value,
+                imeAction = ImeAction.Next,
+                keyboardActions = KeyboardActions(
+                    onNext = { localFocusManager.moveFocus(FocusDirection.Down) }
+                ),
+                isIconClickable = !viewModel.isLoading.value,
+                textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Blue,
+                    focusedLabelColor = Color.Blue,
+                    unfocusedBorderColor = Color.White,
+                    unfocusedLabelColor = Color.White,
+                    trailingIconColor = Color.White,
+                    cursorColor = Color.Blue,
+                    textColor = Color.White
+                ),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 40.dp)
-            ) {
-                Column(
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    StandardTextField(
-                        text = "test",
-                        onValueChange = {},
-                        isError = false,
-                        errorText = "Invalid email address",
-                        label = "password",
-                        modifier = Modifier.fillMaxWidth(),
-                        isIconClickable = true
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    StandardTextField(
-                        text = "test",
-                        onValueChange = {},
-                        isError = false,
-                        errorText = "Invalid email address",
-                        label = "new password",
-                        modifier = Modifier.fillMaxWidth(),
-                        isIconClickable = true
-                    )
-                }
-                Button(
-                    enabled = false,
-                    onClick = {},
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
-                    Text(text = "Change Email")
-                }
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+            )
+            Spacer(modifier = Modifier.height(SpaceMedium))
+            ConfirmPasswordTextField(
+                text = viewModel.confirmPasswordText.value,
+                onValueChange = { viewModel.onEvent(EditPasswordScreenEvent.EnteredConfirmPassword(it)) },
+                isError = viewModel.isConfirmPasswordError.value,
+                imeAction = ImeAction.Done,
+                keyboardActions = KeyboardActions(
+                    onDone = { localFocusManager.clearFocus() }
+                ),
+                isIconClickable = !viewModel.isLoading.value,
+                textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Blue,
+                    focusedLabelColor = Color.Blue,
+                    unfocusedBorderColor = Color.White,
+                    unfocusedLabelColor = Color.White,
+                    trailingIconColor = Color.White,
+                    cursorColor = Color.Blue,
+                    textColor = Color.White
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        Button(
+            enabled = !viewModel.isPasswordError.value
+                    && !viewModel.isConfirmPasswordError.value
+                    && !viewModel.isPasswordModelShowing.value,
+            onClick = {
+                viewModel.onEvent(EditPasswordScreenEvent.EnteredValidationPassword(""))
+                viewModel.onEvent(EditPasswordScreenEvent.ShowPasswordModel)
+            },
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            Text(text = "Change Password")
+        }
+
+        if (viewModel.isPasswordModelShowing.value) {
+            BackHandler(enabled = true) {
+                viewModel.onEvent(EditPasswordScreenEvent.HidePasswordModel)
             }
+            PasswordModal(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .height(220.dp),
+                onConfirm = { viewModel.onEvent(EditPasswordScreenEvent.UpdatePassword)  },
+                onTextChange = { viewModel.onEvent(EditPasswordScreenEvent.EnteredValidationPassword(it)) },
+                text = viewModel.validationPasswordText.value,
+            )
         }
     }
 }

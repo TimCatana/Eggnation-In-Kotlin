@@ -3,10 +3,12 @@ package com.applicnation.eggnation.feature_eggnation.presentation.game.home.comp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -18,16 +20,20 @@ import com.applicnation.eggnation.feature_eggnation.presentation.navigation.Game
 fun HomeScreenBottomIcons(
     viewModel: HomeScreenViewModel,
     navController: NavController,
-    interactionSource: MutableInteractionSource
+    interactionSource: MutableInteractionSource,
+    modifier: Modifier
 ) {
-    Row() {
+    Row(
+        modifier = modifier
+    ) {
         Image(
             painter = painterResource(id = R.drawable.store_icon),
             contentDescription = "store icon",
-            Modifier
-                .size(60.dp)
+            modifier = Modifier
+                .weight(0.5f)
+                .fillMaxSize()
                 .clickable(
-                    enabled = !viewModel.isAnimationPlaying.value,
+                    enabled = !viewModel.isAnimationPlaying.value && !viewModel.showWonPrize.value,
                     interactionSource = interactionSource,
                     indication = null,
                 ) {
@@ -38,9 +44,10 @@ fun HomeScreenBottomIcons(
             painter = painterResource(id = R.drawable.store_icon),
             contentDescription = "store icon",
             Modifier
-                .size(60.dp)
+                .weight(0.5f)
+                .fillMaxSize()
                 .clickable(
-                    enabled = !viewModel.isAnimationPlaying.value,
+                    enabled = !viewModel.isAnimationPlaying.value && !viewModel.showWonPrize.value,
                     interactionSource = interactionSource,
                     indication = null,
                 ) {
